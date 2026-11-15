@@ -1,0 +1,173 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080e1b"><title>THE LAST 10 SECONDS · CINEMATIC V2</title><style>
+:root{font-family:system-ui,-apple-system,"Thonburi",sans-serif;color:#f6f8ff;background:#080e1b;font-size:15px}*{box-sizing:border-box}body{margin:0;padding:0 0 30px;display:flex;justify-content:center;background:radial-gradient(ellipse at 50% -10%,#1d2840,#080e1b 55%)}main{width:min(100%,530px);padding:10px}header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 2px 14px}.brand{font-size:18px;font-weight:950;letter-spacing:.5px;line-height:1.2}.brand span{display:block;letter-spacing:3px;font-size:9px;color:#97a8c5;margin-top:7px}.version{color:#ffb68f;border:1px solid #70534f;background:#30222d;border-radius:7px;padding:7px 9px;font-weight:850;font-size:11px;white-space:nowrap}
+#window{position:relative;width:100%;aspect-ratio:9/16;max-height:790px;border-radius:18px;overflow:hidden;border:1px solid #46526b;background:radial-gradient(#162c48,#06101e);box-shadow:0 13px 40px #01050b9c;isolation:isolate}
+#window:before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:linear-gradient(180deg,#020b199e 0%,transparent 26%,transparent 48%,#030914df 100%)}
+#window:after{content:"";position:absolute;z-index:5;inset:0;pointer-events:none;opacity:0;background:#ff6348}#window.failed:after{animation:flash .42s 2}#window.success:after{background:#30b987;animation:flash .38s 1}@keyframes flash{30%{opacity:.30}100%{opacity:0}}
+canvas{display:block;width:100%;height:100%;touch-action:none}#fallback{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;text-align:center;color:#dce8f9;font-weight:700;background:linear-gradient(145deg,#283c52,#07101b);padding:30px}
+.hud{position:absolute;z-index:2;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:13px;gap:8px}
+.top-strip{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:11px;font-weight:850;letter-spacing:1px;text-shadow:0 1px 6px #000}.red-dot{width:8px;height:8px;border-radius:50%;background:#ff4a57;box-shadow:0 0 9px #ff4040;display:inline-block;margin-right:5px}#status{text-transform:uppercase;color:#b8f9e5}
+.mission-title{margin-top:5px;text-transform:uppercase;color:#ffe2b1;font-size:11px;letter-spacing:1.5px;font-weight:950;max-width:100%;text-align:center;text-shadow:0 1px 10px #000}
+.timer-wrap{text-align:center;display:flex;align-items:center;flex-direction:column;margin-top:-4px}.timer{font-size:clamp(53px,16vw,87px);letter-spacing:-5px;font-weight:1000;line-height:1;color:#ff745e;font-variant-numeric:tabular-nums;text-shadow:0 0 34px #d63b3960}.timer.urgent{color:#ff3137;animation:pulse .6s infinite alternate}@keyframes pulse{to{transform:scale(1.11)}}.timer-caption{font-size:10px;font-weight:800;letter-spacing:3px;color:#c5d5e9}
+.readout{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin:5px 0}.meter{font-size:11px;border:1px solid #5e759578;border-radius:7px;background:#081421bc;padding:7px 8px;backdrop-filter:blur(5px)}.meter b{color:#a5f4cf}.warning{text-align:center;margin-top:5px}.notice{display:inline-block;max-width:100%;background:#090e1ce8;border:1px solid #e097588a;padding:9px 12px;border-radius:10px;font-weight:750;font-size:12px;line-height:1.55;text-shadow:0 1px 3px #000}
+.spacer{flex:1;min-height:5px}.vote-ui{pointer-events:auto;border:1px solid #4b58747f;border-radius:13px;background:#07101de8;padding:12px;backdrop-filter:blur(7px)}.vote-ui .heading{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;font-weight:800;color:#d6e7f5;margin-bottom:9px}.vote-row{display:flex;gap:8px}.vote{min-width:0;flex:1;border-radius:9px;min-height:64px;border:1px solid #537ba2;padding:9px 8px;display:flex;gap:8px;align-items:center;text-align:left;background:#1c4260;color:#fff;font-weight:850;cursor:pointer;font-size:12px}.vote:nth-child(2){background:#59402c;border-color:#ab794d}.vote strong{font-size:25px}.vote small{display:block;font-weight:500;color:#dce3ee;font-size:9px}.vote:disabled{opacity:.5}.votes{display:flex;justify-content:space-between;font-size:11px;margin:9px 0 6px;color:#e5eaf1}.bar{height:8px;border-radius:9px;background:#283d59;display:flex;overflow:hidden}.barA{background:#55c4ff;transition:width .12s}.barB{background:#ffb852;transition:width .12s}
+.controls{background:#101e30;border:1px solid #344964;border-radius:14px;margin-top:11px;padding:13px}.result-label{font-size:11px;letter-spacing:1px;color:#adbfda;font-weight:900}.result-text{font-size:13px;line-height:1.55;color:#ced8e6;min-height:44px;padding:8px 1px}.win-result{color:#94f1b6!important}.loss-result{color:#ff9d91!important}.btnrow{display:flex;gap:8px}.btn{border:0;min-height:48px;border-radius:9px;background:linear-gradient(#23b88d,#11805f);color:#fff;font-size:13px;font-weight:850;flex:1}.btn:disabled{opacity:.42}.btn.secondary{background:#273e58;flex:0 0 34%}.sound{margin-top:9px;min-height:42px;border-radius:9px;border:1px solid #53647d;background:#1b3046;color:#e2effe;padding:8px 13px;font-size:12px;font-weight:800}.tip{font-size:11px;line-height:1.6;color:#9eb1c9;padding:13px 1px}.tip b{color:#dfeefe}#window.in-motion{border-color:#9c5b52}
+@media(max-width:365px){.brand{font-size:15px}.hud{padding:9px}.vote{font-size:10px}.meter{font-size:10px;padding:5px}.notice{font-size:11px}.vote-ui{padding:8px}}
+@media(prefers-reduced-motion:reduce){.timer.urgent{animation:none}#window:after{animation:none!important}}
+</style></head><body><main>
+<header><div class="brand">THE LAST 10 SECONDS<span>3D CINEMATIC SURVIVAL · V2</span></div><span class="version">WEBGL / iPAD</span></header>
+<section id="window" aria-label="เกมลิฟต์เอาชีวิตรอด 3 มิติแนวตั้ง">
+<div id="fallback">กำลังเปิดฉาก WebGL 3 มิติ… หากไม่แสดงผล โปรดใช้ Safari ผ่าน GitHub Pages</div><canvas id="game"></canvas>
+<div class="hud"><div>
+<div class="top-strip"><span><span class="red-dot"></span> EMERGENCY SIMULATOR</span><span id="status">เตรียมตัว</span></div>
+<div class="mission-title" id="chapter">ภารกิจ 01 · เบรกร้อนจัด</div>
+<div class="timer-wrap"><div class="timer" id="timer">10</div><div class="timer-caption">SECONDS TO SURVIVE</div></div>
+<div class="readout"><span class="meter">🔥 เบรก <b id="brake">230°C</b></span><span class="meter">🔋 ไฟสำรอง <b id="battery">72%</b></span><span class="meter">🏢 <span id="floor">ชั้น 30</span></span></div>
+<div class="warning"><span id="banner" class="notice">🚨 ลิฟต์ขัดข้อง! ตรวจสอบเซนเซอร์แล้วช่วยกันตัดสินใจ</span></div></div>
+<div class="spacer"></div>
+<div class="vote-ui"><div class="heading"><span>📣 ผู้ชมช่วยกันตัดสินใจ</span><span>DEMO · 1 คลิก = 1 เสียง</span></div>
+<div class="vote-row"><button type="button" id="voteA" class="vote" disabled><strong>A</strong><span>ใช้เบรกฉุกเฉิน<small>EMERGENCY BRAKE</small></span></button><button type="button" id="voteB" class="vote" disabled><strong>B</strong><span>เปิดไฟสำรอง<small>BACKUP POWER</small></span></button></div>
+<div class="votes"><span>🟦 A · <b id="countA">0</b> เสียง</span><span>🟧 B · <b id="countB">0</b> เสียง</span></div><div class="bar"><div class="barA" id="barA" style="width:0%"></div><div class="barB" id="barB" style="width:0%"></div></div></div></div>
+</section>
+<section class="controls"><div class="result-label">MISSION CONTROL / ผลการตัดสินใจ</div><div id="result" class="result-text" aria-live="polite">อ่านข้อมูลระบบเบรกและแบตเตอรี่ในฉาก แล้วเริ่มภารกิจได้เลย</div>
+<div class="btnrow"><button type="button" class="btn" id="start">▶ เริ่มภารกิจ 1</button><button type="button" class="btn secondary" id="next" disabled>↻ รอบถัดไป</button></div>
+<button type="button" class="sound" id="sound">🔇 ปิดเสียง</button></section>
+<div class="tip"><b>วิธีเล่น:</b> แตะเริ่มเกม แล้วกด A หรือ B ก่อน 10 วินาทีหมด ลากนิ้วบนฉากเพื่อหมุนกล้อง · แต่ละรอบมีข้อมูลต่างกัน การตัดสินใจผิดมีโอกาสแพ้<br><br>ต้นแบบ <b>WebGL 3 มิติจริง</b> แนวตั้ง 9:16 • กติกาลิฟต์เป็นสถานการณ์สมมุติ ไม่ใช่คำแนะนำด้านความปลอดภัย • ยังไม่ได้เชื่อม TikTok LIVE</div>
+</main><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), canvas=$('game'), win=$('window');
+let gl;try{gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');}catch(e){}
+let running=false,ended=false,remaining=10,level=0,votes={A:0,B:0},endTime=0,interval=null,progress=0,winState=false;
+const scenarios=[
+ {brake:230,battery:72,correct:'B',why:'เบรกมีความร้อนเกินกำหนด ระบบสมมุตินี้จึงต้องใช้พลังงานสำรอง',tag:'เบรกร้อนจัด',alert:'🔥 ระบบเบรกเกิดความร้อนสูง!'},
+ {brake:75,battery:6,correct:'A',why:'แบตเตอรี่สำรองใกล้หมด แต่เบรกยังอยู่ในช่วงทำงานได้',tag:'ไฟฟ้าวิกฤต',alert:'🔋 พลังงานสำรองเหลือน้อย!'},
+ {brake:190,battery:88,correct:'B',why:'ระบบเบรกร้อนเกินขีดจำกัด แต่พลังงานสำรองยังพร้อม',tag:'แรงเสียดทานสูง',alert:'⚠️ อุณหภูมิเบรกพุ่งขึ้น!'},
+ {brake:90,battery:11,correct:'A',why:'แบตเตอรี่สำรองไม่เพียงพอและเบรกยังใช้งานได้',tag:'แบตเตอรี่ใกล้หมด',alert:'🚨 แบตเตอรี่สำรองเหลือ 11%!'}
+ ];
+const scenario=()=>scenarios[level%scenarios.length];
+function refresh(){const c=scenario(),t=votes.A+votes.B;
+ $('brake').textContent=c.brake+'°C';$('brake').style.color=c.brake>150?'#ff9d90':'#9becba';
+ $('battery').textContent=c.battery+'%';$('battery').style.color=c.battery<15?'#ff9d90':'#9becba';
+ $('timer').textContent=String(remaining).padStart(2,'0');$('timer').classList.toggle('urgent',running && remaining<=3);$('floor').textContent='ชั้น '+Math.max(1,Math.round(1+29*(1-progress)));$('chapter').textContent='ภารกิจ '+String(level+1).padStart(2,'0')+' · '+c.tag;
+ $('countA').textContent=votes.A;$('countB').textContent=votes.B;
+ $('barA').style.width=(t?100*votes.A/t:0)+'%';$('barB').style.width=(t?100*votes.B/t:0)+'%';
+ $('voteA').disabled=!running;$('voteB').disabled=!running;$('start').disabled=running||ended;$('next').disabled=!ended;
+ $('status').textContent=running?'กำลังโหวต':ended?'จบรอบ':'เตรียมตัว';
+ $('window').classList.toggle('in-motion',running);$('window').classList.toggle('success',ended&&winState);$('window').classList.toggle('failed',ended&&!winState);
+}
+function finish(){if(!running)return;running=false;ended=true;remaining=0;progress=1;clearInterval(interval);interval=null;
+ const winner=votes.A>votes.B?'A':votes.B>votes.A?'B':null,good=winner===scenario().correct;winState=good;
+ $('banner').textContent=good?'✅ รอดชีวิต! หยุดลิฟต์สำเร็จ':'💥 ภารกิจล้มเหลว! ลิฟต์หยุดไม่ทัน';
+ $('result').className=good?'win-result':'loss-result';
+ playEnding(good);
+ $('result').textContent=(winner?'เสียงส่วนใหญ่เลือก '+winner+' — ':'ไม่มีเสียงส่วนใหญ่ — ')+scenario().why+' (คำตอบที่ถูก: '+scenario().correct+')';refresh();
+}
+function tick(){remaining=Math.max(0,Math.ceil((endTime-Date.now())/1000));progress=Math.min(1,Math.max(0,(10000-(endTime-Date.now()))/10000));refresh();if(remaining===0)finish();}
+$('start').addEventListener('click',()=>{if(running||ended)return;running=true;endTime=Date.now()+10000;progress=0;
+ $('banner').textContent=scenario().alert+' เลือก A หรือ B!';$('result').className='';$('result').textContent='เสียงโหวตสูงสุดจะกำหนดการตัดสินใจ';playBeep();interval=setInterval(tick,80);refresh();});
+for(const side of ['A','B'])$('vote'+side).addEventListener('click',()=>{if(!running)return;votes[side]=Math.min(9999,votes[side]+1);refresh();});
+$('next').addEventListener('click',()=>{if(!ended)return;level++;votes={A:0,B:0};remaining=10;progress=0;ended=false;running=false;winState=false;$('banner').textContent=scenario().alert;$('result').className='';$('result').textContent='สถานการณ์ใหม่! อ่านค่าเซนเซอร์ก่อนเริ่ม';$('start').textContent='▶ เริ่มภารกิจ '+(level+1);refresh();});refresh();
+let lastSize=0;
+const reduced=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lastSecond=10;
+// Audio synthesizer: runs only in response to the Start / sound buttons, never autoplay.
+let audioContext=null,soundOn=false;
+function tone(freq,seconds,gain,kind='sine'){if(!soundOn)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audioContext)audioContext=new AC();if(audioContext.state==='suspended')audioContext.resume();const osc=audioContext.createOscillator(),vol=audioContext.createGain();osc.type=kind;osc.frequency.value=freq;vol.gain.setValueAtTime(Math.max(.001,gain),audioContext.currentTime);vol.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+seconds);osc.connect(vol);vol.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+seconds);}catch(e){}}
+function playBeep(){tone(650,.09,.085,'square');}
+function playEnding(good){tone(good?880:190,.36,.11,good?'sine':'sawtooth');}
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊 เสียงเปิด':'🔇 ปิดเสียง';if(soundOn)tone(740,.12,.06);});
+const oldTick=tick;tick=function(){const prev=remaining;oldTick();if(running && remaining!==prev && remaining>0){playBeep();if(remaining<=3)tone(900,.08,.08);}};
+if(!gl){$('fallback').textContent='เบราว์เซอร์นี้ไม่อนุญาตใช้ WebGL กรุณาเปิดเกมผ่านเว็บไซต์ GitHub Pages ใน Safari บน iPad';return;}
+const vs=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute float aEm;uniform mat4 uVP;uniform vec3 uOffset;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;void main(){vec3 w=aPos+uOffset;vec4 clip=uVP*vec4(w,1.0);gl_Position=clip;vN=aNorm;vColor=aCol;vEm=aEm;vW=w;vDepth=clip.w;}`;
+const fs=`precision mediump float;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;uniform float uTime;void main(){vec3 n=normalize(vN);vec3 ld=normalize(vec3(-0.42,0.7,0.8));float light=max(0.0,dot(n,ld));float fill=max(0.0,dot(n,normalize(vec3(0.7,0.15,-0.6))))*0.25;float redPulse=0.70+0.30*sin(uTime*9.2);vec3 lit=vColor*(0.34+0.78*light+fill)+vColor*vEm*(1.05*redPulse);float fog=clamp((vDepth-12.0)/57.0,0.0,0.63);gl_FragColor=vec4(mix(lit,vec3(0.025,0.065,0.105),fog),1.0);}`;
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+let program;try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);}catch(e){$('fallback').textContent='ไม่สามารถเริ่มระบบ 3D: '+e.message;return;}
+const posLoc=gl.getAttribLocation(program,'aPos'),normLoc=gl.getAttribLocation(program,'aNorm'),colLoc=gl.getAttribLocation(program,'aCol'),emLoc=gl.getAttribLocation(program,'aEm');
+const vpLoc=gl.getUniformLocation(program,'uVP'),offLoc=gl.getUniformLocation(program,'uOffset'),timeLoc=gl.getUniformLocation(program,'uTime');
+const staticGeo=[],carGeo=[];let output=staticGeo;
+const cl=(v)=>v.map(x=>x/255),C={wall:cl([18,32,52]),steel:cl([95,118,137]),silver:cl([170,185,193]),gold:cl([230,169,83]),amber:cl([255,179,54]),red:cl([240,56,44]),cyan:cl([31,182,226]),glass:cl([61,124,166]),deep:cl([8,18,33]),black:cl([15,21,30]),skin:cl([241,181,135]),skin2:cl([180,133,93]),blue:cl([61,128,211]),yellow:cl([241,171,67]),white:cl([230,235,231]),green:cl([60,185,126])};
+function vertex(a,n,col,em=0){output.push(...a,...n,...col,em);}
+function tri(a,b,c,n,col,em){vertex(a,n,col,em);vertex(b,n,col,em);vertex(c,n,col,em);}
+function quad(a,b,c,d,n,col,em){tri(a,b,c,n,col,em);tri(a,c,d,n,col,em);}
+function box(x,y,z,w,h,d,color,em=0){const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;
+ quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],color,em);
+ quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1],color,em);
+ quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],color,em);
+ quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],color,em);
+ quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],color,em);
+ quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],color,em);
+}
+function sphere(cx,cy,cz,r,color,em=0,segments=12,rings=8){function pt(th,ph){return[cx+r*Math.sin(th)*Math.cos(ph),cy+r*Math.cos(th),cz+r*Math.sin(th)*Math.sin(ph)]}function nor(p){return[(p[0]-cx)/r,(p[1]-cy)/r,(p[2]-cz)/r]}
+ for(let i=0;i<rings;i++){let ta=i*Math.PI/rings,tb=(i+1)*Math.PI/rings;for(let j=0;j<segments;j++){let pa=j*2*Math.PI/segments,pb=(j+1)*2*Math.PI/segments;let a=pt(ta,pa),b=pt(tb,pa),c=pt(tb,pb),d=pt(ta,pb);
+ vertex(a,nor(a),color,em);vertex(b,nor(b),color,em);vertex(c,nor(c),color,em);
+ vertex(a,nor(a),color,em);vertex(c,nor(c),color,em);vertex(d,nor(d),color,em);}}}
+function cylinder(cx,cy,cz,r,h,color,seg=12,em=0){let yt=cy+h/2,yb=cy-h/2;
+ for(let i=0;i<seg;i++){let a=2*Math.PI*i/seg,b=2*Math.PI*(i+1)/seg;let pa=[cx+r*Math.cos(a),yb,cz+r*Math.sin(a)],pb=[cx+r*Math.cos(b),yb,cz+r*Math.sin(b)],pc=[pb[0],yt,pb[2]],pd=[pa[0],yt,pa[2]];
+ let na=[Math.cos(a),0,Math.sin(a)],nb=[Math.cos(b),0,Math.sin(b)];vertex(pa,na,color,em);vertex(pb,nb,color,em);vertex(pc,nb,color,em);vertex(pa,na,color,em);vertex(pc,nb,color,em);vertex(pd,na,color,em);
+ tri([cx,yt,cz],pd,pc,[0,1,0],color,em);tri([cx,yb,cz],pb,pa,[0,-1,0],color,em);}}
+// Stationary architecture, full 3D solid geometry
+box(0,-5,-4.6,9.5,59,.45,C.wall);box(-4.5,-5,0,.45,59,9,C.wall);box(4.5,-5,0,.45,59,9,C.wall);
+for(let x of [-3.6,3.6]){box(x,-5,-1.2,.45,59,.65,C.steel);box(x,-5,-.74,.12,59,.13,C.cyan,.4);
+ box(x,-5,2.3,.38,59,.58,C.steel);for(let y=-28;y<=20;y+=4.3)box(x,y,1.8,.48,.5,.2,C.gold);}
+for(let y=-31;y<=24;y+=2.1){box(0,y,-4.25,9.4,.17,.5,C.silver);box(0,y,-4.03,9.4,.12,.19,C.deep);
+ for(const x of [-3.95,3.95]){box(x,y,.4,.32,.22,7.5,C.steel);box(x,y,3.4,.24,.35,.85,C.silver);}}
+for(let y=-28;y<=24;y+=5.7){box(0,y,-4.01,3.5,.25,.2,C.gold);for(let x of [-3.88,3.88]){box(x,y,3.45,.45,.75,.42,C.red,1.45);}}
+for(let x of [-.7,.7])cylinder(x,0,-1.3,.055,59,C.silver,8);
+// Cinematic shaft safety markers and structural plates
+for(let y=-29;y<=21;y+=4.4){for(let x of [-2.85,2.85]){box(x,y,-3.86,.48,.18,.14,C.amber,.6);box(x,y-.35,-3.86,.08,.5,.14,C.red,.8);}}
+for(let x of [-4.15,4.15])for(let y=-31;y<26;y+=3.8){box(x,y,1.75,.12,1.5,.13,C.cyan,.72);}
+for(let y=-31;y<=26;y+=3.5){box(0,y,-4.02,1.1,.56,.18,C.black);box(0,y,-3.89,.4,.11,.08,C.amber,.85);}
+// Car: own local coordinates; animated via world uniform offset
+output=carGeo;
+box(0,-1.73,0,3.8,.26,2.65,C.silver);box(0,-1.91,0,3.9,.12,2.68,C.black);
+box(0,1.75,0,3.9,.3,2.65,C.silver);box(0,1.95,0,4.2,.28,2.8,C.steel);
+box(0,2.12,1.25,3.3,.22,.26,C.red,1.7);
+box(0,.0,-1.24,3.8,3.35,.14,C.glass);
+for(let x of [-1.85,1.85])for(let z of [-1.22,1.22])box(x,0,z,.2,3.57,.24,C.gold);
+for(let y of [-1.47,1.53])for(let z of [-1.22,1.22])box(0,y,z,3.85,.19,.15,C.silver);
+for(let x of [-.85,.85]){box(x,.0,1.23,1.72,3.2,.08,C.glass);box(x,0,1.31,.08,3.23,.08,C.steel);}
+box(0,0,1.37,.11,3.43,.12,C.silver);box(0,-1.3,1.32,3.6,.10,.1,C.gold);
+for(let x of [-1.42,1.42]){cylinder(x,2.4,0,.14,.7,C.silver,12);sphere(x,2.76,0,.22,C.amber,1.1);}
+for(let i=0;i<3;i++){
+ let x=(i-1)*.94;box(x,-1.27,-.12,.25,.62,.25,i===1?C.yellow:C.blue);box(x,-.53,-.12,.65,.94,.38,i===1?C.red:C.blue);
+ cylinder(x,-.08,-.12,.32,.45,C.yellow);sphere(x,.45,-.1,.36,i===2?C.skin2:C.skin,0,12,8);
+ sphere(x-.11,.53,.20,.045,C.black);sphere(x+.11,.53,.20,.045,C.black);
+ box(x-.46,-.46,.02,.18,.7,.22,C.skin);box(x+.46,-.46,.02,.18,.7,.22,C.skin);
+}
+for(let x of [-1.55,1.55])box(x,-.25,.87,.10,2.8,.10,C.cyan,1);
+// Metallic door ornament, warning status and highlights
+for(let y of [-1.05,.1,1.05])box(0,y,1.43,3.5,.05,.05,C.silver);
+for(let x of [-1.72,1.72])box(x,0,1.46,.085,2.75,.1,C.amber,.45);
+box(0,1.95,1.53,2.2,.09,.15,C.red,1.9);
+for(let i=0;i<4;i++)box(-1.22+i*.82,-1.71,1.34,.42,.08,.1,C.cyan,.55);
+const makeGeometry=data=>{const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return{buffer,count:data.length/10};};
+const architecture=makeGeometry(staticGeo),elevator=makeGeometry(carGeo);
+function projection(fov,aspect,near,far){let f=1/Math.tan(fov/2),nf=1/(near-far);return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
+function normalize(a){let l=Math.hypot(...a)||1;return a.map(v=>v/l)}
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function view(eye,target){let z=normalize(eye.map((v,i)=>v-target[i]));let x=normalize(cross([0,1,0],z));let y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1];}
+function mul(a,b){let out=new Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)out[c*4+r]+=a[k*4+r]*b[c*4+k];return out}
+for(const loc of [posLoc,normLoc,colLoc,emLoc])gl.enableVertexAttribArray(loc);
+function draw(g,x,y,z){gl.bindBuffer(gl.ARRAY_BUFFER,g.buffer);let stride=40;gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,stride,0);gl.vertexAttribPointer(normLoc,3,gl.FLOAT,false,stride,12);gl.vertexAttribPointer(colLoc,3,gl.FLOAT,false,stride,24);gl.vertexAttribPointer(emLoc,1,gl.FLOAT,false,stride,36);gl.uniform3f(offLoc,x,y,z);gl.drawArrays(gl.TRIANGLES,0,g.count);}
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.015,.039,.074,1);
+$('fallback').style.display='none';
+let azimuth=.28,elevation=.15,distance=15.2,dragging=false,lastX=0,lastY=0,twoFingerLast=null;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;azimuth+=(e.clientX-lastX)*.007;elevation=Math.min(.55,Math.max(-.35,elevation+(e.clientY-lastY)*.004));lastX=e.clientX;lastY=e.clientY;});
+for(const n of ['pointerup','pointercancel'])canvas.addEventListener(n,()=>{dragging=false;});
+canvas.addEventListener('touchmove',e=>{if(e.touches.length!==2){twoFingerLast=null;return;}let t=e.touches,dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY,d=Math.hypot(dx,dy);if(twoFingerLast)distance=Math.min(18,Math.max(6,distance-(d-twoFingerLast)*.02));twoFingerLast=d;},{passive:true});
+canvas.addEventListener('touchend',()=>{twoFingerLast=null;});
+function frame(ms){if(!document.body.contains(canvas))return;let rect=canvas.getBoundingClientRect(),w=Math.max(1,Math.floor(rect.width*Math.min(devicePixelRatio||1,1.4))),h=Math.max(1,Math.floor(rect.height*Math.min(devicePixelRatio||1,1.4)));
+ if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
+ let fallY=running?6-progress*16:ended?(winState?-8:-13):6;
+ let target=[0,fallY-.05,-.15];
+ let shake=(running&&!reduced?(Math.sin(ms*.056)*.09 + Math.sin(ms*.143)*.055)*(0.35+progress*.95):0);
+ const actualDistance=distance*(ended?(winState?.93:1.06):1);
+ let eye=[Math.sin(azimuth)*actualDistance*Math.cos(elevation)+shake,target[1]+actualDistance*Math.sin(elevation)+1.1+shake*.5,Math.cos(azimuth)*actualDistance*Math.cos(elevation)];
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.uniformMatrix4fv(vpLoc,false,new Float32Array(mul(projection(Math.PI/2.95,w/h,.1,120),view(eye,target))));gl.uniform1f(timeLoc,ms/1000);
+ draw(architecture,0,0,0);draw(elevator,0,fallY,0);requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+ canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();$('fallback').style.display='flex';$('fallback').textContent='WebGL หยุดทำงานชั่วคราว ลองโหลดหน้าเว็บไซต์ใหม่';});
+})();
+</script></body></html>
