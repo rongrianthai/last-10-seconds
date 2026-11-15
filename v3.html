@@ -1,0 +1,272 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070e19"><title>THE LAST 10 SECONDS · V3 CINEMATIC</title><style>
+:root{font-family:system-ui,-apple-system,"Thonburi",sans-serif;color:#f4f7ff;background:#070e19;color-scheme:dark}*{box-sizing:border-box}body{margin:0;display:flex;justify-content:center;background:radial-gradient(ellipse at 50% -8%,#1f314b,#070e19 57%);padding:0 0 25px}main{width:min(100%,520px);padding:9px 9px 16px}
+header{display:flex;gap:9px;align-items:center;justify-content:space-between;padding:8px 2px 11px}.brand{font-weight:1000;font-size:18px;line-height:1.15}.brand small{display:block;font-size:9px;color:#a7b9d0;letter-spacing:2.2px;margin-top:6px}.edition{border:1px solid #95605c;background:#3b2929;color:#ffcf9d;border-radius:8px;padding:7px;font-size:11px;font-weight:850;white-space:nowrap}
+#window{position:relative;isolation:isolate;width:100%;aspect-ratio:9/16;max-height:825px;border:1px solid #526179;border-radius:17px;overflow:hidden;background:#0d1f33;box-shadow:0 13px 36px #0008}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:25px;text-align:center;background:linear-gradient(135deg,#2a3b50,#091627);z-index:1;font-weight:750}
+#window .shade{position:absolute;z-index:2;inset:0;pointer-events:none;background:linear-gradient(180deg,#030913bd 0%,#091b2922 25%,transparent 49%,#010814f2 100%)}
+#window .vignette{position:absolute;z-index:3;inset:0;pointer-events:none;box-shadow:inset 0 0 80px #050b18ab}
+#flash{position:absolute;z-index:8;inset:0;pointer-events:none;opacity:0;background:#fb453c}
+#window.failed #flash{animation:alarmFlash 0.35s ease-out 3}#window.success #flash{background:#38e7ae;animation:alarmFlash 0.5s ease-out 1}
+@keyframes alarmFlash{0%{opacity:0}25%{opacity:.56}100%{opacity:0}}
+#window.running{border-color:#e37b5d}
+#noise{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,transparent 0 5px,#c4ecfb13 6px,transparent 7px);mix-blend-mode:screen}
+#window.failed #noise{opacity:.65}
+.hud{position:absolute;z-index:5;inset:0;pointer-events:none;padding:12px;display:flex;flex-direction:column;gap:7px}
+.top-strip{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.7px;text-shadow:0 2px 6px #000}.signal{color:#ff7d72}.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4444;box-shadow:0 0 12px #ff4444;margin-right:5px}.tag{color:#bdfadd}
+.episode{text-align:center;font-size:10px;letter-spacing:1.3px;color:#ffdb9c;font-weight:850;text-shadow:0 2px 8px #000}.clock{text-align:center;font-size:clamp(64px,18vw,91px);font-variant-numeric:tabular-nums;font-weight:1000;line-height:.98;color:#ff7964;letter-spacing:-6px;text-shadow:0 0 22px #e7383b66}.clock.urgent{color:#ff343b;animation:throb .6s infinite alternate}@keyframes throb{to{transform:scale(1.08)}}.clock-label{text-align:center;font-size:9px;letter-spacing:3px;font-weight:900;color:#cedcf1}
+.meters{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}.meter{font-size:10px;color:#eef4ff;border:1px solid #4a6d8c99;background:#081321d9;border-radius:7px;padding:5px 7px;backdrop-filter:blur(4px)}.meter b{color:#bafbd2}.instruction{text-align:center}.instruction span{display:inline-block;max-width:100%;background:#0b1523e8;padding:8px 11px;border:1px solid #f2af6070;border-radius:9px;font-size:11px;line-height:1.5;font-weight:770}
+.callout{font-size:11px;align-self:center;text-align:center;color:#fffbd9;background:#142238e8;border:1px solid #c88c6a99;border-radius:12px;padding:9px 13px;max-width:92%;transform:translateY(11px);text-shadow:0 1px 4px #000;transition:opacity .2s}
+.space{flex:1;min-height:0}
+.cinematic-result{display:none;align-self:center;text-align:center;padding:16px 12px;width:min(96%,330px);background:#061320ef;border:1px solid #64859b;border-radius:15px;box-shadow:0 0 35px #0009;position:absolute;z-index:6;left:50%;top:48%;transform:translate(-50%,-50%);pointer-events:none}
+.cinematic-result.active{display:block}.cinematic-result .icon{font-size:36px}.cinematic-result .head{font-size:23px;font-weight:1000;line-height:1.25}.cinematic-result .desc{font-size:12px;margin-top:8px;color:#d6e2f0;line-height:1.55}
+.cinematic-result.won{border-color:#42dba5}.cinematic-result.won .head{color:#95ffcb}.cinematic-result.lost{border-color:#ff706a}.cinematic-result.lost .head{color:#ff9b8d}
+.vote-ui{pointer-events:auto;border:1px solid #4e6880;background:#071222ed;border-radius:12px;padding:10px;backdrop-filter:blur(4px)}.vote-heading{display:flex;align-items:center;justify-content:space-between;gap:4px;color:#d8ebfe;font-size:10px;font-weight:850;margin-bottom:7px}.vote-heading span:last-child{color:#91a7bc}.vote-row{display:flex;gap:7px}.vote{display:flex;align-items:center;gap:8px;text-align:left;flex:1;min-height:66px;min-width:0;color:#fff;background:#164469;border:1px solid #548ab1;border-radius:9px;padding:8px;font-weight:850;cursor:pointer;font-size:11px}.vote:nth-child(2){background:#66482d;border-color:#bd8248}.vote strong{font-size:28px}.vote small{display:block;font-size:9px;font-weight:560;color:#c9d9e9;margin-top:3px}.vote:disabled{opacity:.52;cursor:not-allowed}.totals{display:flex;justify-content:space-between;font-size:10px;color:#dcecf5;margin:10px 0 5px}.bar{width:100%;height:7px;background:#243851;display:flex;overflow:hidden;border-radius:10px}.bar .a{background:#4bbcff;transition:width .15s}.bar .b{background:#ffb35b;transition:width .15s}
+.controls{background:#101e30;border:1px solid #395571;padding:12px;border-radius:13px;margin-top:10px}.section-label{color:#94a9c4;font-size:10px;letter-spacing:1.3px;font-weight:800}.result{font-size:12px;color:#deebfb;line-height:1.6;min-height:44px;margin:7px 0}.result.positive{color:#9df0b9}.result.negative{color:#ff9b8e}.buttons{display:flex;gap:8px}.btn{flex:1;border-radius:9px;border:0;background:#17876e;color:#fff;font-size:13px;font-weight:850;min-height:47px;padding:8px;cursor:pointer}.btn.secondary{flex:0 0 32%;background:#294461}.btn:disabled{opacity:.43;cursor:not-allowed}.sound{background:#203954;color:#e0efff;border:1px solid #607890;font-weight:700;padding:9px 11px;border-radius:8px;min-height:42px;margin-top:9px;cursor:pointer}.tip{color:#a5bbd1;font-size:11px;line-height:1.65;margin:12px 2px}.tip b{color:#e5f1fc}
+@media(max-width:350px){.hud{padding:8px}.vote{font-size:10px;padding:6px;gap:5px}.meter{font-size:9px;padding:4px}.callout{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.clock.urgent{animation:none!important}#window.failed #flash,#window.success #flash{animation:none!important}}
+</style></head><body><main>
+<header><div class="brand">THE LAST 10 SECONDS<small>3D CINEMATIC SURVIVAL · VERSION 03</small></div><span class="edition">V3 · WEBGL</span></header>
+<section id="window" aria-label="เกมลิฟต์เอาชีวิตรอด 3 มิติ">
+<div id="fallback">กำลังเตรียมโลก WebGL 3 มิติ...</div><canvas id="game"></canvas><div class="shade"></div><div class="vignette"></div><div id="flash"></div><div id="noise"></div>
+<div class="hud">
+  <div class="top-strip"><span class="signal"><span class="live-dot"></span> EMERGENCY / EP 01</span><span id="status" class="tag">พร้อมเล่น</span></div>
+  <div id="chapter" class="episode">ภารกิจ 01 · เบรกร้อนจัด</div>
+  <div id="timer" class="clock">10</div><div class="clock-label">SECONDS TO SURVIVE</div>
+  <div class="meters"><span class="meter">🔥 เบรก <b id="brake">230°C</b></span><span class="meter">🔋 ไฟสำรอง <b id="battery">72%</b></span><span class="meter">🏢 <span id="floor">ชั้น 30</span></span></div>
+  <div class="instruction"><span id="banner">🚨 ลิฟต์กำลังตก! สังเกตเบาะแสแล้วช่วยตัดสินใจ</span></div>
+  <div id="callout" class="callout">🗣️ ผู้โดยสาร: "ใครก็ได้ ช่วยเราด้วย!"</div>
+  <div class="space"></div>
+  <div class="vote-ui"><div class="vote-heading"><span>📣 ผู้ชมร่วมตัดสินชะตา</span><span>ทดลองกดโหวต • DEMO</span></div>
+  <div class="vote-row"><button type="button" class="vote" id="voteA" disabled><strong>A</strong><span>ใช้เบรกฉุกเฉิน<small>EMERGENCY BRAKE</small></span></button><button type="button" class="vote" id="voteB" disabled><strong>B</strong><span>เปิดพลังงานสำรอง<small>BACKUP POWER</small></span></button></div>
+  <div class="totals"><span>🟦 A: <b id="countA">0</b> เสียง</span><span>🟧 B: <b id="countB">0</b> เสียง</span></div><div class="bar"><div class="a" id="barA" style="width:0%"></div><div class="b" id="barB" style="width:0%"></div></div></div>
+</div>
+<div class="cinematic-result" id="ending" aria-live="polite"><div class="icon" id="endingIcon">⚠️</div><div class="head" id="endingTitle">ภารกิจสิ้นสุด</div><div class="desc" id="endingDesc">ผลการตัดสินใจ</div></div>
+</section>
+<section class="controls"><div class="section-label">MISSION CONTROL / ผลการตัดสินใจ</div><div id="result" class="result" aria-live="polite">อ่านค่าระบบข้างบนก่อนกดเริ่มภารกิจ แล้วช่วยกันโหวตให้ทัน 10 วินาที</div>
+<div class="buttons"><button type="button" class="btn" id="start">▶ เริ่มภารกิจ 1</button><button type="button" class="btn secondary" id="next" disabled>↻ รอบถัดไป</button></div>
+<button id="sound" class="sound" type="button" aria-pressed="false">🔇 เสียงปิด (แตะเพื่อเปิด)</button>
+</section>
+<div class="tip"><b>วิธีเล่น:</b> กดเริ่มภารกิจ สังเกตค่าระบบเบรกและแบตเตอรี่ แล้วแตะ A/B ให้ทันเวลา · ลากนิ้วเพื่อหมุนกล้องดูผู้โดยสาร · ถ้าโหวตผิด ให้ดูฉากจบและลองด่านใหม่<br><br><b>หมายเหตุ:</b> เกมสมมุติสำหรับความบันเทิง ไม่ใช่คำแนะนำความปลอดภัยของลิฟต์จริง · โหวตจากปุ่มทดลองเท่านั้น ยังไม่เชื่อม TikTok LIVE</div>
+</main><script>(()=>{'use strict';
+const $=id=>document.getElementById(id),canvas=$('game'),windowEl=$('window');
+let gl;try{gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');}catch(e){}
+const scenarios=[
+{brake:230,battery:72,correct:'B',tag:'เบรกร้อนจัด',alert:'🔥 เบรกอุณหภูมิสูงผิดปกติ!',message:'จับไว้แน่น ๆ! เรากำลังตก!',why:'ระบบเบรกจำลองร้อนเกินเกณฑ์ แต่พลังงานสำรองยังใช้ได้'},
+{brake:78,battery:5,correct:'A',tag:'แบตเตอรี่หมด',alert:'🔋 ไฟสำรองเหลือเพียง 5%!',message:'ไฟดับแล้ว! เราต้องรีบเลือก!',why:'ระบบสำรองไฟจำลองใกล้หมด แต่เบรกยังพร้อมทำงาน'},
+{brake:197,battery:83,correct:'B',tag:'เบรกโอเวอร์โหลด',alert:'⚡ เซนเซอร์เตือนระบบเบรกรับภาระเกิน!',message:'ได้ยินเสียงดังจากด้านบน!',why:'เบรกมีอุณหภูมิสูงเกินไปและมีไฟสำรองเหลือมาก'},
+{brake:93,battery:8,correct:'A',tag:'พลังงานวิกฤต',alert:'🚨 พลังงานสำรองกำลังดับ!',message:'เราจะถึงพื้นแล้วใช่ไหม?!',why:'แบตเตอรี่สำรองใกล้หมด ส่วนเบรกยังอยู่ในช่วงใช้งานได้'}];
+let level=0,phase='ready',remaining=10,votes={A:0,B:0},progress=0,deadline=0,interval=null,resolveStart=0,success=false,endingTimeout=null;
+const current=()=>scenarios[level%scenarios.length];
+let audio=null,soundOn=false,lastSecond=10;const reduced=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function note(freq,duration=.1,vol=.08,kind='sine'){
+ if(!soundOn)return;
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audio)audio=new AC();if(audio.state==='suspended')audio.resume();const osc=audio.createOscillator(),g=audio.createGain();osc.type=kind;osc.frequency.setValueAtTime(freq,audio.currentTime);g.gain.setValueAtTime(Math.max(.001,vol),audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);osc.connect(g);g.connect(audio.destination);osc.start();osc.stop(audio.currentTime+duration);}catch(e){}
+}
+function renderUI(){
+ const c=current(),count=votes.A+votes.B;
+ $('brake').textContent=c.brake+'°C';$('brake').style.color=c.brake>150?'#ff9e93':'#a6f5c2';
+ $('battery').textContent=c.battery+'%';$('battery').style.color=c.battery<15?'#ff9e93':'#a6f5c2';
+ $('floor').textContent='ชั้น '+Math.max(1,Math.round(30-29*progress));
+ $('timer').textContent=String(remaining).padStart(2,'0');$('timer').classList.toggle('urgent',phase==='running'&&remaining<=3);
+ $('chapter').textContent='ภารกิจ '+String(level+1).padStart(2,'0')+' · '+c.tag;
+ $('status').textContent=phase==='running'?'กำลังโหวต':phase==='resolving'?'ประมวลผล':phase==='ended'?'จบรอบ':'พร้อมเล่น';
+ $('countA').textContent=votes.A;$('countB').textContent=votes.B;
+ $('barA').style.width=(count?votes.A/count*100:0)+'%';$('barB').style.width=(count?votes.B/count*100:0)+'%';
+ $('voteA').disabled=phase!=='running';$('voteB').disabled=phase!=='running';
+ $('start').disabled=phase!=='ready';$('next').disabled=phase!=='ended';
+ windowEl.classList.toggle('running',phase==='running');
+}
+function start(){
+ if(phase!=='ready')return;
+ phase='running';remaining=10;progress=0;deadline=Date.now()+10000;lastSecond=10;
+ $('ending').className='cinematic-result';windowEl.classList.remove('failed','success');
+ $('banner').textContent=current().alert+' เลือก A หรือ B!';$('callout').textContent='🗣️ ผู้โดยสาร: "'+current().message+'"';
+ $('result').className='result';$('result').textContent='กำลังนับถอยหลัง... การโหวตครั้งนี้จะกำหนดผลของภารกิจ';
+ note(640,.13,.08,'sawtooth');clearInterval(interval);interval=setInterval(tick,90);renderUI();
+}
+function vote(side){if(phase!=='running')return;votes[side]=Math.min(9999,votes[side]+1);note(side==='A'?530:680,.055,.035);renderUI();}
+function tick(){
+ if(phase!=='running')return;
+ const left=deadline-Date.now();remaining=Math.max(0,Math.ceil(left/1000));progress=Math.max(0,Math.min(1,(10000-left)/10000));
+ if(remaining!==lastSecond){lastSecond=remaining;if(remaining>0)note(remaining<=3?1100:690,.09,remaining<=3?.09:.052,'square');if(remaining===5)$('callout').textContent='🗣️ ผู้โดยสาร: "เหลือเวลาไม่มากแล้ว!"';if(remaining===3)$('callout').textContent='🗣️ ผู้โดยสาร: "ตัดสินใจเร็วเข้า!"';}
+ renderUI();if(remaining<=0)resolve();
+}
+function resolve(){
+ if(phase!=='running')return;clearInterval(interval);interval=null;remaining=0;progress=1;phase='resolving';resolveStart=performance.now();
+ const chosen=votes.A>votes.B?'A':votes.B>votes.A?'B':null;
+ success=chosen!==null && chosen===current().correct;
+ $('banner').textContent='⚠️ ระบบกำลังดำเนินการตามผลโหวต...';
+ $('callout').textContent='⏳ กำลังหยุดลิฟต์...';
+ $('result').textContent='กำลังประเมินผลจากเสียงส่วนใหญ่...';
+ note(450,.28,.1,'sawtooth');renderUI();
+ endingTimeout=setTimeout(()=>{
+  if(phase!=='resolving')return;
+  phase='ended';windowEl.classList.add(success?'success':'failed');
+  const heading=success?'ช่วยชีวิตสำเร็จ!':'ภารกิจล้มเหลว!';
+  $('ending').className='cinematic-result active '+(success?'won':'lost');
+  $('endingIcon').textContent=success?'✅':'⚠️';$('endingTitle').textContent=heading;
+  $('endingDesc').textContent=success?'ลิฟต์ชะลอและหยุดทัน ผู้โดยสารปลอดภัย':'ระบบหยุดไม่ทัน สัญญาณภาพขาดหาย — ลองวางแผนใหม่';
+  $('banner').textContent=success?'✅ หยุดลิฟต์ได้ทัน!':'⚠️ สูญเสียการควบคุมลิฟต์!';
+  $('callout').textContent=success?'🗣️ ผู้โดยสาร: "ขอบคุณทุกคน!"':'🗣️ ระบบ: "สัญญาณขัดข้อง"';
+  const leader=chosen?'เสียงส่วนใหญ่เลือก '+chosen:'ไม่มีเสียงข้างมาก';
+  $('result').className='result '+(success?'positive':'negative');
+  $('result').textContent=leader+' · '+current().why+' · ทางเลือกที่เหมาะกับกติกาด่านนี้คือ '+current().correct;
+  if(success){note(660,.22,.1);setTimeout(()=>note(880,.27,.1),180);}else{note(190,.43,.11,'sawtooth');}
+  renderUI();
+ },1550);
+}
+function next(){if(phase!=='ended')return;clearTimeout(endingTimeout);level++;phase='ready';votes={A:0,B:0};progress=0;remaining=10;success=false;
+ $('ending').className='cinematic-result';windowEl.classList.remove('failed','success');
+ $('banner').textContent=current().alert+' อ่านเบาะแสแล้วเลือกให้ถูก!';$('callout').textContent='🗣️ ผู้โดยสาร: "อย่าทิ้งพวกเราไว้!"';
+ $('result').className='result';$('result').textContent='ด่านใหม่พร้อมแล้ว! กติกาสลับตามค่าระบบ กรุณาอ่านค่าด้านบนอีกครั้ง';$('start').textContent='▶ เริ่มภารกิจ '+(level+1);renderUI();
+}
+$('start').addEventListener('click',start);$('next').addEventListener('click',next);
+$('voteA').addEventListener('click',()=>vote('A'));$('voteB').addEventListener('click',()=>vote('B'));
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊 เปิดเสียงแล้ว (แตะเพื่อปิด)':'🔇 เสียงปิด (แตะเพื่อเปิด)';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn)note(740,.12,.05);});
+renderUI();
+if(!gl){$('fallback').textContent='ไม่สามารถเปิด WebGL กรุณาเปิดเกมผ่านเว็บไซต์ GitHub Pages ใน Safari';return;}
+const vs=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute float aEm;uniform mat4 uVP;uniform vec3 uOffset;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;void main(){vec3 w=aPos+uOffset;vec4 clip=uVP*vec4(w,1.0);gl_Position=clip;vN=aNorm;vColor=aCol;vEm=aEm;vW=w;vDepth=clip.w;}`;
+const fs=`precision mediump float;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;uniform float uTime;uniform float uDanger;void main(){vec3 n=normalize(vN);vec3 ld=normalize(vec3(-0.42,0.7,0.8));float light=max(0.0,dot(n,ld));float fill=max(0.0,dot(n,normalize(vec3(0.7,0.15,-0.6))))*0.25;float redPulse=0.70+0.30*sin(uTime*9.2);vec3 lit=vColor*(0.34+0.78*light+fill)+vColor*vEm*(1.05*redPulse);lit+=vec3(.13,.0,.0)*uDanger*max(0.0,sin(uTime*13.0));float fog=clamp((vDepth-12.0)/57.0,0.0,0.63);gl_FragColor=vec4(mix(lit,vec3(0.025,0.065,0.105),fog),1.0);}`;
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+let program;try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);}catch(e){$('fallback').textContent='ไม่สามารถเริ่มระบบ 3D: '+e.message;return;}
+const posLoc=gl.getAttribLocation(program,'aPos'),normLoc=gl.getAttribLocation(program,'aNorm'),colLoc=gl.getAttribLocation(program,'aCol'),emLoc=gl.getAttribLocation(program,'aEm');
+const vpLoc=gl.getUniformLocation(program,'uVP'),offLoc=gl.getUniformLocation(program,'uOffset'),timeLoc=gl.getUniformLocation(program,'uTime'),dangerLoc=gl.getUniformLocation(program,'uDanger');
+const staticGeo=[],carGeo=[];let output=staticGeo;
+const cl=(v)=>v.map(x=>x/255),C={wall:cl([18,32,52]),steel:cl([95,118,137]),silver:cl([170,185,193]),gold:cl([230,169,83]),amber:cl([255,179,54]),red:cl([240,56,44]),cyan:cl([31,182,226]),glass:cl([61,124,166]),deep:cl([8,18,33]),black:cl([15,21,30]),skin:cl([241,181,135]),skin2:cl([180,133,93]),blue:cl([61,128,211]),yellow:cl([241,171,67]),white:cl([230,235,231]),green:cl([60,185,126])};
+function vertex(a,n,col,em=0){output.push(...a,...n,...col,em);}
+function tri(a,b,c,n,col,em){vertex(a,n,col,em);vertex(b,n,col,em);vertex(c,n,col,em);}
+function quad(a,b,c,d,n,col,em){tri(a,b,c,n,col,em);tri(a,c,d,n,col,em);}
+function box(x,y,z,w,h,d,color,em=0){const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;
+ quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],color,em);
+ quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1],color,em);
+ quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],color,em);
+ quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],color,em);
+ quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],color,em);
+ quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],color,em);
+}
+function sphere(cx,cy,cz,r,color,em=0,segments=12,rings=8){function pt(th,ph){return[cx+r*Math.sin(th)*Math.cos(ph),cy+r*Math.cos(th),cz+r*Math.sin(th)*Math.sin(ph)]}function nor(p){return[(p[0]-cx)/r,(p[1]-cy)/r,(p[2]-cz)/r]}
+ for(let i=0;i<rings;i++){let ta=i*Math.PI/rings,tb=(i+1)*Math.PI/rings;for(let j=0;j<segments;j++){let pa=j*2*Math.PI/segments,pb=(j+1)*2*Math.PI/segments;let a=pt(ta,pa),b=pt(tb,pa),c=pt(tb,pb),d=pt(ta,pb);
+ vertex(a,nor(a),color,em);vertex(b,nor(b),color,em);vertex(c,nor(c),color,em);
+ vertex(a,nor(a),color,em);vertex(c,nor(c),color,em);vertex(d,nor(d),color,em);}}}
+function cylinder(cx,cy,cz,r,h,color,seg=12,em=0){let yt=cy+h/2,yb=cy-h/2;
+ for(let i=0;i<seg;i++){let a=2*Math.PI*i/seg,b=2*Math.PI*(i+1)/seg;let pa=[cx+r*Math.cos(a),yb,cz+r*Math.sin(a)],pb=[cx+r*Math.cos(b),yb,cz+r*Math.sin(b)],pc=[pb[0],yt,pb[2]],pd=[pa[0],yt,pa[2]];
+ let na=[Math.cos(a),0,Math.sin(a)],nb=[Math.cos(b),0,Math.sin(b)];vertex(pa,na,color,em);vertex(pb,nb,color,em);vertex(pc,nb,color,em);vertex(pa,na,color,em);vertex(pc,nb,color,em);vertex(pd,na,color,em);
+ tri([cx,yt,cz],pd,pc,[0,1,0],color,em);tri([cx,yb,cz],pb,pa,[0,-1,0],color,em);}}
+// Stationary architecture, full 3D solid geometry
+box(0,-5,-4.6,9.5,59,.45,C.wall);box(-4.5,-5,0,.45,59,9,C.wall);box(4.5,-5,0,.45,59,9,C.wall);
+for(let x of [-3.6,3.6]){box(x,-5,-1.2,.45,59,.65,C.steel);box(x,-5,-.74,.12,59,.13,C.cyan,.4);
+ box(x,-5,2.3,.38,59,.58,C.steel);for(let y=-28;y<=20;y+=4.3)box(x,y,1.8,.48,.5,.2,C.gold);}
+for(let y=-31;y<=24;y+=2.1){box(0,y,-4.25,9.4,.17,.5,C.silver);box(0,y,-4.03,9.4,.12,.19,C.deep);
+ for(const x of [-3.95,3.95]){box(x,y,.4,.32,.22,7.5,C.steel);box(x,y,3.4,.24,.35,.85,C.silver);}}
+for(let y=-28;y<=24;y+=5.7){box(0,y,-4.01,3.5,.25,.2,C.gold);for(let x of [-3.88,3.88]){box(x,y,3.45,.45,.75,.42,C.red,1.45);}}
+for(let x of [-.7,.7])cylinder(x,0,-1.3,.055,59,C.silver,8);
+// Cinematic shaft safety markers and structural plates
+for(let y=-29;y<=21;y+=4.4){for(let x of [-2.85,2.85]){box(x,y,-3.86,.48,.18,.14,C.amber,.6);box(x,y-.35,-3.86,.08,.5,.14,C.red,.8);}}
+for(let x of [-4.15,4.15])for(let y=-31;y<26;y+=3.8){box(x,y,1.75,.12,1.5,.13,C.cyan,.72);}
+for(let y=-31;y<=26;y+=3.5){box(0,y,-4.02,1.1,.56,.18,C.black);box(0,y,-3.89,.4,.11,.08,C.amber,.85);}
+// Car: own local coordinates; animated via world uniform offset
+output=carGeo;
+box(0,-1.73,0,3.8,.26,2.65,C.silver);box(0,-1.91,0,3.9,.12,2.68,C.black);
+box(0,1.75,0,3.9,.3,2.65,C.silver);box(0,1.95,0,4.2,.28,2.8,C.steel);
+box(0,2.12,1.25,3.3,.22,.26,C.red,1.7);
+box(0,.0,-1.24,3.8,3.35,.14,C.glass);
+for(let x of [-1.85,1.85])for(let z of [-1.22,1.22])box(x,0,z,.2,3.57,.24,C.gold);
+for(let y of [-1.47,1.53])for(let z of [-1.22,1.22])box(0,y,z,3.85,.19,.15,C.silver);
+for(let x of [-.85,.85]){box(x,0,1.31,.065,3.23,.08,C.silver);}
+for(let y of [-.75,.6])box(0,y,1.3,3.45,.065,.08,C.silver);
+box(0,0,1.37,.11,3.43,.12,C.silver);box(0,-1.3,1.32,3.6,.10,.1,C.gold);
+for(let x of [-1.42,1.42]){cylinder(x,2.4,0,.14,.7,C.silver,12);sphere(x,2.76,0,.22,C.amber,1.1);}
+for(let x of [-1.55,1.55])box(x,-.25,.87,.10,2.8,.10,C.cyan,1);
+
+const passengers=[];
+for(let i=0;i<3;i++){
+ const b=[],arms=[],old=output;
+ output=b;
+ const shirt=i===0?C.blue:i===1?C.yellow:C.green;
+ box(0,-.65,-.10,.66,1.04,.5,shirt);
+ box(-.17,-1.35,-.08,.24,.65,.32,C.black);box(.17,-1.35,-.08,.24,.65,.32,C.black);
+ cylinder(0,-.05,-.07,.25,.35,C.gold,10);
+ sphere(0,.38,-.02,.35,i===2?C.skin2:C.skin,0,12,8);
+ sphere(-.11,.43,.27,.044,C.black);sphere(.11,.43,.27,.044,C.black);
+ box(0,.66,-.05,.67,.15,.45,i===0?C.black:C.wall);
+ output=arms;
+ box(-.50,-.45,.05,.21,.8,.24,C.skin);
+ box(.50,-.45,.05,.21,.8,.24,C.skin);
+ output=old;
+ passengers.push({body:b,arms});
+}
+const sparkData=[];{const old=output;output=sparkData;box(0,0,0,.1,.24,.1,C.amber,2.9);output=old;}
+
+// Metallic door ornament, warning status and highlights
+for(let y of [-1.05,.1,1.05])box(0,y,1.43,3.5,.05,.05,C.silver);
+for(let x of [-1.72,1.72])box(x,0,1.46,.085,2.75,.1,C.amber,.45);
+box(0,1.95,1.53,2.2,.09,.15,C.red,1.9);
+for(let i=0;i<4;i++)box(-1.22+i*.82,-1.71,1.34,.42,.08,.1,C.cyan,.55);
+const makeGeometry=data=>{const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return{buffer,count:data.length/10};};
+const architecture=makeGeometry(staticGeo),elevator=makeGeometry(carGeo),people=passengers.map(p=>({body:makeGeometry(p.body),arms:makeGeometry(p.arms)})),spark=makeGeometry(sparkData);
+function projection(fov,aspect,near,far){let f=1/Math.tan(fov/2),nf=1/(near-far);return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
+function normalize(a){let l=Math.hypot(...a)||1;return a.map(v=>v/l)}
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function view(eye,target){let z=normalize(eye.map((v,i)=>v-target[i]));let x=normalize(cross([0,1,0],z));let y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1];}
+function mul(a,b){let out=new Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)out[c*4+r]+=a[k*4+r]*b[c*4+k];return out}
+for(const loc of [posLoc,normLoc,colLoc,emLoc])gl.enableVertexAttribArray(loc);
+function draw(g,x,y,z){gl.bindBuffer(gl.ARRAY_BUFFER,g.buffer);let stride=40;gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,stride,0);gl.vertexAttribPointer(normLoc,3,gl.FLOAT,false,stride,12);gl.vertexAttribPointer(colLoc,3,gl.FLOAT,false,stride,24);gl.vertexAttribPointer(emLoc,1,gl.FLOAT,false,stride,36);gl.uniform3f(offLoc,x,y,z);gl.drawArrays(gl.TRIANGLES,0,g.count);}
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.015,.039,.074,1);
+$('fallback').style.display='none';
+let azimuth=.28,elevation=.15,distance=15.2,dragging=false,lastX=0,lastY=0,twoFingerLast=null;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;azimuth+=(e.clientX-lastX)*.007;elevation=Math.min(.55,Math.max(-.35,elevation+(e.clientY-lastY)*.004));lastX=e.clientX;lastY=e.clientY;});
+for(const n of ['pointerup','pointercancel'])canvas.addEventListener(n,()=>{dragging=false;});
+canvas.addEventListener('touchmove',e=>{if(e.touches.length!==2){twoFingerLast=null;return;}let t=e.touches,dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY,d=Math.hypot(dx,dy);if(twoFingerLast)distance=Math.min(18,Math.max(6,distance-(d-twoFingerLast)*.02));twoFingerLast=d;},{passive:true});
+canvas.addEventListener('touchend',()=>{twoFingerLast=null;});
+
+function frame(ms){
+ if(!document.body.contains(canvas))return;
+ const rect=canvas.getBoundingClientRect();
+ const ratio=Math.min(devicePixelRatio||1,1.25); // iPad Gen 9: bounded GPU load
+ const w=Math.max(1,Math.floor(rect.width*ratio)),h=Math.max(1,Math.floor(rect.height*ratio));
+ if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
+ const timed=phase==='running',resolving=phase==='resolving',finished=phase==='ended';
+ const reveal=resolveStart?Math.min(1,(ms-resolveStart)/1550):0;
+ let fallY=6;
+ if(timed)fallY=6-progress*17;
+ else if(resolving)fallY=-11-(success?2:8)*Math.min(1,Math.pow(Math.max(0,reveal),1.65));
+ else if(finished)fallY=success?-13:-19;
+ let target=[0,fallY-.25,-.13];
+ const shaking=!reduced && (timed || (resolving&&!success));
+ const shake=shaking?(Math.sin(ms*.055)*.10+Math.sin(ms*.134)*.065)*(timed?(0.4+progress*1.5):(1.4)):0;
+ const cameraArc= !reduced?Math.sin(ms*.00035)*.10:0;
+ const zoom=finished?(success?.9:1.15):1;
+ let eye=[Math.sin(azimuth+cameraArc)*distance*zoom*Math.cos(elevation)+shake,target[1]+distance*zoom*Math.sin(elevation)+1.0+shake*.7,Math.cos(azimuth+cameraArc)*distance*zoom*Math.cos(elevation)];
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ gl.uniformMatrix4fv(vpLoc,false,new Float32Array(mul(projection(Math.PI/2.95,w/h,.1,120),view(eye,target))));
+ gl.uniform1f(timeLoc,ms/1000);
+ gl.uniform1f(dangerLoc,timed||resolving?1:finished&&!success?.8:0);
+ draw(architecture,0,0,0);
+ draw(elevator,0,fallY,0);
+ // Separate true-3D character meshes; y/x offsets make the passengers animate as the car falls.
+ for(let i=0;i<people.length;i++){
+   const x=(i-1)*.97;
+   const dx=timed&&!reduced?Math.sin(ms*.013+i*1.8)*.10:0;
+   const bob=timed&&!reduced?Math.sin(ms*.024+i*1.4)*.09:0;
+   draw(people[i].body,x+dx,fallY+bob,-.12);
+   draw(people[i].arms,x+dx,fallY+(!reduced&&timed?Math.sin(ms*.032+i)*.19:.04),-.12);
+ }
+ // Luminous electrical sparks, moving in 3D, only while in danger.
+ if(!reduced&&(timed||resolving)){
+   for(let i=0;i<17;i++){
+     let a=ms*.003*(1+i%4*.3)+i*2.399;
+     const x=(i%2?1:-1)*(1.65+(i%3)*.12)+Math.sin(a)*.29;
+     const y=fallY-1.2+((a*1.8+i*.45)%4.8);
+     const z=1.65+Math.cos(a+i)*.30;
+     draw(spark,x,y,z);
+   }
+ }
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();clearInterval(interval);clearTimeout(endingTimeout);phase='ended';$('fallback').style.display='flex';$('fallback').textContent='WebGL หยุดทำงานชั่วคราว ลองโหลดหน้าเว็บ Safari อีกครั้ง';});
+})();
+</script></body></html>
