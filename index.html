@@ -1,0 +1,118 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#08111d"><title>THE LAST 10 SECONDS — TRUE WEBGL 3D</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Thonburi",sans-serif;color:#f5f9ff;background:#08111d;font-size:14px}*{box-sizing:border-box}body{margin:0;padding:0;display:flex;justify-content:center}main{width:min(100%,630px);padding:12px 10px 22px}header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 3px 12px}small{color:#a9bfda}.brand{font-size:18px;letter-spacing:.6px;font-weight:900;line-height:1.15}.brand small{display:block;font-size:10px;letter-spacing:3px;margin-top:6px}.ready{font-size:11px;border:1px solid #4f716e;color:#a4eed2;padding:8px;border-radius:7px;background:#16352e}#window{height:430px;position:relative;overflow:hidden;border-radius:17px;border:1px solid #384559;background:radial-gradient(#17293c,#060c15);touch-action:pan-y}canvas{display:block;width:100%;height:100%;touch-action:none}#fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ccd9e7;background:linear-gradient(150deg,#243951,#101c30,#070e18);font-weight:600;text-align:center;padding:25px}#overlay{position:absolute;inset:0;pointer-events:none;padding:15px;display:flex;flex-direction:column;justify-content:space-between}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.pill{background:#07111cce;border:1px solid #526575aa;border-radius:11px;padding:10px 12px;backdrop-filter:blur(4px)}.ttl{font-size:10px;letter-spacing:2px;color:#d4e2f7}.timer{font-size:62px;line-height:1;font-weight:900;color:#ff7667;letter-spacing:-3px;font-variant-numeric:tabular-nums}.stat{font-size:12px;line-height:1.9}.stat b{color:#a4edcd}.alarm{font-size:12px;color:#ffb5a5;font-weight:700}.centered{text-align:center}.notice{display:inline-block;padding:11px 13px;background:#05111fd9;border:1px solid #dba65b70;border-radius:11px;max-width:95%;line-height:1.5}.bottom-hud{display:flex;justify-content:space-between;align-items:flex-end;gap:5px}.live{font-size:11px;font-weight:900;color:#ff8a80}.hint{font-size:11px;color:#ccdae7;text-align:right}.controls{margin-top:12px;background:#142133;border:1px solid #2b4056;border-radius:14px;padding:13px}.goal{display:flex;justify-content:space-between;gap:10px;font-weight:700;margin-bottom:12px}.vote-row{display:flex;gap:9px}.vote{width:50%;min-height:80px;border-radius:12px;border:1px solid #55718c;padding:12px;display:flex;align-items:center;gap:11px;text-align:left;color:#fff;background:#193b57;cursor:pointer;font-weight:700;font-size:13px}.vote:nth-child(2){background:#503827;border-color:#967047}.vote span{font-size:26px;line-height:1;font-weight:900}.vote:disabled{opacity:.55}.votes{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#bacce0;margin:11px 0 6px}.bar{height:9px;background:#35455a;border-radius:9px;display:flex;overflow:hidden}.barA{background:#5ccafa;transition:width .2s}.barB{background:#ffc56c;transition:width .2s}#result{min-height:54px;padding:14px 0 9px;color:#c9d7e5;line-height:1.5}.btnrow{display:flex;gap:8px}.btn{border:0;padding:14px 12px;border-radius:11px;background:#24a078;color:#faffff;font-weight:900;cursor:pointer;flex:1;font-size:14px}.btn.secondary{background:#263c54;flex:0 0 33%}.btn:disabled{opacity:.45;cursor:default}.foot{color:#9ab1c9;font-size:11px;line-height:1.6;margin:12px 2px}.info{color:#add6e7;font-weight:700;margin:9px 2px}.touch{font-size:12px;color:#9fb1c6;margin-bottom:7px}@media(min-width:520px){#window{height:510px}}@media(max-width:360px){.timer{font-size:48px}.pill{padding:8px}.vote{font-size:12px;padding:9px}#window{height:390px}}
+</style></head><body><main>
+<header><div class="brand">THE LAST 10 SECONDS <small>EP. 01 · ELEVATOR EMERGENCY</small></div><div class="ready">TRUE WEBGL 3D</div></header>
+<div class="touch">👆 ลากนิ้วบนฉากเพื่อหมุนมุมกล้อง • ใช้สองนิ้วเพื่อซูม</div>
+<section id="window" aria-label="ฉากลิฟต์สามมิติที่หมุนมุมกล้องได้"><div id="fallback">กำลังโหลดฉาก 3 มิติ… หากข้อความนี้ค้างอยู่ ให้เปิดเกมผ่าน URL เว็บไซต์ใน Safari ไม่ใช่หน้าพรีวิวไฟล์</div><canvas id="game"></canvas>
+<div id="overlay"><div class="top"><div class="pill"><div class="ttl">TIME LEFT</div><div class="timer" id="timer">10</div><div class="alarm">⚠ ระบบลิฟต์ขัดข้อง</div></div><div class="pill stat" style="text-align:right"><div>🔥 เบรก <b id="brake">230°C</b></div><div>🔋 แบตเตอรี่ <b id="battery">72%</b></div><div>🏢 <span id="floor">ชั้น 30</span></div></div></div><div class="centered"><div class="notice" id="banner">🚨 ลิฟต์ตกจากตึกสูง! คุณจะช่วยทุกคนอย่างไร?</div></div><div class="bottom-hud"><div class="pill live">● DEMO MODE<br><span style="color:#ffffffa9;font-weight:500">ทดลองกดโหวตเอง</span></div><div class="hint">3D real geometry + lighting<br>offline / ไม่เชื่อม TikTok</div></div></div></section>
+<section class="controls"><div class="goal"><span>เลือกทางรอดก่อนหมดเวลา</span><small>โหวตจำลอง</small></div><div class="vote-row"><button type="button" id="voteA" class="vote" disabled><span>A</span><div>ใช้เบรกฉุกเฉิน<small style="display:block;margin-top:4px">Emergency Brake</small></div></button><button type="button" id="voteB" class="vote" disabled><span>B</span><div>เปิดไฟสำรอง<small style="display:block;margin-top:4px">Backup Power</small></div></button></div><div class="votes"><div>🟦 A: <b id="countA">0</b> เสียง</div><div>🟧 B: <b id="countB">0</b> เสียง</div></div><div class="bar"><div class="barA" id="barA" style="width:0%"></div><div class="barB" id="barB" style="width:0%"></div></div><div id="result" aria-live="polite">อ่านข้อมูลเบรกและแบตเตอรี่ด้านบนให้ดี แล้วกดเริ่มเกม</div><div class="btnrow"><button class="btn" id="start" type="button">▶ เริ่ม 10 วินาที</button><button class="btn secondary" id="next" type="button" disabled>↻ รอบถัดไป</button></div></section><div class="info">เกมนี้เป็น 3 มิติจริง ไม่ใช่ CSS จำลองมิติ</div><div class="foot">ภาพกราฟิกนี้เป็นเกมต้นแบบแบบ Low-Poly เพื่อทดสอบเทคโนโลยีบน iPad ไม่ใช่กราฟิกระดับ Unity สำเร็จรูป · สามารถเปิดไฟล์นี้แบบออฟไลน์ได้หากเบราว์เซอร์อนุญาตให้รัน WebGL · ยังไม่เชื่อม TikTok LIVE</div></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), canvas=$('game'), win=$('window');
+let gl;try{gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');}catch(e){}
+let running=false,ended=false,remaining=10,level=0,votes={A:0,B:0},endTime=0,interval=null,progress=0,winState=false;
+const scenarios=[{brake:230,battery:72,correct:'B',why:'เบรกร้อนเกินขีดจำกัด แต่แบตเตอรี่สำรองยังพร้อมใช้งาน'},{brake:75,battery:6,correct:'A',why:'เบรกยังทำงานได้ดี แต่พลังงานสำรองเกือบหมด'},{brake:195,battery:92,correct:'B',why:'ความร้อนของเบรกสูง จึงควรใช้ระบบพลังงานสำรอง'}];
+const scenario=()=>scenarios[level%scenarios.length];
+function refresh(){const c=scenario(),t=votes.A+votes.B;
+ $('brake').textContent=c.brake+'°C';$('brake').style.color=c.brake>150?'#ff9d90':'#9becba';
+ $('battery').textContent=c.battery+'%';$('battery').style.color=c.battery<15?'#ff9d90':'#9becba';
+ $('timer').textContent=String(remaining).padStart(2,'0');$('floor').textContent='ชั้น '+Math.max(1,Math.round(1+29*(1-progress)));
+ $('countA').textContent=votes.A;$('countB').textContent=votes.B;
+ $('barA').style.width=(t?100*votes.A/t:0)+'%';$('barB').style.width=(t?100*votes.B/t:0)+'%';
+ $('voteA').disabled=!running;$('voteB').disabled=!running;$('start').disabled=running||ended;$('next').disabled=!ended;
+}
+function finish(){if(!running)return;running=false;ended=true;remaining=0;progress=1;clearInterval(interval);interval=null;
+ const winner=votes.A>votes.B?'A':votes.B>votes.A?'B':null,good=winner===scenario().correct;winState=good;
+ $('banner').textContent=good?'✅ ภารกิจสำเร็จ! ลิฟต์หยุดได้ทัน':'🚨 ลิฟต์หยุดไม่ทัน! ภารกิจล้มเหลว';
+ $('result').textContent=(winner?'เสียงส่วนใหญ่เลือก '+winner+' — ':'ไม่มีเสียงส่วนใหญ่ — ')+scenario().why+' (คำตอบที่ถูก: '+scenario().correct+')';refresh();
+}
+function tick(){remaining=Math.max(0,Math.ceil((endTime-Date.now())/1000));progress=Math.min(1,Math.max(0,(10000-(endTime-Date.now()))/10000));refresh();if(remaining===0)finish();}
+$('start').addEventListener('click',()=>{if(running||ended)return;running=true;endTime=Date.now()+10000;progress=0;
+ $('banner').textContent='🚨 เปิดโหวต! เลือก A หรือ B ก่อนหมดเวลา';$('result').textContent='กำลังนับคะแนนจากปุ่มทดลองด้านล่าง';interval=setInterval(tick,80);refresh();});
+for(const side of ['A','B'])$('vote'+side).addEventListener('click',()=>{if(!running)return;votes[side]=Math.min(9999,votes[side]+1);refresh();});
+$('next').addEventListener('click',()=>{if(!ended)return;level++;votes={A:0,B:0};remaining=10;progress=0;ended=false;running=false;winState=false;$('banner').textContent='🔧 ระบบเปลี่ยนเงื่อนไขแล้ว! อ่านค่าใหม่ก่อนตัดสินใจ';$('result').textContent='ด่านใหม่: ค่าเบรกและแบตเตอรี่เปลี่ยนไป';refresh();});refresh();
+if(!gl){$('fallback').textContent='เบราว์เซอร์นี้ไม่อนุญาตใช้ WebGL กรุณาเปิดเกมผ่านเว็บไซต์ GitHub Pages ใน Safari บน iPad';return;}
+const vs=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute float aEm;uniform mat4 uVP;uniform vec3 uOffset;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;void main(){vec3 w=aPos+uOffset;vec4 clip=uVP*vec4(w,1.0);gl_Position=clip;vN=aNorm;vColor=aCol;vEm=aEm;vW=w;vDepth=clip.w;}`;
+const fs=`precision mediump float;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;uniform float uTime;void main(){vec3 n=normalize(vN);vec3 ld=normalize(vec3(-0.42,0.7,0.8));float light=max(0.0,dot(n,ld));float fill=max(0.0,dot(n,normalize(vec3(0.7,0.15,-0.6))))*0.25;float redPulse=0.85+0.15*sin(uTime*6.5);vec3 lit=vColor*(0.34+0.78*light+fill)+vColor*vEm*(1.05*redPulse);float fog=clamp((vDepth-12.0)/57.0,0.0,0.63);gl_FragColor=vec4(mix(lit,vec3(0.025,0.065,0.105),fog),1.0);}`;
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+let program;try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);}catch(e){$('fallback').textContent='ไม่สามารถเริ่มระบบ 3D: '+e.message;return;}
+const posLoc=gl.getAttribLocation(program,'aPos'),normLoc=gl.getAttribLocation(program,'aNorm'),colLoc=gl.getAttribLocation(program,'aCol'),emLoc=gl.getAttribLocation(program,'aEm');
+const vpLoc=gl.getUniformLocation(program,'uVP'),offLoc=gl.getUniformLocation(program,'uOffset'),timeLoc=gl.getUniformLocation(program,'uTime');
+const staticGeo=[],carGeo=[];let output=staticGeo;
+const cl=(v)=>v.map(x=>x/255),C={wall:cl([18,32,52]),steel:cl([95,118,137]),silver:cl([170,185,193]),gold:cl([230,169,83]),amber:cl([255,179,54]),red:cl([240,56,44]),cyan:cl([31,182,226]),glass:cl([61,124,166]),deep:cl([8,18,33]),black:cl([15,21,30]),skin:cl([241,181,135]),skin2:cl([180,133,93]),blue:cl([61,128,211]),yellow:cl([241,171,67]),white:cl([230,235,231]),green:cl([60,185,126])};
+function vertex(a,n,col,em=0){output.push(...a,...n,...col,em);}
+function tri(a,b,c,n,col,em){vertex(a,n,col,em);vertex(b,n,col,em);vertex(c,n,col,em);}
+function quad(a,b,c,d,n,col,em){tri(a,b,c,n,col,em);tri(a,c,d,n,col,em);}
+function box(x,y,z,w,h,d,color,em=0){const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;
+ quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],color,em);
+ quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1],color,em);
+ quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],color,em);
+ quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],color,em);
+ quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],color,em);
+ quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],color,em);
+}
+function sphere(cx,cy,cz,r,color,em=0,segments=12,rings=8){function pt(th,ph){return[cx+r*Math.sin(th)*Math.cos(ph),cy+r*Math.cos(th),cz+r*Math.sin(th)*Math.sin(ph)]}function nor(p){return[(p[0]-cx)/r,(p[1]-cy)/r,(p[2]-cz)/r]}
+ for(let i=0;i<rings;i++){let ta=i*Math.PI/rings,tb=(i+1)*Math.PI/rings;for(let j=0;j<segments;j++){let pa=j*2*Math.PI/segments,pb=(j+1)*2*Math.PI/segments;let a=pt(ta,pa),b=pt(tb,pa),c=pt(tb,pb),d=pt(ta,pb);
+ vertex(a,nor(a),color,em);vertex(b,nor(b),color,em);vertex(c,nor(c),color,em);
+ vertex(a,nor(a),color,em);vertex(c,nor(c),color,em);vertex(d,nor(d),color,em);}}}
+function cylinder(cx,cy,cz,r,h,color,seg=12,em=0){let yt=cy+h/2,yb=cy-h/2;
+ for(let i=0;i<seg;i++){let a=2*Math.PI*i/seg,b=2*Math.PI*(i+1)/seg;let pa=[cx+r*Math.cos(a),yb,cz+r*Math.sin(a)],pb=[cx+r*Math.cos(b),yb,cz+r*Math.sin(b)],pc=[pb[0],yt,pb[2]],pd=[pa[0],yt,pa[2]];
+ let na=[Math.cos(a),0,Math.sin(a)],nb=[Math.cos(b),0,Math.sin(b)];vertex(pa,na,color,em);vertex(pb,nb,color,em);vertex(pc,nb,color,em);vertex(pa,na,color,em);vertex(pc,nb,color,em);vertex(pd,na,color,em);
+ tri([cx,yt,cz],pd,pc,[0,1,0],color,em);tri([cx,yb,cz],pb,pa,[0,-1,0],color,em);}}
+// Stationary architecture, full 3D solid geometry
+box(0,-5,-4.6,9.5,59,.45,C.wall);box(-4.5,-5,0,.45,59,9,C.wall);box(4.5,-5,0,.45,59,9,C.wall);
+for(let x of [-3.6,3.6]){box(x,-5,-1.2,.45,59,.65,C.steel);box(x,-5,-.74,.12,59,.13,C.cyan,.4);
+ box(x,-5,2.3,.38,59,.58,C.steel);for(let y=-28;y<=20;y+=4.3)box(x,y,1.8,.48,.5,.2,C.gold);}
+for(let y=-31;y<=24;y+=2.1){box(0,y,-4.25,9.4,.17,.5,C.silver);box(0,y,-4.03,9.4,.12,.19,C.deep);
+ for(const x of [-3.95,3.95]){box(x,y,.4,.32,.22,7.5,C.steel);box(x,y,3.4,.24,.35,.85,C.silver);}}
+for(let y=-28;y<=24;y+=5.7){box(0,y,-4.01,3.5,.25,.2,C.gold);for(let x of [-3.88,3.88]){box(x,y,3.45,.45,.75,.42,C.red,1.45);}}
+for(let x of [-.7,.7])cylinder(x,0,-1.3,.055,59,C.silver,8);
+for(let y=-31;y<=26;y+=3.5){box(0,y,-4.02,1.1,.56,.18,C.black);box(0,y,-3.89,.4,.11,.08,C.amber,.85);}
+// Car: own local coordinates; animated via world uniform offset
+output=carGeo;
+box(0,-1.73,0,3.8,.26,2.65,C.silver);box(0,-1.91,0,3.9,.12,2.68,C.black);
+box(0,1.75,0,3.9,.3,2.65,C.silver);box(0,1.95,0,4.2,.28,2.8,C.steel);
+box(0,2.12,1.25,3.3,.22,.26,C.red,1.7);
+box(0,.0,-1.24,3.8,3.35,.14,C.glass);
+for(let x of [-1.85,1.85])for(let z of [-1.22,1.22])box(x,0,z,.2,3.57,.24,C.gold);
+for(let y of [-1.47,1.53])for(let z of [-1.22,1.22])box(0,y,z,3.85,.19,.15,C.silver);
+for(let x of [-.85,.85]){box(x,.0,1.23,1.72,3.2,.08,C.glass);box(x,0,1.31,.08,3.23,.08,C.steel);}
+box(0,0,1.37,.11,3.43,.12,C.silver);box(0,-1.3,1.32,3.6,.10,.1,C.gold);
+for(let x of [-1.42,1.42]){cylinder(x,2.4,0,.14,.7,C.silver,12);sphere(x,2.76,0,.22,C.amber,1.1);}
+for(let i=0;i<3;i++){
+ let x=(i-1)*.94;box(x,-1.27,-.12,.25,.62,.25,i===1?C.yellow:C.blue);box(x,-.53,-.12,.65,.94,.38,i===1?C.red:C.blue);
+ cylinder(x,-.08,-.12,.32,.45,C.yellow);sphere(x,.45,-.1,.36,i===2?C.skin2:C.skin,0,12,8);
+ sphere(x-.11,.53,.20,.045,C.black);sphere(x+.11,.53,.20,.045,C.black);
+ box(x-.46,-.46,.02,.18,.7,.22,C.skin);box(x+.46,-.46,.02,.18,.7,.22,C.skin);
+}
+for(let x of [-1.55,1.55])box(x,-.25,.87,.10,2.8,.10,C.cyan,1);
+const makeGeometry=data=>{const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return{buffer,count:data.length/10};};
+const architecture=makeGeometry(staticGeo),elevator=makeGeometry(carGeo);
+function projection(fov,aspect,near,far){let f=1/Math.tan(fov/2),nf=1/(near-far);return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
+function normalize(a){let l=Math.hypot(...a)||1;return a.map(v=>v/l)}
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function view(eye,target){let z=normalize(eye.map((v,i)=>v-target[i]));let x=normalize(cross([0,1,0],z));let y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1];}
+function mul(a,b){let out=new Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)out[c*4+r]+=a[k*4+r]*b[c*4+k];return out}
+for(const loc of [posLoc,normLoc,colLoc,emLoc])gl.enableVertexAttribArray(loc);
+function draw(g,x,y,z){gl.bindBuffer(gl.ARRAY_BUFFER,g.buffer);let stride=40;gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,stride,0);gl.vertexAttribPointer(normLoc,3,gl.FLOAT,false,stride,12);gl.vertexAttribPointer(colLoc,3,gl.FLOAT,false,stride,24);gl.vertexAttribPointer(emLoc,1,gl.FLOAT,false,stride,36);gl.uniform3f(offLoc,x,y,z);gl.drawArrays(gl.TRIANGLES,0,g.count);}
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.015,.039,.074,1);
+$('fallback').style.display='none';
+let azimuth=.43,elevation=.23,distance=11.8,dragging=false,lastX=0,lastY=0,twoFingerLast=null;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;azimuth+=(e.clientX-lastX)*.007;elevation=Math.min(.55,Math.max(-.35,elevation+(e.clientY-lastY)*.004));lastX=e.clientX;lastY=e.clientY;});
+for(const n of ['pointerup','pointercancel'])canvas.addEventListener(n,()=>{dragging=false;});
+canvas.addEventListener('touchmove',e=>{if(e.touches.length!==2){twoFingerLast=null;return;}let t=e.touches,dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY,d=Math.hypot(dx,dy);if(twoFingerLast)distance=Math.min(18,Math.max(6,distance-(d-twoFingerLast)*.02));twoFingerLast=d;},{passive:true});
+canvas.addEventListener('touchend',()=>{twoFingerLast=null;});
+let lastSize=0;
+function frame(ms){if(!document.body.contains(canvas))return;let rect=canvas.getBoundingClientRect(),w=Math.max(1,Math.floor(rect.width*Math.min(devicePixelRatio||1,1.4))),h=Math.max(1,Math.floor(rect.height*Math.min(devicePixelRatio||1,1.4)));
+ if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
+ let fallY=running?6-progress*16:ended?(winState?-8:-13):6;
+ let target=[0,fallY-.05,-.15],eye=[Math.sin(azimuth)*distance*Math.cos(elevation),target[1]+distance*Math.sin(elevation)+1.2,Math.cos(azimuth)*distance*Math.cos(elevation)];
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.uniformMatrix4fv(vpLoc,false,new Float32Array(mul(projection(Math.PI/3,w/h,.1,120),view(eye,target))));gl.uniform1f(timeLoc,ms/1000);
+ draw(architecture,0,0,0);draw(elevator,0,fallY,0);requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script></body></html>
