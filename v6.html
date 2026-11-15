@@ -1,0 +1,631 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070e19"><title>THE LAST 10 SECONDS · V6 LOGIC & UI</title><style>
+
+/* V5 · Sound design and start gate */
+.sound-gate{position:absolute;z-index:20;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(175deg,#030a16ed 4%,#0c192bdd 50%,#030914f5 100%);color:#fff}
+.sound-gate[hidden]{display:none!important}
+.sound-gate-card{width:100%;max-width:340px;background:#071523f4;border:1px solid #fa967e99;border-radius:20px;padding:23px 18px 19px;text-align:center;box-shadow:0 0 0 6px #f4755810,0 16px 50px #000b}
+.sound-gate .kicker{font-size:10px;color:#ff9886;letter-spacing:3px;font-weight:900}
+.sound-gate .symbol{font-size:57px;filter:drop-shadow(0 0 20px #ff886655);margin:10px 0 4px}
+.sound-gate h2{font-size:24px;line-height:1.23;margin:0 0 10px;font-weight:1000}
+.sound-gate p{font-size:12px;color:#cad9e9;line-height:1.65;margin:0 0 18px}
+.sound-gate button{display:block;width:100%;min-height:52px;border-radius:11px;border:0;font-weight:900;font-size:14px;cursor:pointer}
+#launchWithSound{background:linear-gradient(90deg,#e7684b,#faab55);color:#15212c;box-shadow:0 6px 22px #f67c5340}
+#launchMuted{margin-top:9px;background:transparent;color:#b6ccdd;border:1px solid #475f75}
+.sound-gate .small{font-size:10px;color:#a3b7ca;margin-top:12px;line-height:1.5}
+.sound-mix{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}
+.sound-mix label{font-size:12px;color:#d7e5f7;font-weight:750}
+.sound-mix input{flex:1;accent-color:#ef8863;min-width:100px;min-height:36px}
+#musicStatus{color:#b9e5d0;font-size:11px;min-height:17px;margin-top:5px}
+#window.running .vignette{box-shadow:inset 0 0 95px #27040e7a;animation:cinematicBreathe 1.25s infinite alternate}
+@keyframes cinematicBreathe{to{box-shadow:inset 0 0 122px #7e071463}}
+@media(prefers-reduced-motion:reduce){#window.running .vignette{animation:none}}
+
+:root{font-family:system-ui,-apple-system,"Thonburi",sans-serif;color:#f4f7ff;background:#070e19;color-scheme:dark}*{box-sizing:border-box}body{margin:0;display:flex;justify-content:center;background:radial-gradient(ellipse at 50% -8%,#1f314b,#070e19 57%);padding:0 0 25px}main{width:min(100%,520px);padding:9px 9px 16px}
+header{display:flex;gap:9px;align-items:center;justify-content:space-between;padding:8px 2px 11px}.brand{font-weight:1000;font-size:18px;line-height:1.15}.brand small{display:block;font-size:9px;color:#a7b9d0;letter-spacing:2.2px;margin-top:6px}.edition{border:1px solid #95605c;background:#3b2929;color:#ffcf9d;border-radius:8px;padding:7px;font-size:11px;font-weight:850;white-space:nowrap}
+#window{position:relative;isolation:isolate;width:100%;aspect-ratio:9/16;max-height:825px;border:1px solid #526179;border-radius:17px;overflow:hidden;background:#0d1f33;box-shadow:0 13px 36px #0008}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:25px;text-align:center;background:linear-gradient(135deg,#2a3b50,#091627);z-index:1;font-weight:750}
+#window .shade{position:absolute;z-index:2;inset:0;pointer-events:none;background:linear-gradient(180deg,#030913bd 0%,#091b2922 25%,transparent 49%,#010814f2 100%)}
+#window .vignette{position:absolute;z-index:3;inset:0;pointer-events:none;box-shadow:inset 0 0 80px #050b18ab}
+#flash{position:absolute;z-index:8;inset:0;pointer-events:none;opacity:0;background:#fb453c}
+#window.failed #flash{animation:alarmFlash 0.35s ease-out 3}#window.success #flash{background:#38e7ae;animation:alarmFlash 0.5s ease-out 1}
+@keyframes alarmFlash{0%{opacity:0}25%{opacity:.56}100%{opacity:0}}
+#window.running{border-color:#e37b5d}
+#noise{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,transparent 0 5px,#c4ecfb13 6px,transparent 7px);mix-blend-mode:screen}
+#window.failed #noise{opacity:.65}
+.hud{position:absolute;z-index:5;inset:0;pointer-events:none;padding:12px;display:flex;flex-direction:column;gap:7px}
+.top-strip{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.7px;text-shadow:0 2px 6px #000}.signal{color:#ff7d72}.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4444;box-shadow:0 0 12px #ff4444;margin-right:5px}.tag{color:#bdfadd}
+.episode{text-align:center;font-size:10px;letter-spacing:1.3px;color:#ffdb9c;font-weight:850;text-shadow:0 2px 8px #000}.clock{text-align:center;font-size:clamp(64px,18vw,91px);font-variant-numeric:tabular-nums;font-weight:1000;line-height:.98;color:#ff7964;letter-spacing:-6px;text-shadow:0 0 22px #e7383b66}.clock.urgent{color:#ff343b;animation:throb .6s infinite alternate}@keyframes throb{to{transform:scale(1.08)}}.clock-label{text-align:center;font-size:9px;letter-spacing:3px;font-weight:900;color:#cedcf1}
+.meters{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}.meter{font-size:10px;color:#eef4ff;border:1px solid #4a6d8c99;background:#081321d9;border-radius:7px;padding:5px 7px;backdrop-filter:blur(4px)}.meter b{color:#bafbd2}.instruction{text-align:center}.instruction span{display:inline-block;max-width:100%;background:#0b1523e8;padding:8px 11px;border:1px solid #f2af6070;border-radius:9px;font-size:11px;line-height:1.5;font-weight:770}
+.callout{font-size:11px;align-self:center;text-align:center;color:#fffbd9;background:#142238e8;border:1px solid #c88c6a99;border-radius:12px;padding:9px 13px;max-width:92%;transform:translateY(11px);text-shadow:0 1px 4px #000;transition:opacity .2s}
+.space{flex:1;min-height:0}
+.cinematic-result{display:none;align-self:center;text-align:center;padding:16px 12px;width:min(96%,330px);background:#061320ef;border:1px solid #64859b;border-radius:15px;box-shadow:0 0 35px #0009;position:absolute;z-index:6;left:50%;top:48%;transform:translate(-50%,-50%);pointer-events:none}
+.cinematic-result.active{display:block}.cinematic-result .icon{font-size:36px}.cinematic-result .head{font-size:23px;font-weight:1000;line-height:1.25}.cinematic-result .desc{font-size:12px;margin-top:8px;color:#d6e2f0;line-height:1.55}
+.cinematic-result.won{border-color:#42dba5}.cinematic-result.won .head{color:#95ffcb}.cinematic-result.lost{border-color:#ff706a}.cinematic-result.lost .head{color:#ff9b8d}
+.vote-ui{pointer-events:auto;border:1px solid #4e6880;background:#071222ed;border-radius:12px;padding:10px;backdrop-filter:blur(4px)}.vote-heading{display:flex;align-items:center;justify-content:space-between;gap:4px;color:#d8ebfe;font-size:10px;font-weight:850;margin-bottom:7px}.vote-heading span:last-child{color:#91a7bc}.vote-row{display:flex;gap:7px}.vote{display:flex;align-items:center;gap:8px;text-align:left;flex:1;min-height:66px;min-width:0;color:#fff;background:#164469;border:1px solid #548ab1;border-radius:9px;padding:8px;font-weight:850;cursor:pointer;font-size:11px}.vote:nth-child(2){background:#66482d;border-color:#bd8248}.vote strong{font-size:28px}.vote small{display:block;font-size:9px;font-weight:560;color:#c9d9e9;margin-top:3px}.vote:disabled{opacity:.52;cursor:not-allowed}.totals{display:flex;justify-content:space-between;font-size:10px;color:#dcecf5;margin:10px 0 5px}.bar{width:100%;height:7px;background:#243851;display:flex;overflow:hidden;border-radius:10px}.bar .a{background:#4bbcff;transition:width .15s}.bar .b{background:#ffb35b;transition:width .15s}
+.controls{background:#101e30;border:1px solid #395571;padding:12px;border-radius:13px;margin-top:10px}.section-label{color:#94a9c4;font-size:10px;letter-spacing:1.3px;font-weight:800}.result{font-size:12px;color:#deebfb;line-height:1.6;min-height:44px;margin:7px 0}.result.positive{color:#9df0b9}.result.negative{color:#ff9b8e}.buttons{display:flex;gap:8px}.btn{flex:1;border-radius:9px;border:0;background:#17876e;color:#fff;font-size:13px;font-weight:850;min-height:47px;padding:8px;cursor:pointer}.btn.secondary{flex:0 0 32%;background:#294461}.btn:disabled{opacity:.43;cursor:not-allowed}.sound{background:#203954;color:#e0efff;border:1px solid #607890;font-weight:700;padding:9px 11px;border-radius:8px;min-height:42px;margin-top:9px;cursor:pointer}.tip{color:#a5bbd1;font-size:11px;line-height:1.65;margin:12px 2px}.tip b{color:#e5f1fc}
+@media(max-width:350px){.hud{padding:8px}.vote{font-size:10px;padding:6px;gap:5px}.meter{font-size:9px;padding:4px}.callout{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.clock.urgent{animation:none!important}#window.failed #flash,#window.success #flash{animation:none!important}}
+
+/* Live systems: run in the same iPad Safari/WebGL environment as V3 */
+.live-panel{background:#101e30;border:1px solid #38566e;border-radius:13px;padding:12px;margin-top:10px;display:grid;gap:12px}
+.live-panel h2{font-size:15px;margin:0;color:#edf6ff}
+.live-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.live-badge{padding:5px 8px;border-radius:8px;background:#21374d;color:#b8d9f4;font-size:10px;white-space:nowrap}
+.live-badge.connected{background:#194e39;color:#b1ffe0}
+.live-badge.error{background:#512e2c;color:#ffb7ad}
+.live-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.live-row>label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer}
+.live-row input[type=checkbox]{width:20px;height:20px;accent-color:#16ba94}
+.live-row input[type=text],.live-panel input[type=text],.live-panel select{min-height:43px;border-radius:8px;color:#fff;border:1px solid #546c83;background:#0b1727;padding:9px 10px;min-width:0;font-size:14px}
+.live-panel input[type=text]{width:100%}
+.live-panel .panel-button{min-height:43px;background:#205777;border:1px solid #5487a8;color:white;border-radius:8px;padding:9px 12px;font-weight:760;font-size:12px;cursor:pointer}
+.live-panel .panel-button:disabled{opacity:.48}
+.live-panel .panel-button.alt{background:#55421e;border-color:#90753d}
+.live-panel .panel-button.danger{background:#572c36;border-color:#99545a}
+.live-panel .fine{font-size:11px;color:#b2c6d8;line-height:1.5}
+.live-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.live-stat{background:#091626;border:1px solid #34475a;border-radius:9px;padding:10px 8px;text-align:center}
+.live-stat strong{display:block;color:#fff;font-size:22px;line-height:1.35;font-variant-numeric:tabular-nums}
+.live-stat span{font-size:10px;color:#b5cbde}
+.live-feed{margin:0;padding:6px 0;list-style:none;max-height:150px;overflow:hidden;color:#d1e7f5;font-size:11px;line-height:1.55}
+.live-feed li{border-bottom:1px solid #ffffff10;padding:4px 0}
+.live-leader{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.live-leader li{display:flex;justify-content:space-between;gap:7px;padding:8px 10px;background:#0b1929;border-radius:8px;font-size:11px}
+.live-leader b{font-variant-numeric:tabular-nums;color:#afefc3}
+.live-grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.live-label{font-size:11px;color:#bed1e6;font-weight:760;margin-bottom:4px;display:block}
+#autoCountdown{font-size:11px;color:#fde2a2;min-height:18px}
+#window .alert-wash{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 75%,transparent 32%,#dc1d1a55 95%)}
+#window.running .alert-wash{opacity:.7;animation:alarmWash .75s infinite alternate}
+@keyframes alarmWash{to{opacity:.12}}
+#cinematicStatus{position:absolute;left:50%;top:59%;z-index:6;transform:translateX(-50%);font-size:12px;color:#fff5c8;max-width:85%;text-align:center;padding:9px 12px;border-radius:9px;background:#0b1829dd;border:1px solid #8f816d;pointer-events:none;display:none}
+#window.resolving #cinematicStatus{display:block}
+@media(prefers-reduced-motion:reduce){#window.running .alert-wash{animation:none}}
+@media(max-width:360px){.live-grid{gap:4px}.live-stat strong{font-size:18px}.live-panel{padding:10px}}
+
+#streamTally{position:absolute;z-index:5;right:10px;bottom:159px;pointer-events:none;color:#e0f6f2;background:#0a1e27df;border:1px solid #39776f;font-size:9px;padding:5px 8px;border-radius:7px;max-width:95%;text-align:right}
+#streamBack{display:none;position:absolute;z-index:9;top:42%;right:7px;border:1px solid #5d7588;color:white;border-radius:8px;background:#061320c9;padding:8px;min-height:40px;font-size:11px;cursor:pointer}
+body.stream-active{padding:0}body.stream-active main{width:min(100%,520px);padding:0}body.stream-active header,body.stream-active .controls,body.stream-active .live-panel,body.stream-active .tip{display:none}body.stream-active #window{border-radius:0;border:0;max-height:none;box-shadow:none}body.stream-active #streamBack{display:block}
+
+/* V6: move the question and actions into the visible central area of the 9:16 game. */
+#window{width:min(100%,43svh,480px);max-height:none;margin:0 auto;aspect-ratio:9/16}
+#window .hud .space{display:none}
+#fallback{align-items:flex-end;padding-bottom:12px;font-size:11px;opacity:.86}
+#window .callout{position:absolute;left:5%;right:5%;top:37%;max-width:none;margin:0;transform:none;padding:6px 9px;font-size:10px;background:#071524cf}
+#window .decision-zone{position:absolute;z-index:6;left:8px;right:8px;top:43%;display:grid;gap:5px;pointer-events:auto}
+.question-head{text-align:center;color:#ffcc8f;background:#291a1be9;border:1px solid #ff9b685e;border-radius:8px 8px 0 0;padding:5px 7px;font-size:10px;font-weight:900;letter-spacing:.4px}
+.decision-question{font-size:clamp(11px,2.1svh,14px);font-weight:850;line-height:1.48;text-align:center;padding:8px 7px;background:#071726f3;color:#fff;border:1px solid #678cb4a8;border-radius:7px;text-wrap:pretty}
+.ruleline{font-size:10px;text-align:center;line-height:1.42;color:#d2e8f8;background:#062432de;border:1px solid #375c6e;border-radius:6px;padding:6px}
+.ruleline b{color:#b6f1dc}
+#window .vote-ui{padding:7px 8px;background:#06101ef5}
+#window .vote-row{gap:6px}
+#window .vote{min-height:58px;padding:6px;gap:5px;font-size:11px}
+#window .vote strong{font-size:24px}
+#window .vote small{font-size:9px;line-height:1.25;margin-top:2px;color:#e1e5ee}
+#window .vote-heading{font-size:10px}
+#window .totals{margin:6px 0 4px}
+#window .meter{padding:4px 5px;font-size:9px}
+#streamTally{display:none}
+body.stream-active #streamTally{display:block;top:29%;bottom:auto;right:8px;font-size:9px}
+body.stream-active #window{width:min(100%,43svh,480px);aspect-ratio:9/16}
+#window.resolving .decision-zone{opacity:.24;pointer-events:none}
+#window.success .decision-zone,#window.failed .decision-zone{opacity:0;pointer-events:none}
+#window .cinematic-result{top:59%;width:92%;max-width:340px}
+#window .shade{background:linear-gradient(180deg,#030913d9 0%,#091b294d 27%,transparent 46%,#010814e1 100%)}
+@media(max-height:570px){#window .hud{padding:7px}#window .clock{font-size:51px}#window .callout{display:none}#window .decision-zone{top:39%}#window .decision-question{font-size:10px;padding:5px}#window .ruleline{font-size:9px;padding:4px}#window .vote{min-height:45px}#window .vote-heading{margin-bottom:4px}}
+@media(min-height:900px){#window .decision-zone{top:44%}}
+</style></head><body><main>
+<header><div class="brand">THE LAST 10 SECONDS<small>3D CINEMATIC SURVIVAL · V6 INTERACTIVE</small></div><span class="edition">V6 · SMART CHOICES</span></header>
+<section id="window" aria-label="เกมลิฟต์เอาชีวิตรอด 3 มิติ">
+<div id="fallback">กำลังเตรียมโลก WebGL 3 มิติ...</div><canvas id="game"></canvas><div class="shade"></div><div class="vignette"></div><div id="flash"></div><div id="noise"></div><div class="alert-wash"></div><div id="cinematicStatus">⚡ ระบบฉุกเฉินกำลังตอบสนอง...</div><div id="streamTally">🏆 ช่วยสำเร็จ 0 รอบ · ผู้ร่วมเล่น 0 คน</div><button id="streamBack" type="button">⚙ จัดการเกม</button>
+<div class="hud">
+  <div class="top-strip"><span class="signal"><span class="live-dot"></span> EMERGENCY / EP 01</span><span id="status" class="tag">พร้อมเล่น</span></div>
+  <div id="chapter" class="episode">ภารกิจ 01 · เบรกร้อนจัด</div>
+  <div id="timer" class="clock">10</div><div class="clock-label">SECONDS TO SURVIVE</div>
+  <div class="meters"><span class="meter">🔥 คีบราง <b id="brake">230°C</b></span><span class="meter">⚡ สนามแม่เหล็ก <b id="battery">72%</b></span><span class="meter">🏢 <span id="floor">ชั้น 30</span></span></div>
+  <div id="callout" class="callout">🗣️ ผู้โดยสาร: "ใครก็ได้ ช่วยเราด้วย!"</div>
+  <div class="decision-zone" id="decisionZone">
+    <div class="question-head">🚨 ตัดสินใจหยุดลิฟต์ X-9</div>
+    <div class="decision-question" id="banner" aria-live="polite">คีบรางร้อน 230°C แต่สนามแม่เหล็กยังมีไฟ 72% จะใช้ระบบไหนหยุดลิฟต์?</div>
+    <div class="ruleline">กติกาเกม: <b>A ใช้ได้เมื่อคีบราง ≤ 160°C</b> · <b>B ใช้ได้เมื่อไฟ ≥ 25%</b></div>
+    <div class="vote-ui"><div class="vote-heading"><span>📣 เลือกคำตอบ A หรือ B</span><span>หนึ่งบัญชี / หนึ่งเสียง</span></div>
+    <div class="vote-row"><button type="button" class="vote" id="voteA" disabled><strong>A</strong><span>สั่งคีบรางกลไก<small>หนีบรางเพื่อหยุดลิฟต์</small></span></button><button type="button" class="vote" id="voteB" disabled><strong>B</strong><span>เปิดเบรกแม่เหล็ก<small>ใช้ไฟสำรองชะลอลิฟต์</small></span></button></div>
+    <div class="totals"><span>🟦 A: <b id="countA">0</b> เสียง</span><span>🟧 B: <b id="countB">0</b> เสียง</span></div><div class="bar"><div class="a" id="barA" style="width:0%"></div><div class="b" id="barB" style="width:0%"></div></div></div>
+  </div>
+</div>
+<div class="cinematic-result" id="ending" aria-live="polite"><div class="icon" id="endingIcon">⚠️</div><div class="head" id="endingTitle">ภารกิจสิ้นสุด</div><div class="desc" id="endingDesc">ผลการตัดสินใจ</div></div>
+<div id="soundGate" class="sound-gate" role="dialog" aria-labelledby="soundGateTitle" aria-describedby="soundGateDesc">
+ <div class="sound-gate-card">
+  <div class="kicker">CINEMATIC SURVIVAL · V6</div><div class="symbol">🚨</div>
+  <h2 id="soundGateTitle">ภารกิจลิฟต์ X-9</h2>
+  <p id="soundGateDesc">เลือกวิธีหยุดลิฟต์ทดลองให้ถูกต้องจากข้อมูลบนจอ มีเสียงดนตรีระทึก เสียงไซเรนและผู้โดยสาร พร้อมเล่นวนอัตโนมัติ</p>
+  <button id="launchWithSound" type="button">🔊 เริ่มเกมพร้อมเสียง</button>
+  <button id="launchMuted" type="button">เริ่มเกมแบบเงียบ</button>
+  <div class="small">Safari บน iPad ต้องให้ผู้เล่นแตะหน้าจอหนึ่งครั้งก่อนเริ่มเสียง · ลดระดับเสียงเริ่มต้นเพื่อความสบายหู</div>
+ </div>
+</div>
+</section>
+<section class="controls"><div class="section-label">MISSION CONTROL / ผลการตัดสินใจ</div><div id="result" class="result" aria-live="polite">ดูอุณหภูมิคีบรางและพลังงานแม่เหล็ก แล้วเลือกระบบหยุดฉุกเฉินที่ยังใช้งานได้</div>
+<div class="buttons"><button type="button" class="btn" id="start">▶ เริ่มภารกิจ 1</button><button type="button" class="btn secondary" id="next" disabled>↻ รอบถัดไป</button></div>
+<button id="sound" class="sound" type="button" aria-pressed="false">🔇 เสียงปิด (แตะเพื่อเปิด)</button>
+<div class="sound-mix"><label for="soundVolume">ระดับเสียง</label><input id="soundVolume" type="range" min="0" max="100" value="45" aria-label="ระดับเสียงเกม"><span id="volumeValue">45%</span></div>
+<div id="musicStatus" aria-live="polite">🎵 ดนตรีประกอบต้นฉบับ • เสียงไซเรน • เสียงผู้โดยสาร</div>
+<button id="testScream" class="sound" type="button">🎤 ทดลองเสียงผู้โดยสารกรีดร้อง</button>
+</section>
+
+<section class="live-panel" id="livepanel">
+  <div class="live-header"><h2>📡 LIVE CONTROL CENTER</h2><span id="relayState" class="live-badge">SIMULATION • ยังไม่เชื่อม TikTok</span></div>
+  <div class="live-grid">
+    <div class="live-stat"><strong id="statRound">0</strong><span>รอบที่เล่นจบ</span></div>
+    <div class="live-stat"><strong id="statSaved">0</strong><span>ภารกิจช่วยชีวิตสำเร็จ</span></div>
+    <div class="live-stat"><strong id="statPeople">0</strong><span>ผู้ชมที่ร่วมโหวตไม่ซ้ำ</span></div>
+  </div>
+  <div class="live-row"><button type="button" class="panel-button" id="streamEnter">📺 โหมดแสดงผลสำหรับ LIVE</button></div>
+  <div class="live-row"><label><input type="checkbox" id="autoplay"> เริ่มรอบใหม่อัตโนมัติ (วนต่อเนื่อง)</label><span id="autoCountdown"></span></div>
+  <div class="fine">โหมดอัตโนมัติ: เกมเปิดโหวต 20 วินาที แล้วแสดงผลและเริ่มรอบใหม่หลังพัก 6 วินาทีเพื่อให้ผู้ชมไลฟ์มีเวลาตอบ (โหมดกดเริ่มเองยังเป็น 10 วินาที)</div>
+  <div><span class="live-label">ทดสอบคอมเมนต์เสมือน: หนึ่งบัญชีโหวตได้ครั้งเดียวต่อรอบ</span>
+    <div class="live-grid2"><input type="text" id="mockUsername" maxlength="32" value="viewer001" aria-label="ชื่อบัญชีจำลอง" placeholder="ชื่อผู้ชม"><select id="mockChoice" aria-label="ตัวเลือกโหวต"><option value="A">A — คีบรางกลไก</option><option value="B">B — เบรกแม่เหล็ก</option></select></div>
+    <div class="live-row" style="margin-top:7px"><button type="button" class="panel-button" id="mockSend">ส่งคอมเมนต์จำลอง</button><button type="button" class="panel-button alt" id="mockCrowd">จำลองผู้ชม 12 บัญชี</button></div>
+  </div>
+  <div><span class="live-label">TikTok comment relay (ระบบภายนอก — ตัวเลือกสำหรับเชื่อมในอนาคต)</span>
+    <input id="relayUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="wss://your-secure-relay.example/ws" aria-label="WebSocket relay URL">
+    <div class="live-row" style="margin-top:7px"><button type="button" class="panel-button" id="relayConnect">เชื่อมต่อ Relay</button><button type="button" class="panel-button danger" id="relayDisconnect" disabled>ตัดการเชื่อมต่อ</button></div>
+    <p class="fine">รองรับข้อความ JSON รูปแบบ <code>{"type":"chat","userId":"stable-id","username":"viewer","text":"A"}</code> จากเซิร์ฟเวอร์ที่เชื่อถือได้เท่านั้น ห้ามใส่ API Key หรือรหัสลับไว้ในหน้า HTML/URL สาธารณะ การมีช่องนี้ยังไม่ได้แปลว่าเชื่อม TikTok แล้ว</p>
+  </div>
+  <div><span class="live-label">🏆 ผู้ชมช่วยชีวิตสะสม (คะแนนเฉพาะเบราว์เซอร์นี้)</span><ol id="leaderboard" class="live-leader"><li>ยังไม่มีคะแนน</li></ol></div>
+  <div><div class="live-row" style="justify-content:space-between"><span class="live-label">🗨️ กิจกรรมผู้ชมล่าสุด</span><button type="button" id="resetStats" class="panel-button danger">ล้างคะแนน</button></div><ul id="chatFeed" class="live-feed" aria-live="polite"><li>เริ่มเกมเพื่อเปิดรับคอมเมนต์</li></ul></div>
+</section>
+<div class="tip"><b>วิธีเล่น:</b> ลิฟต์ทดลอง X-9 มีระบบหยุด 2 แบบ: A คีบรางกลไกใช้งานได้เมื่อไม่เกิน 160°C; B ระบบเบรกแม่เหล็กต้องมีไฟสำรองอย่างน้อย 25% เลือกระบบที่ยังทำงานได้ก่อนหมดเวลา · ลากนิ้วเพื่อหมุนกล้องดูผู้โดยสาร · ถ้าโหวตผิด ให้ดูฉากจบและลองด่านใหม่<br><br><b>หมายเหตุ:</b> ลิฟต์ X-9 และเกณฑ์อุปกรณ์เป็นเทคโนโลยีสมมุติเพื่อเล่นเกม ไม่ใช่คำแนะนำสำหรับเหตุลิฟต์ขัดข้องในชีวิตจริง · รองรับโหวตจำลองจากบัญชีผู้ชม และเตรียมช่อง Relay แต่ยังไม่ได้เชื่อม TikTok LIVE จริง · เสียงกรีดร้องใช้คลิป CC0 ที่ดาวน์โหลดผ่านเว็บไซต์ภายนอก หากโหลดไม่ได้มีเสียงสังเคราะห์สำรอง</div>
+</main><script>(()=>{'use strict';
+const $=id=>document.getElementById(id),canvas=$('game'),windowEl=$('window');
+let gl;try{gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');}catch(e){}
+// Fantasy-tech X-9 elevator: explicit arcade rules, NOT real-world elevator safety guidance.
+// A mechanical rail clamp operates at <=160 C; B electromagnetic braking requires >=25% reserve charge.
+const scenarios=[
+{brake:230,battery:72,correct:'B',tag:'คีบรางร้อนจัด',alert:'🔥 คีบรางร้อน 230°C!',question:'คีบรางร้อน 230°C แต่สนามแม่เหล็กยังมีไฟ 72% จะใช้ระบบไหนหยุดลิฟต์?',message:'อย่าให้ลิฟต์ชนพื้นนะ!',why:'คีบรางเกินขีด 160°C จึงใช้ไม่ได้ แต่ระบบแม่เหล็กมีพลังงานมากกว่า 25%'},
+{brake:78,battery:5,correct:'A',tag:'พลังงานหมด',alert:'🔋 ไฟสนามแม่เหล็กเหลือเพียง 5%!',question:'ไฟสนามแม่เหล็กเหลือเพียง 5% แต่คีบรางอยู่ที่ 78°C จะหยุดลิฟต์ด้วยอะไร?',message:'ไฟมันจะดับแล้ว ช่วยด้วย!',why:'ระบบแม่เหล็กต้องใช้ไฟอย่างน้อย 25% แต่คีบรางยังไม่เกิน 160°C'},
+{brake:197,battery:83,correct:'B',tag:'ระบบคีบรางเสีย',alert:'⚠️ คีบรางพุ่งถึง 197°C!',question:'คีบรางร้อนถึง 197°C ขณะที่ระบบแม่เหล็กมีไฟ 83% ควรเลือกอะไร?',message:'ได้ยินเสียงดังจากชุดคีบราง!',why:'ชุดคีบรางร้อนเกิน 160°C แต่สนามแม่เหล็กมีไฟเพียงพอที่จะชะลอลิฟต์'},
+{brake:93,battery:8,correct:'A',tag:'สนามแม่เหล็กดับ',alert:'🚨 ระบบสนามแม่เหล็กกำลังดับ!',question:'ไฟสนามแม่เหล็กเหลือ 8% แต่คีบรางยังอยู่ที่ 93°C จะใช้ระบบไหนดี?',message:'ไฟสำรองไม่เหลือแล้ว!',why:'ไฟไม่พอสำหรับระบบแม่เหล็ก แต่คีบรางยังอยู่ต่ำกว่าขีดจำกัด 160°C'}];
+let level=0,phase='ready',remaining=10,votes={A:0,B:0},progress=0,deadline=0,interval=null,resolveStart=0,success=false,endingTimeout=null;
+let autoMode=false,autoTimer=null,activeRoundMs=10000,relaySocket=null,relayConnected=false;
+let votedUsers=new Map(),roundVotes=[],roundsDone=0,roundsSaved=0,peopleSeen=new Set(),scores={};
+try{const saved=JSON.parse(localStorage.getItem('last10v4-stats')||'{}');if(saved&&typeof saved==='object'){roundsDone=Math.max(0,Math.min(999999,Number(saved.roundsDone)||0));roundsSaved=Math.max(0,Math.min(roundsDone,Number(saved.roundsSaved)||0));if(saved.scores&&typeof saved.scores==='object')scores=saved.scores;if(Array.isArray(saved.people))peopleSeen=new Set(saved.people.slice(0,5000));}}catch(e){}
+function saveStats(){try{localStorage.setItem('last10v4-stats',JSON.stringify({roundsDone,roundsSaved,scores,people:[...peopleSeen].slice(-5000)}));}catch(e){}}
+function logEvent(line){const li=document.createElement('li');li.textContent=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · '+line;const list=$('chatFeed');list.prepend(li);while(list.children.length>7)list.lastChild.remove();}
+function renderStats(){
+ $('statRound').textContent=roundsDone;$('statSaved').textContent=roundsSaved;$('statPeople').textContent=peopleSeen.size;$('streamTally').textContent='🏆 ช่วยสำเร็จ '+roundsSaved+' รอบ · ผู้ร่วมเล่น '+peopleSeen.size+' คน';
+ const entries=Object.entries(scores).filter(([id,val])=>val&&Number.isFinite(Number(val.points))).sort((a,b)=>Number(b[1].points)-Number(a[1].points)).slice(0,5);
+ const board=$('leaderboard');board.replaceChildren();
+ if(!entries.length){const li=document.createElement('li');li.textContent='ยังไม่มีคะแนน';board.append(li);}
+ else entries.forEach(([id,val],i)=>{const li=document.createElement('li');const nm=document.createElement('span');nm.textContent=(i+1)+'. '+String(val.name||id).slice(0,28);const pts=document.createElement('b');pts.textContent=(Number(val.points)||0)+' คะแนน';li.append(nm,pts);board.append(li);});
+}
+function castVote(userId,userName,side,from='DEMO'){
+ if(phase!=='running')return {ok:false,reason:'ยังไม่เปิดโหวต'};
+ const sourceId=String(userId||'').trim().toLowerCase(),uid='u:'+sourceId,name=String(userName||sourceId).trim().slice(0,32);const choice=String(side||'').trim().toUpperCase();
+ if(!sourceId||sourceId.length>100||!['A','B'].includes(choice))return {ok:false,reason:'ข้อมูลไม่ถูกต้อง'};
+ if(votedUsers.has(uid))return {ok:false,reason:'บัญชีนี้โหวตแล้วในรอบนี้'};
+ votedUsers.set(uid,choice);roundVotes.push({userId:uid,name:name||uid,choice});peopleSeen.add(uid);votes[choice]=Math.min(9999,votes[choice]+1);
+ logEvent((name||uid)+' โหวต '+choice+' ('+from+')');note(choice==='A'?530:680,.055,.035);renderUI();renderStats();return{ok:true};
+}
+function scheduleNext(){
+ clearTimeout(autoTimer);autoTimer=null;
+ if(!autoMode)return;
+ const started=Date.now();
+ $('autoCountdown').textContent='รอบต่อไปใน 6 วินาที';
+ autoTimer=setTimeout(()=>{if(!autoMode)return;if(phase==='ended')next();if(phase==='ready')start();$('autoCountdown').textContent='LIVE AUTO ทำงาน';},6000);
+}
+function onRelayMessage(ev){
+ let obj;try{obj=typeof ev==='string'?JSON.parse(ev):ev;}catch(e){return;}
+ if(!obj||obj.type!=='chat')return;
+ const stableId=typeof obj.userId==='string'?obj.userId.trim():'';
+ if(!stableId)return;
+ const raw=String(obj.text||'').trim().toUpperCase();
+ if(raw!=='A'&&raw!=='B')return;
+ castVote(stableId,String(obj.username||stableId),raw,'LIVE RELAY');
+}
+renderStats();
+
+const current=()=>scenarios[level%scenarios.length];
+/* V5 original cinematic underscore. Every generated musical sequence is created in-browser. */
+let audio=null,soundOn=false,lastSecond=10;
+const reduced=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let audioMaster=null,musicBus=null,fxBus=null,musicLoop=null,nextMusicBeat=0,musicBeat=0,ambientOsc=[],lastScreamRound=-1;
+const musicTempo=0.46; // 130 BPM, pulse accelerates via percussion density rather than changing loop clock
+const screamTrack=new Audio('https://sfxmint.com/dl/female-scream-01.mp3');
+screamTrack.preload='none';screamTrack.volume=.37;screamTrack.playsInline=true;
+let screamPlayable=true, screamPrimed=false;
+screamTrack.addEventListener('error',()=>{screamPlayable=false;});
+const levelVolume=()=>Number($('soundVolume').value)/100;
+function ensureAudio(){
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC)return false;
+ if(audio)return true;
+ try{
+  audio=new AC();
+  audioMaster=audio.createGain();audioMaster.gain.value=levelVolume()*.78;audioMaster.connect(audio.destination);
+  musicBus=audio.createGain();musicBus.gain.value=.44;musicBus.connect(audioMaster);
+  fxBus=audio.createGain();fxBus.gain.value=.55;fxBus.connect(audioMaster);
+  // Two drone tones, original suspense underscore (minor-key pedal)
+  for(let i=0;i<2;i++){
+   const osc=audio.createOscillator(),f=audio.createBiquadFilter(),g=audio.createGain();
+   osc.type=i===0?'sine':'triangle';osc.frequency.value=i===0?55:82.41;
+   f.type='lowpass';f.frequency.value=240;g.gain.value=i===0?.15:.035;
+   osc.connect(f);f.connect(g);g.connect(musicBus);osc.start();ambientOsc.push(osc);
+  }
+  return true;
+ }catch(e){return false;}
+}
+function beepAt(t,freq,duration=.14,vol=.085,kind='sine',bus=fxBus,slide=null){
+ if(!audio||!bus)return;
+ let osc=audio.createOscillator(),gain=audio.createGain();
+ osc.type=kind;osc.frequency.setValueAtTime(Math.max(1,freq),t);
+ if(slide)osc.frequency.exponentialRampToValueAtTime(Math.max(1,slide),t+duration);
+ gain.gain.setValueAtTime(.0001,t);
+ gain.gain.exponentialRampToValueAtTime(Math.max(.0002,vol),t+.014);
+ gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+ osc.connect(gain);gain.connect(bus);osc.start(t);osc.stop(t+duration+.025);
+}
+function burstNoise(duration=.45,volume=.13,highpass=false){
+ if(!soundOn||!audio)return;
+ const rate=audio.sampleRate,n=Math.min(Math.floor(rate*duration),rate*3);
+ const buffer=audio.createBuffer(1,n,rate),arr=buffer.getChannelData(0);
+ for(let i=0;i<n;i++)arr[i]=(Math.random()*2-1)*Math.min(1,i/(rate*.024));
+ const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+ src.buffer=buffer;filter.type=highpass?'highpass':'lowpass';filter.frequency.value=highpass?1100:300;
+ gain.gain.value=0;const t=audio.currentTime;
+ gain.gain.setValueAtTime(Math.max(.0001,volume),t);
+ gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+ src.connect(filter);filter.connect(gain);gain.connect(fxBus);src.start(t);
+}
+function note(freq,duration=.1,vol=.08,kind='sine'){
+ if(!soundOn||!ensureAudio())return;
+ if(audio.state==='suspended')audio.resume().catch(()=>{});
+ beepAt(audio.currentTime+.004,freq,duration,vol,kind);
+}
+function playMusicBeat(t,index){
+ const running=phase==='running',urgent=running&&remaining<=5;
+ const chord=[55,46.25,65.41,49][Math.floor(index/8)%4];
+ // warm industrial bass + ostinato; 4-chord original cinematic score
+ if(index%2===0)beepAt(t,chord,.33,running?.105:.045,'triangle',musicBus);
+ if(running){
+  const seq=[220,261.6,329.6,261.6,196,261.6,293.7,329.6];
+  beepAt(t+.045,seq[index%8],urgent?.23:.18,urgent?.07:.036,'triangle',musicBus);
+  if(index%2===1)beepAt(t,340,.065,urgent?.04:.018,'square',musicBus,220);
+  if(urgent)beepAt(t+.20,590,.055,.035,'sine',musicBus);
+ }else if(index%4===0){beepAt(t,164.8,.36,.018,'sine',musicBus);}
+}
+function musicTick(){
+ if(!audio||!soundOn||audio.state!=='running')return;
+ let loops=0;
+ while(nextMusicBeat<audio.currentTime+.30 && loops++<8){
+  playMusicBeat(nextMusicBeat,musicBeat++);nextMusicBeat+=musicTempo;
+ }
+}
+function startMusic(){
+ if(!soundOn||!ensureAudio())return;
+ if(audio.state==='suspended')audio.resume().catch(()=>{});
+ if(musicLoop===null){nextMusicBeat=audio.currentTime+.06;musicBeat=0;musicLoop=setInterval(musicTick,110);}
+ $('musicStatus').textContent='🎼 ดนตรีระทึกกำลังทำงาน · เอฟเฟกต์ฉุกเฉินพร้อม';
+}
+function stopMusic(){
+ if(musicLoop!==null){clearInterval(musicLoop);musicLoop=null;}
+ screamTrack.pause();try{screamTrack.currentTime=0;}catch(e){}
+ if(audio&&audio.state==='running')audio.suspend().catch(()=>{});
+}
+function primeScream(){
+ if(screamPrimed||!screamPlayable)return;
+ screamPrimed=true;
+ try{
+  screamTrack.volume=0;
+  const played=screamTrack.play();
+  if(played&&typeof played.then==='function')played.then(()=>{screamTrack.pause();try{screamTrack.currentTime=0;}catch(e){};screamTrack.volume=.37*levelVolume();}).catch(()=>{screamPlayable=false;});
+ }catch(e){screamPlayable=false;}
+}
+function syntheticScream(){
+ if(!soundOn||!audio)return;
+ const t=audio.currentTime;
+ // A rising, breathy multi-formant shriek is a local fallback, not a recorded human voice
+ for(const [f,amp] of [[350,.075],[580,.05],[900,.022]]){
+  const o=audio.createOscillator(),g=audio.createGain();o.type='sawtooth';
+  o.frequency.setValueAtTime(f,t);o.frequency.linearRampToValueAtTime(f*1.65,t+.47);o.frequency.linearRampToValueAtTime(f*1.4,t+.94);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(amp,t+.16);g.gain.exponentialRampToValueAtTime(.0001,t+1.2);
+  o.connect(g);g.connect(fxBus);o.start(t);o.stop(t+1.22);
+ }
+ burstNoise(1.2,.043,true);
+}
+function scream(){
+ if(!soundOn)return;
+ if(!screamPlayable){syntheticScream();return;}
+ try{
+  screamTrack.pause();screamTrack.currentTime=0;screamTrack.volume=Math.min(.6,.48*levelVolume());
+  const r=screamTrack.play();if(r&&typeof r.catch==='function')r.catch(()=>{screamPlayable=false;syntheticScream();});
+ }catch(e){syntheticScream();}
+}
+function siren(){
+ if(!soundOn||!audio)return;
+ const t=audio.currentTime;
+ for(let i=0;i<3;i++)beepAt(t+i*.42,410,.39,.13,'sawtooth',fxBus,670);
+ burstNoise(.46,.18,false);
+}
+function brakeSound(){
+ if(!soundOn||!audio)return;
+ const t=audio.currentTime;
+ beepAt(t,1250,.85,.26,'sawtooth',fxBus,155);burstNoise(.95,.22,true);
+}
+function impactSound(){
+ if(!soundOn||!audio)return;
+ const t=audio.currentTime;
+ beepAt(t,110,.85,.40,'sawtooth',fxBus,29);burstNoise(1.25,.43,false);
+}
+function unlockSound(){
+ soundOn=true;
+ if(!ensureAudio()){$('musicStatus').textContent='⚠️ เบราว์เซอร์นี้ไม่รองรับระบบเสียง';soundOn=false;return;}
+ // Must be called synchronously from a click/tap event for Safari/iPad
+ if(audio.state==='suspended')audio.resume().catch(()=>{$('musicStatus').textContent='⚠️ แตะเปิดเสียงอีกครั้ง หาก Safari ยังบล็อก';});
+ primeScream();startMusic();
+ $('sound').textContent='🔊 เสียงเปิด (แตะเพื่อปิด)';$('sound').setAttribute('aria-pressed','true');
+}
+function muteSound(){soundOn=false;stopMusic();$('sound').textContent='🔇 เสียงปิด (แตะเพื่อเปิด)';$('sound').setAttribute('aria-pressed','false');$('musicStatus').textContent='🔇 ปิดดนตรีและเอฟเฟกต์เสียง';}
+function renderUI(){
+ const c=current(),count=votes.A+votes.B;
+ $('brake').textContent=c.brake+'°C';$('brake').style.color=c.brake>150?'#ff9e93':'#a6f5c2';
+ $('battery').textContent=c.battery+'%';$('battery').style.color=c.battery<15?'#ff9e93':'#a6f5c2';
+ $('floor').textContent='ชั้น '+Math.max(1,Math.round(30-29*progress));
+ $('timer').textContent=String(remaining).padStart(2,'0');$('timer').classList.toggle('urgent',phase==='running'&&remaining<=3);
+ $('chapter').textContent='ภารกิจ '+String(level+1).padStart(2,'0')+' · '+c.tag;
+ $('status').textContent=phase==='running'?'กำลังโหวต':phase==='resolving'?'ประมวลผล':phase==='ended'?'จบรอบ':'พร้อมเล่น';windowEl.classList.toggle('resolving',phase==='resolving');
+ $('countA').textContent=votes.A;$('countB').textContent=votes.B;
+ $('barA').style.width=(count?votes.A/count*100:0)+'%';$('barB').style.width=(count?votes.B/count*100:0)+'%';
+ $('voteA').disabled=phase!=='running';$('voteB').disabled=phase!=='running';
+ $('start').disabled=phase!=='ready';$('next').disabled=phase!=='ended';
+ windowEl.classList.toggle('running',phase==='running');
+}
+function start(){
+ if(phase!=='ready')return;
+ phase='running';remaining=autoMode?20:10;activeRoundMs=remaining*1000;progress=0;deadline=Date.now()+activeRoundMs;lastSecond=remaining;votedUsers.clear();roundVotes=[];$('autoCountdown').textContent=autoMode?'LIVE AUTO: กำลังเปิดโหวต 20 วินาที':'';
+ $('ending').className='cinematic-result';windowEl.classList.remove('failed','success');
+ $('banner').textContent=current().question;$('callout').textContent='🗣️ ผู้โดยสาร: "'+current().message+'"';
+ $('result').className='result';$('result').textContent='กำลังนับถอยหลัง... การโหวตครั้งนี้จะกำหนดผลของภารกิจ';
+ note(640,.13,.08,'sawtooth');siren();startMusic();lastScreamRound=-1;clearInterval(interval);interval=setInterval(tick,90);renderUI();
+}
+function vote(side){const reply=castVote('local-player','Local demo',side);if(!reply.ok)logEvent(reply.reason);}
+function tick(){
+ if(phase!=='running')return;
+ const left=deadline-Date.now();remaining=Math.max(0,Math.ceil(left/1000));progress=Math.max(0,Math.min(1,(activeRoundMs-left)/activeRoundMs));
+ if(remaining!==lastSecond){lastSecond=remaining;if(remaining>0)note(remaining<=3?1100:690,.09,remaining<=3?.09:.052,'square');if(remaining<=7 && remaining>0 && lastScreamRound!==level){lastScreamRound=level;scream();}if(remaining===5)$('callout').textContent='🗣️ ผู้โดยสาร: "เหลือเวลาไม่มากแล้ว!"';if(remaining===3){brakeSound();}if(remaining===3)$('callout').textContent='🗣️ ผู้โดยสาร: "ตัดสินใจเร็วเข้า!"';}
+ renderUI();if(remaining<=0)resolve();
+}
+function resolve(){
+ if(phase!=='running')return;clearInterval(interval);interval=null;remaining=0;progress=1;phase='resolving';resolveStart=performance.now();
+ const chosen=votes.A>votes.B?'A':votes.B>votes.A?'B':null;
+ success=chosen!==null && chosen===current().correct;
+ $('banner').textContent='⚠️ กำลังส่งคำสั่งเข้าระบบหยุดฉุกเฉิน...';
+ $('callout').textContent='⏳ กำลังหยุดลิฟต์...';
+ $('result').textContent='กำลังประเมินผลจากเสียงส่วนใหญ่...';
+ note(450,.28,.1,'sawtooth');renderUI();
+ endingTimeout=setTimeout(()=>{
+  if(phase!=='resolving')return;
+  phase='ended';windowEl.classList.add(success?'success':'failed');
+  const heading=success?'ช่วยชีวิตสำเร็จ!':'ภารกิจล้มเหลว!';
+  $('ending').className='cinematic-result active '+(success?'won':'lost');
+  $('endingIcon').textContent=success?'✅':'⚠️';$('endingTitle').textContent=heading;
+  $('endingDesc').textContent=success?'ระบบ'+(chosen==='A'?'คีบรางกลไก':'เบรกแม่เหล็ก')+' ทำงานทัน ผู้โดยสารปลอดภัย':'ระบบที่เลือกไม่พร้อมใช้งาน — ลองสังเกตตัวเลขและเกณฑ์อีกครั้ง';
+  $('banner').textContent=success?'✅ ระบบฉุกเฉินหยุดลิฟต์ได้ทัน!':'⚠️ ระบบที่เลือกใช้หยุดลิฟต์ไม่ได้!';
+  $('callout').textContent=success?'🗣️ ผู้โดยสาร: "ขอบคุณทุกคน!"':'🗣️ ระบบ: "สัญญาณขัดข้อง"';
+  const leader=chosen?'เสียงส่วนใหญ่เลือก '+chosen:'ไม่มีเสียงข้างมาก';
+  $('result').className='result '+(success?'positive':'negative');
+  $('result').textContent=leader+' · '+current().why+' · คำตอบที่ถูก: '+current().correct+' ('+(current().correct==='A'?'คีบรางกลไก':'เบรกแม่เหล็ก')+')';
+  roundsDone++;if(success)roundsSaved++;
+  for(const v of roundVotes){if(!scores[v.userId])scores[v.userId]={name:v.name,points:0,correct:0,total:0};scores[v.userId].name=v.name;scores[v.userId].total=(Number(scores[v.userId].total)||0)+1;if(v.choice===current().correct){scores[v.userId].points=(Number(scores[v.userId].points)||0)+10;scores[v.userId].correct=(Number(scores[v.userId].correct)||0)+1;}}
+  saveStats();renderStats();logEvent('จบรอบ '+(level+1)+' · '+(success?'ช่วยสำเร็จ':'ภารกิจล้มเหลว')+' · โหวตรวม '+(votes.A+votes.B)+' เสียง');
+  if(success){brakeSound();note(660,.22,.1);setTimeout(()=>note(880,.27,.1),180);}else{impactSound();note(190,.43,.11,'sawtooth');}
+  renderUI();scheduleNext();
+ },1550);
+}
+function next(){if(phase!=='ended')return;clearTimeout(endingTimeout);clearTimeout(autoTimer);level++;phase='ready';votes={A:0,B:0};votedUsers.clear();roundVotes=[];progress=0;remaining=autoMode?20:10;success=false;
+ $('ending').className='cinematic-result';windowEl.classList.remove('failed','success');
+ $('banner').textContent=current().question;$('callout').textContent='🗣️ ผู้โดยสาร: "อย่าทิ้งพวกเราไว้!"';
+ $('result').className='result';$('result').textContent='ด่านใหม่พร้อมแล้ว! อ่านอุณหภูมิคีบรางกับพลังงานแม่เหล็ก แล้วเลือกวิธีหยุดที่ยังทำงานได้';$('start').textContent='▶ เริ่มภารกิจ '+(level+1);renderUI();
+}
+$('start').addEventListener('click',start);$('next').addEventListener('click',next);
+$('voteA').addEventListener('click',()=>vote('A'));$('voteB').addEventListener('click',()=>vote('B'));
+$('streamEnter').addEventListener('click',()=>{document.body.classList.add('stream-active');});
+$('streamBack').addEventListener('click',()=>{document.body.classList.remove('stream-active');});
+$('autoplay').addEventListener('change',e=>{
+ autoMode=Boolean(e.target.checked);clearTimeout(autoTimer);autoTimer=null;
+ if(autoMode){logEvent('เปิดโหมด LIVE AUTO');if(phase==='ready')start();else if(phase==='ended')scheduleNext();else $('autoCountdown').textContent='LIVE AUTO ทำงาน';}
+ else{$('autoCountdown').textContent='ปิด LIVE AUTO แล้ว';logEvent('ปิดโหมด LIVE AUTO');}
+});
+$('mockSend').addEventListener('click',()=>{
+ const name=$('mockUsername').value.trim();if(!name){logEvent('กรุณากรอกชื่อบัญชีจำลอง');return;}
+ const r=castVote('demo:'+name,name,$('mockChoice').value,'DEMO');if(!r.ok)logEvent(name+': '+r.reason);
+});
+$('mockCrowd').addEventListener('click',()=>{
+ if(phase!=='running'){logEvent('เปิดโหวตก่อนเพิ่มคนดูจำลอง');return;}
+ for(let i=1;i<=12;i++){const id='crowd'+i;const side=(i+level)%3===0?'B':'A';castVote(id,'Viewer '+String(i).padStart(2,'0'),side,'DEMO');}
+});
+$('relayConnect').addEventListener('click',()=>{
+ const url=$('relayUrl').value.trim();if(!/^wss:\/\/[^\s]+$/i.test(url)){logEvent('Relay ต้องเป็น wss:// และใช้ HTTPS/TLS');return;}
+ if(relaySocket){try{relaySocket.close();}catch(e){}}
+ $('relayState').className='live-badge';$('relayState').textContent='กำลังเชื่อม RELAY';
+ try{
+  const ws=new WebSocket(url);relaySocket=ws;
+  ws.onopen=()=>{relayConnected=true;$('relayState').className='live-badge connected';$('relayState').textContent='RELAY CONNECTED (ยังไม่ยืนยัน TikTok)';$('relayDisconnect').disabled=false;logEvent('เชื่อม Relay ได้แล้ว ตรวจต่อว่ามีคอมเมนต์ TikTok จริงหรือไม่');};
+  ws.onmessage=e=>onRelayMessage(e.data);
+  ws.onerror=()=>{logEvent('การเชื่อม Relay มีข้อผิดพลาด');};
+  ws.onclose=()=>{if(relaySocket===ws){relayConnected=false;$('relayState').className='live-badge error';$('relayState').textContent='RELAY DISCONNECTED';$('relayDisconnect').disabled=true;}};
+ }catch(e){$('relayState').className='live-badge error';$('relayState').textContent='RELAY ERROR';logEvent(String(e.message||e));}
+});
+$('relayDisconnect').addEventListener('click',()=>{if(relaySocket)relaySocket.close();relaySocket=null;relayConnected=false;$('relayState').className='live-badge';$('relayState').textContent='SIMULATION • ยังไม่เชื่อม TikTok';$('relayDisconnect').disabled=true;});
+$('resetStats').addEventListener('click',()=>{if(!confirm('ล้างคะแนนและสถิติสะสมบนเบราว์เซอร์เครื่องนี้?'))return;scores={};peopleSeen.clear();roundsDone=0;roundsSaved=0;saveStats();renderStats();logEvent('ล้างสถิติแล้ว');});
+$('launchWithSound').addEventListener('click',()=>{
+ unlockSound();$('soundGate').hidden=true;
+ if(!$('autoplay').checked){$('autoplay').checked=true;autoMode=true;logEvent('เริ่มโหมดเล่นต่อเนื่องพร้อมดนตรี');}
+ if(phase==='ready')start();else if(phase==='ended')scheduleNext();
+});
+$('launchMuted').addEventListener('click',()=>{
+ muteSound();$('soundGate').hidden=true;
+ if(!$('autoplay').checked){$('autoplay').checked=true;autoMode=true;}
+ if(phase==='ready')start();else if(phase==='ended')scheduleNext();
+});
+$('sound').addEventListener('click',()=>{if(soundOn)muteSound();else{unlockSound();note(740,.13,.055);}});
+$('testScream').addEventListener('click',()=>{if(!soundOn)unlockSound();scream();$('musicStatus').textContent='🎤 ทดสอบเสียงแล้ว · ถ้าเสียงไม่เหมือนคนจริง อาจเป็นเสียงสังเคราะห์สำรอง';});
+$('soundVolume').addEventListener('input',()=>{
+ const v=levelVolume();$('volumeValue').textContent=Math.round(v*100)+'%';
+ if(audioMaster&&audio)audioMaster.gain.setTargetAtTime(v*.78,audio.currentTime,.04);
+ if(screamTrack)screamTrack.volume=Math.min(.6,.48*v);
+});
+document.addEventListener('visibilitychange',()=>{
+ if(!audio)return;
+ if(document.hidden){audio.suspend().catch(()=>{});screamTrack.pause();}
+ else if(soundOn && audio.state==='suspended'){
+  audio.resume().then(()=>{nextMusicBeat=audio.currentTime+.1;}).catch(()=>{$('musicStatus').textContent='🔊 แตะปุ่มเสียงเพื่อเปิดเสียงต่อ';});
+ }
+});
+renderUI();
+if(!gl){$('fallback').textContent='ไม่สามารถเปิด WebGL กรุณาเปิดเกมผ่านเว็บไซต์ GitHub Pages ใน Safari';return;}
+const vs=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute float aEm;uniform mat4 uVP;uniform vec3 uOffset;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;void main(){vec3 w=aPos+uOffset;vec4 clip=uVP*vec4(w,1.0);gl_Position=clip;vN=aNorm;vColor=aCol;vEm=aEm;vW=w;vDepth=clip.w;}`;
+const fs=`precision mediump float;varying vec3 vN;varying vec3 vColor;varying vec3 vW;varying float vEm;varying float vDepth;uniform float uTime;uniform float uDanger;void main(){vec3 n=normalize(vN);vec3 ld=normalize(vec3(-0.42,0.7,0.8));float light=max(0.0,dot(n,ld));float fill=max(0.0,dot(n,normalize(vec3(0.7,0.15,-0.6))))*0.25;float redPulse=0.70+0.30*sin(uTime*9.2);vec3 lit=vColor*(0.34+0.78*light+fill)+vColor*vEm*(1.05*redPulse);lit+=vec3(.13,.0,.0)*uDanger*max(0.0,sin(uTime*13.0));float fog=clamp((vDepth-12.0)/57.0,0.0,0.63);gl_FragColor=vec4(mix(lit,vec3(0.025,0.065,0.105),fog),1.0);}`;
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+let program;try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);}catch(e){$('fallback').textContent='ไม่สามารถเริ่มระบบ 3D: '+e.message;return;}
+const posLoc=gl.getAttribLocation(program,'aPos'),normLoc=gl.getAttribLocation(program,'aNorm'),colLoc=gl.getAttribLocation(program,'aCol'),emLoc=gl.getAttribLocation(program,'aEm');
+const vpLoc=gl.getUniformLocation(program,'uVP'),offLoc=gl.getUniformLocation(program,'uOffset'),timeLoc=gl.getUniformLocation(program,'uTime'),dangerLoc=gl.getUniformLocation(program,'uDanger');
+const staticGeo=[],carGeo=[];let output=staticGeo;
+const cl=(v)=>v.map(x=>x/255),C={wall:cl([18,32,52]),steel:cl([95,118,137]),silver:cl([170,185,193]),gold:cl([230,169,83]),amber:cl([255,179,54]),red:cl([240,56,44]),cyan:cl([31,182,226]),glass:cl([61,124,166]),deep:cl([8,18,33]),black:cl([15,21,30]),skin:cl([241,181,135]),skin2:cl([180,133,93]),blue:cl([61,128,211]),yellow:cl([241,171,67]),white:cl([230,235,231]),green:cl([60,185,126])};
+function vertex(a,n,col,em=0){output.push(...a,...n,...col,em);}
+function tri(a,b,c,n,col,em){vertex(a,n,col,em);vertex(b,n,col,em);vertex(c,n,col,em);}
+function quad(a,b,c,d,n,col,em){tri(a,b,c,n,col,em);tri(a,c,d,n,col,em);}
+function box(x,y,z,w,h,d,color,em=0){const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;
+ quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],color,em);
+ quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1],color,em);
+ quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],color,em);
+ quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],color,em);
+ quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],color,em);
+ quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],color,em);
+}
+function sphere(cx,cy,cz,r,color,em=0,segments=12,rings=8){function pt(th,ph){return[cx+r*Math.sin(th)*Math.cos(ph),cy+r*Math.cos(th),cz+r*Math.sin(th)*Math.sin(ph)]}function nor(p){return[(p[0]-cx)/r,(p[1]-cy)/r,(p[2]-cz)/r]}
+ for(let i=0;i<rings;i++){let ta=i*Math.PI/rings,tb=(i+1)*Math.PI/rings;for(let j=0;j<segments;j++){let pa=j*2*Math.PI/segments,pb=(j+1)*2*Math.PI/segments;let a=pt(ta,pa),b=pt(tb,pa),c=pt(tb,pb),d=pt(ta,pb);
+ vertex(a,nor(a),color,em);vertex(b,nor(b),color,em);vertex(c,nor(c),color,em);
+ vertex(a,nor(a),color,em);vertex(c,nor(c),color,em);vertex(d,nor(d),color,em);}}}
+function cylinder(cx,cy,cz,r,h,color,seg=12,em=0){let yt=cy+h/2,yb=cy-h/2;
+ for(let i=0;i<seg;i++){let a=2*Math.PI*i/seg,b=2*Math.PI*(i+1)/seg;let pa=[cx+r*Math.cos(a),yb,cz+r*Math.sin(a)],pb=[cx+r*Math.cos(b),yb,cz+r*Math.sin(b)],pc=[pb[0],yt,pb[2]],pd=[pa[0],yt,pa[2]];
+ let na=[Math.cos(a),0,Math.sin(a)],nb=[Math.cos(b),0,Math.sin(b)];vertex(pa,na,color,em);vertex(pb,nb,color,em);vertex(pc,nb,color,em);vertex(pa,na,color,em);vertex(pc,nb,color,em);vertex(pd,na,color,em);
+ tri([cx,yt,cz],pd,pc,[0,1,0],color,em);tri([cx,yb,cz],pb,pa,[0,-1,0],color,em);}}
+// Stationary architecture, full 3D solid geometry
+box(0,-5,-4.6,9.5,59,.45,C.wall);box(-4.5,-5,0,.45,59,9,C.wall);box(4.5,-5,0,.45,59,9,C.wall);
+for(let x of [-3.6,3.6]){box(x,-5,-1.2,.45,59,.65,C.steel);box(x,-5,-.74,.12,59,.13,C.cyan,.4);
+ box(x,-5,2.3,.38,59,.58,C.steel);for(let y=-28;y<=20;y+=4.3)box(x,y,1.8,.48,.5,.2,C.gold);}
+for(let y=-31;y<=24;y+=2.1){box(0,y,-4.25,9.4,.17,.5,C.silver);box(0,y,-4.03,9.4,.12,.19,C.deep);
+ for(const x of [-3.95,3.95]){box(x,y,.4,.32,.22,7.5,C.steel);box(x,y,3.4,.24,.35,.85,C.silver);}}
+for(let y=-28;y<=24;y+=5.7){box(0,y,-4.01,3.5,.25,.2,C.gold);for(let x of [-3.88,3.88]){box(x,y,3.45,.45,.75,.42,C.red,1.45);}}
+for(let x of [-.7,.7])cylinder(x,0,-1.3,.055,59,C.silver,8);
+// Cinematic shaft safety markers and structural plates
+for(let y=-29;y<=21;y+=4.4){for(let x of [-2.85,2.85]){box(x,y,-3.86,.48,.18,.14,C.amber,.6);box(x,y-.35,-3.86,.08,.5,.14,C.red,.8);}}
+for(let x of [-4.15,4.15])for(let y=-31;y<26;y+=3.8){box(x,y,1.75,.12,1.5,.13,C.cyan,.72);}
+for(let y=-31;y<=26;y+=3.5){box(0,y,-4.02,1.1,.56,.18,C.black);box(0,y,-3.89,.4,.11,.08,C.amber,.85);}
+// Car: own local coordinates; animated via world uniform offset
+output=carGeo;
+box(0,-1.73,0,3.8,.26,2.65,C.silver);box(0,-1.91,0,3.9,.12,2.68,C.black);
+box(0,1.75,0,3.9,.3,2.65,C.silver);box(0,1.95,0,4.2,.28,2.8,C.steel);
+box(0,2.12,1.25,3.3,.22,.26,C.red,1.7);
+box(0,.0,-1.24,3.8,3.35,.14,C.glass);
+for(let x of [-1.85,1.85])for(let z of [-1.22,1.22])box(x,0,z,.2,3.57,.24,C.gold);
+for(let y of [-1.47,1.53])for(let z of [-1.22,1.22])box(0,y,z,3.85,.19,.15,C.silver);
+for(let x of [-.85,.85]){box(x,0,1.31,.065,3.23,.08,C.silver);}
+for(let y of [-.75,.6])box(0,y,1.3,3.45,.065,.08,C.silver);
+box(0,0,1.37,.11,3.43,.12,C.silver);box(0,-1.3,1.32,3.6,.10,.1,C.gold);
+for(let x of [-1.42,1.42]){cylinder(x,2.4,0,.14,.7,C.silver,12);sphere(x,2.76,0,.22,C.amber,1.1);}
+for(let x of [-1.55,1.55])box(x,-.25,.87,.10,2.8,.10,C.cyan,1);
+
+const passengers=[];
+for(let i=0;i<3;i++){
+ const b=[],arms=[],old=output;
+ output=b;
+ const shirt=i===0?C.blue:i===1?C.yellow:C.green;
+ box(0,-.65,-.10,.66,1.04,.5,shirt);
+ box(-.17,-1.35,-.08,.24,.65,.32,C.black);box(.17,-1.35,-.08,.24,.65,.32,C.black);
+ cylinder(0,-.05,-.07,.25,.35,C.gold,10);
+ sphere(0,.38,-.02,.35,i===2?C.skin2:C.skin,0,12,8);
+ sphere(-.11,.43,.27,.044,C.black);sphere(.11,.43,.27,.044,C.black);
+ box(0,.66,-.05,.67,.15,.45,i===0?C.black:C.wall);
+ output=arms;
+ box(-.50,-.45,.05,.21,.8,.24,C.skin);
+ box(.50,-.45,.05,.21,.8,.24,C.skin);
+ output=old;
+ passengers.push({body:b,arms});
+}
+const sparkData=[];{const old=output;output=sparkData;box(0,0,0,.1,.24,.1,C.amber,2.9);output=old;}
+
+// Metallic door ornament, warning status and highlights
+for(let y of [-1.05,.1,1.05])box(0,y,1.43,3.5,.05,.05,C.silver);
+for(let x of [-1.72,1.72])box(x,0,1.46,.085,2.75,.1,C.amber,.45);
+box(0,1.95,1.53,2.2,.09,.15,C.red,1.9);
+for(let i=0;i<4;i++)box(-1.22+i*.82,-1.71,1.34,.42,.08,.1,C.cyan,.55);
+const makeGeometry=data=>{const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return{buffer,count:data.length/10};};
+const architecture=makeGeometry(staticGeo),elevator=makeGeometry(carGeo),people=passengers.map(p=>({body:makeGeometry(p.body),arms:makeGeometry(p.arms)})),spark=makeGeometry(sparkData);
+function projection(fov,aspect,near,far){let f=1/Math.tan(fov/2),nf=1/(near-far);return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
+function normalize(a){let l=Math.hypot(...a)||1;return a.map(v=>v/l)}
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function view(eye,target){let z=normalize(eye.map((v,i)=>v-target[i]));let x=normalize(cross([0,1,0],z));let y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1];}
+function mul(a,b){let out=new Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)out[c*4+r]+=a[k*4+r]*b[c*4+k];return out}
+for(const loc of [posLoc,normLoc,colLoc,emLoc])gl.enableVertexAttribArray(loc);
+function draw(g,x,y,z){gl.bindBuffer(gl.ARRAY_BUFFER,g.buffer);let stride=40;gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,stride,0);gl.vertexAttribPointer(normLoc,3,gl.FLOAT,false,stride,12);gl.vertexAttribPointer(colLoc,3,gl.FLOAT,false,stride,24);gl.vertexAttribPointer(emLoc,1,gl.FLOAT,false,stride,36);gl.uniform3f(offLoc,x,y,z);gl.drawArrays(gl.TRIANGLES,0,g.count);}
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.015,.039,.074,1);
+$('fallback').style.display='none';
+let azimuth=.28,elevation=.15,distance=15.2,dragging=false,lastX=0,lastY=0,twoFingerLast=null;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;azimuth+=(e.clientX-lastX)*.007;elevation=Math.min(.55,Math.max(-.35,elevation+(e.clientY-lastY)*.004));lastX=e.clientX;lastY=e.clientY;});
+for(const n of ['pointerup','pointercancel'])canvas.addEventListener(n,()=>{dragging=false;});
+canvas.addEventListener('touchmove',e=>{if(e.touches.length!==2){twoFingerLast=null;return;}let t=e.touches,dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY,d=Math.hypot(dx,dy);if(twoFingerLast)distance=Math.min(18,Math.max(6,distance-(d-twoFingerLast)*.02));twoFingerLast=d;},{passive:true});
+canvas.addEventListener('touchend',()=>{twoFingerLast=null;});
+
+function frame(ms){
+ if(!document.body.contains(canvas))return;
+ const rect=canvas.getBoundingClientRect();
+ const ratio=Math.min(devicePixelRatio||1,1.25); // iPad Gen 9: bounded GPU load
+ const w=Math.max(1,Math.floor(rect.width*ratio)),h=Math.max(1,Math.floor(rect.height*ratio));
+ if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
+ const timed=phase==='running',resolving=phase==='resolving',finished=phase==='ended';
+ const reveal=resolveStart?Math.min(1,(ms-resolveStart)/1550):0;
+ let fallY=6;
+ if(timed)fallY=6-progress*17;
+ else if(resolving)fallY=-11-(success?2:8)*Math.min(1,Math.pow(Math.max(0,reveal),1.65));
+ else if(finished)fallY=success?-13:-19;
+ let target=[0,fallY-.25,-.13];
+ const shaking=!reduced && (timed || (resolving&&!success));
+ const shake=shaking?(Math.sin(ms*.055)*.10+Math.sin(ms*.134)*.065)*(timed?(0.4+progress*1.5):(1.4)):0;
+ const cameraArc= !reduced?Math.sin(ms*.00035)*.10:0;
+ const zoom=finished?(success?.9:1.15):1;
+ let eye=[Math.sin(azimuth+cameraArc)*distance*zoom*Math.cos(elevation)+shake,target[1]+distance*zoom*Math.sin(elevation)+1.0+shake*.7,Math.cos(azimuth+cameraArc)*distance*zoom*Math.cos(elevation)];
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ gl.uniformMatrix4fv(vpLoc,false,new Float32Array(mul(projection(Math.PI/2.95,w/h,.1,120),view(eye,target))));
+ gl.uniform1f(timeLoc,ms/1000);
+ gl.uniform1f(dangerLoc,timed||resolving?1:finished&&!success?.8:0);
+ draw(architecture,0,0,0);
+ draw(elevator,0,fallY,0);
+ // Separate true-3D character meshes; y/x offsets make the passengers animate as the car falls.
+ for(let i=0;i<people.length;i++){
+   const x=(i-1)*.97;
+   const dx=timed&&!reduced?Math.sin(ms*.013+i*1.8)*.10:0;
+   const bob=timed&&!reduced?Math.sin(ms*.024+i*1.4)*.09:0;
+   draw(people[i].body,x+dx,fallY+bob,-.12);
+   draw(people[i].arms,x+dx,fallY+(!reduced&&timed?Math.sin(ms*.032+i)*.19:.04),-.12);
+ }
+ // Luminous electrical sparks, moving in 3D, only while in danger.
+ if(!reduced&&(timed||resolving)){
+   for(let i=0;i<17;i++){
+     let a=ms*.003*(1+i%4*.3)+i*2.399;
+     const x=(i%2?1:-1)*(1.65+(i%3)*.12)+Math.sin(a)*.29;
+     const y=fallY-1.2+((a*1.8+i*.45)%4.8);
+     const z=1.65+Math.cos(a+i)*.30;
+     draw(spark,x,y,z);
+   }
+ }
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();clearInterval(interval);clearTimeout(endingTimeout);phase='ended';$('fallback').style.display='flex';$('fallback').textContent='WebGL หยุดทำงานชั่วคราว ลองโหลดหน้าเว็บ Safari อีกครั้ง';});
+})();
+</script></body></html>
