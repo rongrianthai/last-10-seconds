@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#070b15"><title>LAST FLOOR V13 — One Game One World</title><style>
+
+:root { color-scheme:dark; --bg:#070c17; --surface:#111b2e; --border:#2c3a51; --text:#f2f6ff; --muted:#9dabbe; --red:#fc536c; --blue:#4d9fff; --green:#31deb2; --yellow:#ffd06b; }
+* {box-sizing:border-box} body { margin:0; font-family:system-ui,-apple-system,"Noto Sans Thai",Tahoma,sans-serif;background:radial-gradient(ellipse at 85% 15%,#241435,transparent 38%),radial-gradient(ellipse at 8% 45%,#112a42,transparent 50%),var(--bg);color:var(--text); } button,input {font:inherit} button {min-height:43px;border:1px solid #40506d;background:#243249;border-radius:10px;color:var(--text);cursor:pointer;font-weight:700;padding:9px 11px;transition:filter .15s,transform .12s} button:hover:not(:disabled) {filter:brightness(1.18)} button:active:not(:disabled) {transform:scale(.98)} button:disabled {opacity:.48;cursor:not-allowed} button:focus-visible,input:focus-visible,a:focus-visible {outline:2px solid #a2daff;outline-offset:2px} a {color:#8bd9ff} h1,h2,h3,p {margin:0} .app {max-width:1250px;margin:0 auto;padding:16px 16px 60px} .topbar {display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 0 14px} .brand {font-size:clamp(19px,2vw,25px);font-weight:1000;letter-spacing:.12em} .brand span {color:var(--red)} .subtitle {color:var(--muted);font-size:12px;margin-top:2px} .pill {font-size:11px;font-weight:900;letter-spacing:.055em;border-radius:100px;border:1px solid #78465e;padding:8px 12px;background:#3f1b36;color:#ffd0dc} .layout {display:grid;grid-template-columns:minmax(310px,438px) minmax(345px,1fr);gap:20px;align-items:start} .stage-column {position:sticky;top:16px;min-width:0}.phone {width:100%;aspect-ratio:9/16;border-radius:24px;border:2px solid #52627b;position:relative;overflow:hidden;background:#08111c;isolation:isolate;box-shadow:0 0 0 4px #10172a,0 26px 70px #0008}.render {position:absolute;width:100%;height:100%;inset:0;display:block;background:linear-gradient(#121a2d,#09172b 48%,#080a11)} .vignette {position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 54%,transparent 38%,#02030aad 100%),linear-gradient(180deg,#02030aa2,transparent 24%,transparent 70%,#0206139c 92%)} .warningflash{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 50%,transparent 25%,#fa355c8a 100%);mix-blend-mode:screen} .phone.alarm .warningflash {animation:pulse .63s infinite} .phone.critical .warningflash {animation:pulse .2s infinite} .phone.shake {animation:shake .12s infinite} @keyframes pulse {0%,100%{opacity:.05}50%{opacity:.65}} @keyframes shake {0%{transform:translate(1px,-2px) rotate(.13deg)}50%{transform:translate(-2px,1px) rotate(-.13deg)}100%{transform:translate(2px,0) rotate(.1deg)}}
+.stage-top {position:absolute;z-index:3;top:15px;left:16px;right:16px;display:flex;justify-content:space-between;gap:8px;align-items:start} .onair {background:#e44462;border-radius:6px;padding:6px 9px;font-weight:900;font-size:11px;letter-spacing:.13em;box-shadow:0 0 15px #e4446450}.floor-box{text-align:right;text-shadow:0 2px 8px #000}.floor-box small{display:block;color:#dce7ff;letter-spacing:.17em;font-size:10px;font-weight:800}.floor-box strong {font-size:46px;line-height:1;font-weight:1000} .stage-title {position:absolute;z-index:3;top:13%;left:12px;right:12px;text-align:center;text-shadow:0 3px 11px #000;pointer-events:none}.stage-title .over {color:#c7d6e9;letter-spacing:.34em;font-size:10px;font-weight:850}.stage-title h1 {font-size:clamp(22px,3.5vw,37px);font-weight:1000;letter-spacing:.07em;margin-top:5px}.stage-title .role {color:#ffe8b9;letter-spacing:.1em;font-size:12px;font-weight:800}.countdown {position:absolute;z-index:5;top:32%;left:50%;transform:translateX(-50%);font-size:92px;font-weight:1000;line-height:1;color:#fff;text-shadow:0 0 15px #f2374f,0 0 55px #e6234b;opacity:0;pointer-events:none;transition:opacity .12s}.countdown.show {opacity:1} .event {position:absolute;z-index:4;top:62%;left:4%;right:4%;background:linear-gradient(110deg,#0e1c34ed,#131129ee);border:1px solid #63729ca1;border-radius:14px;padding:12px 13px;box-shadow:0 12px 26px #0009;min-height:82px}.event .mini {display:flex;justify-content:space-between;color:#b6cbe1;font-size:10px;letter-spacing:.12em;font-weight:900}.event .event-name {text-align:center;font-weight:1000;font-size:clamp(16px,2.6vw,22px);padding:5px 0 2px}.event .event-description {font-size:11px;text-align:center;color:#c8d5e8;line-height:1.5}.stage-bottom {position:absolute;bottom:0;left:0;right:0;z-index:4;padding:13px 14px 16px;background:linear-gradient(transparent,#050815d9 20%,#050815f7)}.status-line {display:flex;gap:8px;justify-content:space-between;align-items:center;margin:5px 0 10px;font-size:11px;font-weight:900;letter-spacing:.055em}.status-line b{font-size:15px}.teams {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.team {padding:8px 3px;background:#151d30e8;border:1px solid #3b465e;border-top:3px solid var(--c);border-radius:8px;text-align:center}.team .teamlabel {color:#c4cdda;font-size:10px}.team strong {display:block;font-size:19px;margin-top:3px}.team.hot {box-shadow:inset 0 0 16px color-mix(in srgb,var(--c),transparent 80%)}.progress-track {height:4px;background:#3c4658;border-radius:10px;overflow:hidden;margin-top:10px}.progress-track span {display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));width:0;transition:width .4s}.stage-ticker {font-size:10px;color:#c8d3e9;text-align:center;padding:8px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stage-info {display:flex;gap:5px;align-items:center;justify-content:center;font-size:11px;color:#a4b2c8;margin:12px 0} .stage-info .dot {width:6px;height:6px;background:#f58f9d;border-radius:100%} .panel {background:#111a2bf2;border:1px solid #2b3851;border-radius:16px;padding:17px;margin-bottom:14px} .panel-heading {display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:12px}.panel-heading h2 {font-size:16px;font-weight:900}.panel-heading p,.help {font-size:12px;color:var(--muted);line-height:1.65}.panel-heading span {font-size:11px;color:#9caec6}.button-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.button-grid.three {grid-template-columns:repeat(3,minmax(0,1fr))}.button-grid.four {grid-template-columns:repeat(4,minmax(0,1fr))}.button-grid button.active {background:#45617f;border-color:#9bc9f9}.button-grid button.team-btn {border-color:var(--c);background:color-mix(in srgb,var(--c),#152339 87%);font-size:12px}.primary {background:linear-gradient(105deg,#b4234d,#e34b6e);border-color:#fc7291;font-weight:900}.primary:hover{filter:brightness(1.13)} .action {display:grid;grid-template-columns:1fr 1fr;gap:9px}.action button {min-height:66px;text-align:left}.action small {display:block;font-size:11px;color:#b8c7da;font-weight:500;padding-top:2px}.action button.active{border-color:#f3cc7d;background:#39425b}.note {background:#1a2942;border:1px solid #324763;padding:10px 12px;border-radius:9px;font-size:12px;color:#c8d7e6;margin-top:11px;line-height:1.6}.stats {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stat {background:#1a273b;border:1px solid #33435b;padding:11px;border-radius:10px}.stat b {display:block;font-size:23px}.stat span {font-size:11px;color:#b0c1d6}.logs {max-height:225px;overflow-y:auto;overscroll-behavior:contain;font-size:12px;color:#cad7e9}.log {padding:9px 0;border-bottom:1px solid #293750}.log:last-child {border:0}.feature {font-size:11px;color:#abb9cb;line-height:1.7;margin-top:10px}.row {display:flex;align-items:center;gap:8px;flex-wrap:wrap}.row .grow{flex:1}.row button {flex:1}.input {background:#1b2a41;border:1px solid #475b78;border-radius:8px;padding:10px 11px;color:#fff;max-width:100%;min-width:90px;flex:1;min-height:43px}.sound-switch{border:0;background:transparent;color:#becce0;font-size:13px;padding:7px 9px}.health {font-size:12px;color:#a9d1bc}.success {color:#8af8c2}.danger {color:#ff8b9a}.foot {text-align:center;color:#9aaec6;font-size:12px;line-height:1.7;margin-top:14px}.sticker {position:absolute;z-index:7;top:46%;left:10%;right:10%;text-align:center;background:#081428ec;border:1px solid #f8d17d;border-radius:16px;padding:20px 12px;box-shadow:0 0 38px #ffce6260;display:none}.sticker.show {display:block}.sticker .gold {font-size:38px}.sticker h2{font-size:24px;margin:5px 0}.sticker p {font-size:13px;color:#d6e2f0}.links {display:flex;gap:12px;flex-wrap:wrap;font-size:12px}.links a {white-space:nowrap}.spectator-only {display:none}.stage-center-message{position:absolute;top:49%;left:5%;right:5%;z-index:6;transform:translateY(-50%);pointer-events:none;text-align:center;font-size:18px;text-shadow:0 2px 8px #000;font-weight:950;min-height:26px} .stage-center-message span {display:inline-block;padding:8px 13px;border-radius:10px;background:#050918bb}
+body.live {background:#030509;overflow:hidden} body.live .app {padding:0;max-width:none} body.live .topbar,body.live .controls,body.live .stage-info,body.live .foot {display:none} body.live .layout {display:flex;justify-content:center;gap:0} body.live .stage-column {position:static;width:min(100vw,56.25vh);max-width:none} body.live .phone {width:100%;height:100vh;aspect-ratio:9/16;border:0;border-radius:0;box-shadow:none}body.live .spectator-only {display:block;position:absolute;z-index:5;bottom:122px;left:0;right:0;text-align:center;color:#c1dbfa;font-size:13px;font-weight:800;text-shadow:0 2px 8px black;pointer-events:none}body.live .stage-title h1{font-size:clamp(25px,5vh,40px)}body.live .stage-top{top:19px}body.live .event{top:62%}
+@media(max-width:830px){.app{padding:11px 12px 35px}.layout{grid-template-columns:minmax(0,1fr)}.stage-column{position:static}.phone{max-width:480px;margin:0 auto}.controls{max-width:550px;margin:auto;width:100%}.panel{padding:13px}.stage-title h1{font-size:clamp(24px,7vw,33px)}.brand{font-size:20px}} @media(max-width:360px){.button-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.action{grid-template-columns:1fr}.stat b{font-size:19px}} @media(prefers-reduced-motion:reduce){.phone.shake{animation:none}.phone.alarm .warningflash,.phone.critical .warningflash{animation:none;opacity:.23}*{scroll-behavior:auto!important}}
+
+/* V11 cinematic presentation: unobstructed action zone and two legible choices */
+.event{top:27.5%;left:4.5%;right:4.5%;padding:11px 12px;min-height:0;border-color:#788cadb8;background:linear-gradient(115deg,#101b2bef,#152036eb);backdrop-filter:blur(4px)}
+.event .event-name{font-size:clamp(17px,3vw,23px);line-height:1.22;padding:4px 0 1px}
+.event .event-description{font-size:11px;line-height:1.3}
+.stage-title{top:11.5%}
+.stage-title .over{font-size:9px}
+.stage-title h1{margin-top:2px}
+.stage-choices{display:none;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
+.stage-choices.show{display:grid}
+.stage-option{border:1px solid #506883;border-radius:8px;background:#0b1628e6;display:flex;gap:5px;align-items:center;min-width:0;padding:5px 5px;font-size:10px;line-height:1.2;color:#e5eefc}
+.stage-option b{display:flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border-radius:5px;background:#e7eaff;color:#132033;font-size:15px}
+.stage-option span{flex:1;min-width:0}.stage-option small{font-size:10px;color:#ffd899;white-space:nowrap}
+.stage-option.chosen{border-color:#8dffd6;background:#114a3b}
+.stage-option.wrong{border-color:#ff6a7a;background:#4d1b29}
+.event.danger{border-color:#ee657e;box-shadow:0 0 26px #c9234738,0 11px 26px #000a}
+.stage-bottom{padding:12px 13px 14px}
+.stage-center-message{top:53%;font-size:14px}
+.stage-center-message span{background:#0a1726de;padding:7px 10px;border:1px solid #f98678}
+.hazard-banner{display:none;position:absolute;z-index:6;top:48%;left:5%;right:5%;font-size:10px;text-align:center;color:#fff4dd;background:#ae1d33dc;border:1px solid #ff9d92;border-radius:9px;padding:8px 7px;box-shadow:0 0 22px #fa294b7d;letter-spacing:.08em;font-weight:900;pointer-events:none}
+.hazard-banner b{display:block;font-size:17px;letter-spacing:0;margin-top:2px}
+.hazard-banner.show{display:block;animation:hazardBlink .62s ease-in-out infinite alternate}
+@keyframes hazardBlink{0%{opacity:.7}100%{opacity:1}}
+.phone.shake{animation:none}.phone.shake .render{animation:shake .12s linear infinite}
+.scenario{width:100%;background:#36233b;border-color:#b7677a;color:#ffe3d7}
+body.live .event{top:28%}body.live .stage-title{top:12%}
+@media(max-width:430px){.event{top:27%;padding:9px 8px}.stage-title{top:11%}.stage-title h1{font-size:24px}.event .event-name{font-size:17px}.stage-option{font-size:9px;padding:4px}.stage-option small{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.phone.shake .render,.hazard-banner.show{animation:none}}
+
+
+/* V13 – unified gameplay */
+body{background:radial-gradient(ellipse at 90% 7%,#33182a 0%,transparent 37%),radial-gradient(ellipse at 4% 39%,#102c46,transparent 50%),#070b15}
+.app{max-width:1220px}.layout{grid-template-columns:minmax(290px,440px) minmax(345px,1fr)}
+.phone{box-shadow:0 0 0 4px #10162a,0 20px 60px #0009}.stage-title{top:11%}.stage-title h1{font-size:clamp(23px,3vw,32px)}
+.event{top:auto;bottom:25%;min-height:76px;padding:10px 12px;background:linear-gradient(100deg,#09172aed,#1c1427ed)}
+.event.danger{border-color:#ff798c;background:linear-gradient(110deg,#350e24ea,#0b1729f0)}
+.event .event-name{font-size:18px}.stage-choices{display:flex;gap:5px;margin-top:8px}.stage-option{flex:1;min-width:0;display:flex;align-items:center;gap:4px;border:1px solid #486388;border-radius:7px;padding:5px 6px;font-size:10px;line-height:1.3}.stage-option b{font-size:15px}.stage-option span{flex:1}.stage-option small{font-size:9px;color:#a9e6ff}.stage-option.chosen{border-color:#ffd989;background:#58472c9e}
+.event .mini{font-size:9px}.stage-bottom{padding:13px 12px 13px}.stage-top{top:12px}.floor-box strong{font-size:43px}
+.stage-center-message{top:42%;font-size:21px}.stage-center-message span{padding:8px 13px;background:#071328d9;border:1px solid #bcd3f959}
+.status-line{margin-bottom:7px}.team{padding:6px 2px}.team strong{font-size:20px}.stage-ticker{padding-top:7px}
+.topbar{margin-bottom:15px}.pill{font-size:10px}.panel{padding:15px}.panel-heading h2{font-size:15px}
+.v13-tag{display:inline-block;background:#123c38;border:1px solid #39aa91;color:#bdfbe1;font-size:10px;letter-spacing:.06em;border-radius:999px;padding:6px 10px;font-weight:850}
+.metricline{display:flex;gap:8px;justify-content:space-between;margin-top:10px}.metric{background:#1a283d;flex:1;border:1px solid #344763;border-radius:10px;padding:10px;text-align:center}.metric b{font-size:24px;display:block}.metric span{color:#a7bdd2;font-size:10px}
+.camrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.camrow button{font-size:11px;padding:8px 4px}.camrow button.selected{background:#52364c;border-color:#ff9db7}
+.event-feed{max-height:210px;overflow-y:auto}.feedrow{font-size:12px;padding:8px 0;border-bottom:1px solid #293851;line-height:1.45}.feedrow:first-child{color:#e2ecff}
+.status-note{padding:11px;border-radius:10px;background:#1c2c44;border:1px solid #36506f;color:#d6e7fb;font-size:12px;line-height:1.65}
+.callout{background:linear-gradient(100deg,#112d3a,#1b2b3d);border:1px solid #3a6b83;padding:11px 12px;border-radius:10px;color:#d8f6ff;font-size:12px;line-height:1.5}
+.danger-callout{background:#3b1e32;border-color:#9c4b67;color:#ffe0ea}.inlineform{display:flex;gap:8px;flex-wrap:wrap}.inlineform input{flex:1;min-width:150px}.sbs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sbs button{min-height:50px}
+.btn-amber{background:#593f2d;border-color:#aa7952}.scene-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.scene-grid button{font-size:11px}
+.viewer-note{font-size:10px;color:#a8bed9;margin-top:10px;text-align:center}.controls .panel{margin-bottom:12px}
+.phone .sticker{top:39%;border-color:#ffdb87;background:#101723f0;box-shadow:0 0 40px #ffcf5466}
+.live-connection{position:absolute;bottom:21%;z-index:8;left:7%;right:7%;background:#070d1df2;border:1px solid #ffbf81;padding:10px;border-radius:10px;font-size:11px;text-align:center;display:none}
+body.live:not(.connected) .live-connection{display:block}
+@media(max-width:840px){.layout{grid-template-columns:1fr}.stage-column{position:static;max-width:440px;margin:auto;width:100%}.app{max-width:650px;padding:12px}.camrow{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.app{padding:9px}.panel{padding:12px}.button-grid.four{grid-template-columns:repeat(2,1fr)}}
+body.live{margin:0;background:#03050c;overflow:hidden}body.live .app{padding:0!important;max-width:none}body.live .topbar,body.live .controls,body.live .stage-info,body.live .foot{display:none!important}body.live .layout{display:flex;justify-content:center}body.live .stage-column{width:min(100vw,56.25vh);max-width:none;margin:0}body.live .phone{height:100vh;width:100%;aspect-ratio:9/16;border:0;border-radius:0;box-shadow:none}body.live .app,body.live .layout{height:100vh}body.live .layout{align-items:center}body.live .phone{height:auto;aspect-ratio:9/16}body.live .event{bottom:25%}body.live .stage-title{top:11%}body.live .stage-bottom{padding-bottom:15px}
+body.paused-game .phone .warningflash{animation:none!important;opacity:.12}
+@media(prefers-reduced-motion:reduce){.phone.shake,.phone.alarm .warningflash,.phone.critical .warningflash{animation:none}}
+</style></head><body>
+<div class="app"><header class="topbar"><div><div class="brand">LAST <span>FLOOR</span> V13</div><div class="subtitle">ONE GAME · ONE WORLD · SURVIVAL + TEAM · WebGL 3D</div></div><span class="pill">● LOCAL SIMULATION · ยังไม่เชื่อม TikTok</span></header>
+<main class="layout">
+<section class="stage-column" aria-label="จอไลฟ์แนวตั้ง">
+<div class="phone" id="phone"><canvas id="world" class="render" aria-label="ฉากลิฟต์ 3D พร้อมผู้เล่นที่แข่งขันจริงในระบบจำลอง"></canvas><div class="vignette"></div><div class="warningflash"></div>
+<div class="stage-top"><span class="onair">● GAME DEMO</span><div class="floor-box"><small>FLOOR</small><strong id="floorNumber">100</strong></div></div>
+<div class="stage-title"><div class="over">THE ELEVATOR EXPERIMENT</div><h1>ลิฟต์มรณะ</h1><div class="role" id="phaseLabel">SURVIVAL + TEAM</div></div>
+<div class="countdown" id="bigTimer">10</div><div class="stage-center-message" id="stageMessage"></div>
+<div class="event" id="eventBox"><div class="mini"><span id="eventMode">READY</span><span id="eventClock">12s</span></div><div class="event-name" id="eventTitle">เตรียมลงลิฟต์</div><div class="event-description" id="eventDescription">เลือกทีมก่อนกดเริ่มการแข่งขัน</div><div class="stage-choices" id="stageChoices"><div class="stage-option" id="stageOptionA"><b>1</b><span id="stageOptionAText"></span><small id="stageVotesA"></small></div><div class="stage-option" id="stageOptionB"><b>2</b><span id="stageOptionBText"></span><small id="stageVotesB"></small></div></div></div>
+<div class="stage-bottom"><div class="status-line"><span>👥 ผู้รอดชีวิต <b id="aliveStage">20 / 20</b></span><span>🏅 <b id="stageState">รอเริ่ม</b></span></div><div class="teams" id="teamStage"></div><div class="progress-track"><span id="progressBar"></span></div><div class="stage-ticker" id="ticker">ตัวละคร 3D และผลคะแนนใช้ข้อมูลผู้เล่นชุดเดียวกัน</div></div>
+<div class="sticker" id="winner"><div class="gold">🏆</div><h2 id="winnerName">ผู้ชนะ</h2><p id="winnerMeta"></p></div><div class="live-connection">⏳ รอข้อมูลจากหน้าควบคุม V13<br>เปิดหน้าควบคุมเกมจากเบราว์เซอร์เดียวกัน</div>
+</div><div class="stage-info"><span class="dot"></span> เวที 3D 9:16 · จำนวนบนเวทีสูงสุด 12 ตัว · ผลตกรอบผูกกับแอนิเมชันจริง</div></section>
+<section class="controls">
+<div class="panel"><div class="panel-heading"><div><h2>01 · ตั้งค่าห้องจำลอง</h2><p>ปรับขนาดห้อง ผู้เข้าแข่งขันจำลองเริ่มต้น 20% ของผู้ชม</p></div><span class="v13-tag">SINGLE STATE</span></div><div class="button-grid three" id="roomSizes"><button data-size="10">10 คน</button><button data-size="100">100 คน</button><button data-size="1000">1,000 คน</button></div><div class="metricline"><div class="metric"><b id="totalStat">100</b><span>คนในห้อง</span></div><div class="metric"><b id="playersStat">20</b><span>ผู้แข่งขัน</span></div><div class="metric"><b id="spectatorsStat">80</b><span>คนดูที่ร่วมโหวตได้</span></div></div></div>
+<div class="panel"><div class="panel-heading"><div><h2>02 · ควบคุมการแข่งขันจริง</h2><p>หักผู้เล่นออกเมื่อเห็นตัวละครตกในแอนิเมชันเท่านั้น</p></div><span id="stepCounter">0 / 5</span></div><div class="sbs"><button class="primary" id="playBtn">▶ เริ่มการแข่งขัน</button><button id="nextBtn">⚡ ตัดสิน/ข้ามรอ</button></div><div class="sbs" style="margin-top:8px"><button id="testCollapseBtn" class="btn-amber">💥 ทดลองชั้น 20 โดยใช้ผู้เล่นจริง</button><button id="resetBtn">↻ สร้างห้องใหม่</button></div><div class="status-note" id="statusNote" style="margin-top:9px" role="status">รอเริ่มเกม</div><div class="links" style="margin-top:10px"><a href="?view=live" target="_blank" rel="noopener">📺 เปิดจอไลฟ์ 9:16</a><a href="?view=control" target="_blank" rel="noopener">🛠 เปิดแผงควบคุมอีกแท็บ</a></div></div>
+<div class="panel"><div class="panel-heading"><div><h2>03 · ผู้ชมควบคุมชะตา</h2><p>จำลองคนดูเข้าร่วมและโหวตได้ โดยไม่ต้องส่งของขวัญ</p></div><span>ทดสอบแบบ Local</span></div>
+<div class="inlineform"><input class="input" id="playerName" maxlength="20" placeholder="ชื่อผู้เล่น เช่น นักเวท01" aria-label="ชื่อผู้เล่น"/></div><div class="button-grid four" id="joinButtons" style="margin-top:9px"><button class="team-btn" data-team="0" style="--c:var(--red)">🔴 แดง</button><button class="team-btn" data-team="1" style="--c:var(--blue)">🔵 น้ำเงิน</button><button class="team-btn" data-team="2" style="--c:var(--green)">🟢 เขียว</button><button class="team-btn" data-team="3" style="--c:var(--yellow)">🟡 เหลือง</button></div><div class="viewer-note" id="joinStatus">เข้าร่วมได้ก่อนเริ่มเกมเท่านั้น · ไม่มีการคืนชีพผู้ตกรอบ</div>
+<div class="button-grid four" id="cheerButtons" style="margin-top:13px"><button data-team="0">💪 แดง</button><button data-team="1">💪 น้ำเงิน</button><button data-team="2">💪 เขียว</button><button data-team="3">💪 เหลือง</button></div><p class="feature">แรงเชียร์เพิ่มเกราะทีมได้สูงสุด 3 ขั้นต่อชั้น (ไม่ได้รับประกันรอด)</p>
+<div class="sbs" style="margin-top:10px"><button id="voteA">1 · <span id="choiceA">ทางเลือกที่ 1</span><small id="countA">0 เสียง</small></button><button id="voteB">2 · <span id="choiceB">ทางเลือกที่ 2</span><small id="countB">0 เสียง</small></button></div><div class="row" style="margin-top:9px"><button id="autoVotesBtn">👥 เพิ่ม 20 เสียงจำลอง</button><button id="soundBtn">🔇 เปิดเสียงเตือน</button></div><div class="note" id="voteResult">1 คนโหวตได้ 1 ครั้งต่อชั้น · ปุ่มเพิ่มเสียงเป็นข้อมูลจำลอง</div>
+</div>
+<div class="panel"><div class="panel-heading"><div><h2>04 · มุมกล้องและการทดสอบ</h2><p>กล้องตามผู้ตกอัตโนมัติระหว่างเหตุการณ์พื้นแตก</p></div><span id="camInfo">DIRECTOR</span></div><div class="camrow" id="camButtons"><button data-camera="director">🎬 อัตโนมัติ</button><button data-camera="wide">📷 ภาพกว้าง</button><button data-camera="edge">🕳 ขอบเหว</button><button data-camera="follow">⬇ ตามคนตก</button></div><div class="sbs" style="margin-top:9px"><button id="pauseBtn">⏸ หยุดชั่วคราว</button><button id="slowBtn">🐢 ความเร็ว 1×</button></div><p class="feature">โหมดทดสอบชั้น 20 ใช้กติกาและตัวละครเดียวกับเกมจริง ไม่สร้างฉากสาธิตคนละชุดอีกแล้ว</p></div>
+<div class="panel"><div class="panel-heading"><div><h2>05 · ผลการแข่งขัน</h2><p>สีทีมและจำนวนผู้รอดชีวิตอัปเดตเมื่อผู้เล่นตกรอบจริง</p></div><span id="outcomeStatus">LIVE STATE</span></div><div class="stats" style="grid-template-columns:repeat(4,minmax(0,1fr))" id="teamStats"></div><div class="note" id="resultNote">พร้อมแข่งขัน</div></div>
+<div class="panel"><div class="panel-heading"><div><h2>06 · บันทึกเหตุการณ์</h2><p>แสดงผลการโหวต ผู้ถูกคัดออก และผู้ชนะ พร้อมตรวจสอบลำดับได้</p></div></div><div class="event-feed" id="logs" aria-live="polite"></div></div>
+<div class="foot">V13 เป็นเกมจำลองบนเบราว์เซอร์พร้อม WebGL 3D และเชื่อมหลายแท็บในอุปกรณ์/โดเมนเดียวกัน<br><strong>ยังไม่เชื่อม TikTok LIVE จริง ไม่มีระบบเซิร์ฟเวอร์ และยังไม่บันทึกบัญชีผู้เล่นถาวร</strong></div>
+</section></main></div><script>'use strict';
+(()=>{
+const $=id=>document.getElementById(id);
+const isLive=new URLSearchParams(location.search).get('view')==='live';
+if(isLive)document.body.classList.add('live');
+const TEAM=[{name:'แดง',color:'#fb5875',rgb:[1,.24,.37]},{name:'น้ำเงิน',color:'#51a5fa',rgb:[.19,.60,1]},{name:'เขียว',color:'#3ce3b3',rgb:[.12,.87,.65]},{name:'เหลือง',color:'#ffd26a',rgb:[1,.75,.25]}];
+const EVENTS=[
+ {floor:80,name:'ไฟฟ้าดับทั้งลิฟต์',icon:'⚡',mode:'blackout',choices:['เปิดระบบไฟสำรอง','รอให้ไฟกลับมา'],safer:0},
+ {floor:60,name:'สายเคเบิลขาด!',icon:'⛓',mode:'cable',choices:['ล็อกเบรกฉุกเฉิน','พุ่งสู่ช่องซ่อม'],safer:0},
+ {floor:40,name:'ควันพิษเข้าห้อง',icon:'☣️',mode:'smoke',choices:['เปิดช่องระบายอากาศ','ปิดผนึกประตู'],safer:0},
+ {floor:20,name:'พื้นลิฟต์เริ่มแตก!',icon:'💥',mode:'collapse',choices:['จับราวริมผนัง','วิ่งเข้ากลางห้อง'],safer:0},
+ {floor:10,name:'ไฟไหม้ห้องควบคุม',icon:'🔥',mode:'fire',choices:['ใช้ถังดับเพลิง','เปิดประตูหนี'],safer:0}
+];
+const NAMES=['นักเวท','จอมพลัง','สายฟ้า','ดาวเหนือ','ผู้กล้า','มังกร','นักสู้','พิทักษ์','สายลม','หมาป่า','นักบิน','ดาวรุ่ง','ใบชา','ราชสีห์','แสงจันทร์','ผู้พิทักษ์','ดวงดาว','นักรบ','เหยี่ยว','พลอย'];
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const sm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
+const mix=(a,b,t)=>a+(b-a)*t;
+let rngSeed=62413;function random(){rngSeed^=rngSeed<<13;rngSeed^=rngSeed>>>17;rngSeed^=rngSeed<<5;return(rngSeed>>>0)/4294967296}
+let sequence=0,state=null,paused=false,camera='director',sound=false,speed=1,lastTick=0,lastUi=0,lastSync=0,channel=null,lastRemote=0;
+let voteUsedStep=-1,playerJoined=false;
+function peopleAlive(){return state.players.filter(p=>p.alive)}
+function teamCounts(){return TEAM.map((_,i)=>state.players.filter(p=>p.alive&&p.team===i).length)}
+function visibleSurvivors(){return peopleAlive().sort((a,b)=>Number(!!b.manual)-Number(!!a.manual)).slice(0,12)}
+function log(s){state.logs.unshift(s);if(state.logs.length>20)state.logs.pop();state.ticker=s;}
+function createRoom(n=100){
+ n=[10,100,1000].includes(n)?n:100;rngSeed=2399+n*17;sequence=0;
+ const players=[];const size=Math.max(2,Math.round(n*.2));
+ for(let i=0;i<size;i++){players.push({id:'p'+(++sequence),name:NAMES[i%NAMES.length]+(i>=NAMES.length?' '+(Math.floor(i/NAMES.length)+1):''),team:i%4,alive:true,hero:0,eliminatedAt:-1})}
+ state={clock:0,audience:n,players,phase:'lobby',step:-1,timer:0,elapsed:0,votes:[0,0],cheers:[0,0,0,0],winnerId:null,choice:-1,stageIds:players.slice(0,12).map(p=>p.id),pending:[],outcome:null,logs:[],ticker:'เกมจำลอง · ผู้ชมและผู้เล่นไม่ได้มาจาก TikTok',eventMode:'none',sceneElapsed:0,contestantsAtStart:players.length};
+ paused=false;voteUsedStep=-1;playerJoined=false;
+ log('🎮 เปิดห้อง '+n+' คน · ตัวละครจำลอง '+size+' คน');
+ ui();sync(true);
+}
+function join(t){
+ if(state.phase!=='lobby')return;
+ const input=$('playerName');const name=(input.value||'').trim().slice(0,20)||('ผู้เล่น '+(sequence+1));
+ if(state.players.length>=state.audience){log('ผู้เล่นเต็มห้องแล้ว');ui();return}
+ state.players.push({id:'p'+(++sequence),name,team:t,alive:true,hero:0,manual:true,eliminatedAt:-1});input.value='';playerJoined=true;
+ state.stageIds=state.players.slice(-12).map(p=>p.id);
+ log('👤 '+name+' เข้าทีม'+TEAM[t].name+' (จำลอง)');ui();sync(true);
+}
+function start(){if(state.phase==='finished'){createRoom(state.audience)}if(state.phase!=='lobby')return; beginDecision(0)}
+function testCollapse(){const size=state.audience;createRoom(size);beginDecision(3);log('🧪 เริ่มเกมจริงที่ชั้น 20 · ตัวละครและผลการแข่งขันเชื่อมกัน');ui();sync(true)}
+function beginDecision(step){
+ state.phase='decision';state.step=step;state.timer=12;state.elapsed=0;state.sceneElapsed=0;state.votes=[0,0];state.choice=-1;state.pending=[];state.outcome=null;state.cheers=[0,0,0,0];voteUsedStep=-1;
+ state.stageIds=visibleSurvivors().map(p=>p.id);
+ const ev=EVENTS[step];state.eventMode=ev.mode;
+ log('🚨 ชั้น '+ev.floor+' · '+ev.name+' — โหวต 1 หรือ 2 ภายใน 12 วินาที');ui();sync(true);
+}
+function vote(c){if(state.phase!=='decision'||voteUsedStep===state.step)return;voteUsedStep=state.step;state.votes[c]++;log('🗳 มีคนดูจำลองโหวต '+(c+1));ui();sync(true)}
+function addSimVotes(){if(state.phase!=='decision')return;for(let i=0;i<20;i++)state.votes[random()<.52?0:1]++;log('👥 เพิ่มเสียงจำลองอีก 20 เสียง (ไม่ได้มาจาก TikTok)');ui();sync(true)}
+function cheer(t){if(state.phase!=='decision')return;const old=state.cheers[t];state.cheers[t]=Math.min(3,old+1);if(old!==state.cheers[t])log('💪 คนดูจำลองช่วยทีม'+TEAM[t].name+' · เกราะ '+state.cheers[t]+'/3');ui();sync(true)}
+function resolve(){
+ if(state.phase!=='decision')return;
+ const event=EVENTS[state.step],remaining=peopleAlive();
+ const defaulted=state.votes[0]===0&&state.votes[1]===0;
+ const chosen=defaulted?0:state.votes[1]>state.votes[0]?1:0;
+ const risk=(chosen===event.safer?.12:.36);
+ const victims=[];let capacity=Math.max(0,remaining.length-1);
+ for(let t=0;t<4;t++){
+  let pool=remaining.filter(p=>p.team===t);
+  for(const p of pool){
+   const chance=clamp(risk-state.cheers[t]*.033, .025,.5);
+   if(victims.length<capacity&&random()<chance)victims.push(p.id);
+  }
+ }
+ // The collapsed-floor demo guarantees one visible rescue-or-fall sequence when enough actors remain.
+ if(event.mode==='collapse'&&remaining.length>=6&&!victims.length){victims.push(remaining[Math.floor(remaining.length/3)].id)}
+ const victimSet=new Set(victims);
+ // Prioritize actual casualties in the 3D shot. Those IDs are from the live participant pool.
+ const displayed=[...victims.slice(0,8),...remaining.filter(p=>!victimSet.has(p.id)).sort((a,b)=>Number(!!b.manual)-Number(!!a.manual)).slice(0,12)].slice(0,12);
+ state.stageIds=displayed.map(p=>typeof p==='string'?p:p.id);
+ state.pending=victims.map((id,i)=>({id,at:3.55+2.0*(i/Math.max(victims.length,1)),done:false}));
+ const aided=remaining.filter(p=>!victimSet.has(p.id)&&state.cheers[p.team]>0);
+ if(aided.length){const rescuer=aided[Math.floor(random()*aided.length)];rescuer.hero=(rescuer.hero||0)+1;log('🦸 HERO MOMENT: '+rescuer.name+' ช่วยทีม'+TEAM[rescuer.team].name+' รอดจากอันตราย');}
+ state.phase='impact';state.elapsed=0;state.timer=7;state.sceneElapsed=0;state.choice=chosen;
+ state.outcome={floor:event.floor,chosen,victimIds:[...victims],startAlive:remaining.length,casualties:0,defaulted};
+ log('⚡ ผลโหวต: '+(chosen+1)+' '+event.choices[chosen]+(defaulted?' (ไม่มีเสียง ระบบเลือก 1)':'')+' · ความเสี่ยง '+Math.round(risk*100)+'%');
+ // Do not change p.alive here: actual elimination is synchronized to the falling animation.
+ ui();sync(true);
+}
+function markFallen(p,at){
+ if(!p||!p.alive)return;
+ p.alive=false;p.eliminatedAt=at;
+ if(state.phase==='impact'&&state.outcome)state.outcome.casualties++;
+ log('⬇ '+p.name+' ทีม'+TEAM[p.team].name+' ตกรอบ · เหลือ '+peopleAlive().length+' คน');
+}
+function processImpact(to){for(const item of state.pending){if(!item.done&&to>=item.at){item.done=true;markFallen(state.players.find(p=>p.id===item.id),item.at)}}}
+function endImpact(){if(state.phase!=='impact')return;processImpact(7);state.phase='intermission';state.timer=2.5;state.elapsed=0;state.pending=[];state.stageIds=visibleSurvivors().map(p=>p.id);log('✅ จบชั้น '+EVENTS[state.step].floor+' · รอด '+peopleAlive().length+'/'+state.players.length+' คน');ui();sync(true)}
+function beginFinal(){
+ const rest=peopleAlive();if(rest.length<1){const p=state.players[0];p.alive=true;rest.push(p)}
+ // Each finalist has a fair weighted chance independent of gifting.
+ const weighted=[];for(const p of rest){weighted.push({p,w:1+Math.min(p.hero,3)*.25})}
+ let total=weighted.reduce((a,b)=>a+b.w,0),pick=random()*total,champ=weighted[0].p;
+ for(const part of weighted){pick-=part.w;if(pick<=0){champ=part.p;break}}
+ const out=rest.filter(p=>p.id!==champ.id);for(let i=out.length-1;i>0;i--){let j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}
+ state.phase='final';state.timer=10;state.elapsed=0;state.winnerId=champ.id;
+ state.pending=out.map((p,i)=>({id:p.id,at:2+(i+1)/Math.max(1,out.length)*7.15,done:false}));
+ state.stageIds=[champ.id,...out.slice(-11).map(p=>p.id)];state.eventMode='final';
+ log('🚨 10 วินาทีสุดท้าย! เหลือ '+rest.length+' คน · หาผู้ชนะหนึ่งเดียว');ui();sync(true);
+}
+function finish(){if(state.phase!=='final')return;processImpact(10);const champion=state.players.find(p=>p.id===state.winnerId);
+ if(champion&&!champion.alive)champion.alive=true;
+ state.phase='finished';state.timer=0;state.elapsed=0;state.pending=[];state.stageIds=[champion.id];log('🏆 '+champion.name+' ทีม'+TEAM[champion.team].name+' คือผู้รอดชีวิตคนสุดท้าย');ui();sync(true);
+}
+function next(){if(state.phase==='lobby')start();else if(state.phase==='decision')resolve();else if(state.phase==='impact')endImpact();else if(state.phase==='intermission'){if(state.step>=EVENTS.length-1)beginFinal();else beginDecision(state.step+1)}else if(state.phase==='final')finish();else if(state.phase==='finished')createRoom(state.audience)}
+function pause(){if(['decision','impact','intermission','final'].includes(state.phase)){paused=!paused;log(paused?'⏸ หยุดเกมชั่วคราว':'▶ เล่นเกมต่อ');ui();sync(true)}}
+function advance(dt){if(isLive||paused||state.phase==='lobby'||state.phase==='finished')return;
+ let rest=clamp(dt*speed,0,.12),guard=0;state.clock+=rest;
+ while(rest>.00001&&guard++<9){
+  let consume=Math.min(rest,Math.max(0,state.timer));state.timer=Math.max(0,state.timer-consume);state.elapsed+=consume;
+  if(state.phase==='impact')processImpact(state.elapsed);
+  if(state.phase==='final')processImpact(state.elapsed);
+  rest-=consume;
+  if(state.timer<=.00001){if(state.phase==='decision')resolve();else if(state.phase==='impact')endImpact();else if(state.phase==='intermission'){if(state.step===EVENTS.length-1)beginFinal();else beginDecision(state.step+1)}else if(state.phase==='final')finish();else break;}
+  else break;
+ }
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function ui(){
+ if(!state)return;
+ const active=state.phase,ev=EVENTS[state.step],currentCount=peopleAlive().length,teams=teamCounts();
+ $('floorNumber').textContent=active==='lobby'?'100':active==='final'||active==='finished'?'00':ev?ev.floor:100;
+ $('phaseLabel').textContent=active==='final'?'LAST TEN SECONDS':active==='finished'?'WINNER OF THE ROUND':'SURVIVAL + TEAM · เลือกทางรอด';
+ $('eventMode').textContent=({lobby:'LOBBY',decision:'VOTE TO SURVIVE',impact:'DANGER — ANIMATION',intermission:'RESULT',final:'FINAL 10 SECONDS',finished:'CHAMPION'})[active];
+ $('eventClock').textContent=['decision','impact','intermission','final'].includes(active)?Math.ceil(state.timer)+'s':'READY';
+ $('eventTitle').textContent=active==='lobby'?'เตรียมลงลิฟต์':active==='finished'?'🏆 '+(state.players.find(p=>p.id===state.winnerId)?.name||'แชมป์'):active==='final'?'🚨 เหลือผู้ชนะเพียงคนเดียว':active==='intermission'?'✅ ผ่านเหตุการณ์นี้แล้ว':ev?ev.icon+' '+ev.name:'ลิฟต์มรณะ';
+ $('eventDescription').textContent=active==='lobby'?'เข้าทีมก่อนเริ่มเกม · ไม่ต้องส่งของขวัญ':active==='impact'?'คนที่ตกรอบจะถูกหักออกเมื่อแอนิเมชันตกถึงจังหวะจริง':active==='decision'?'พิมพ์ 1 หรือ 2 · การเลือกของคนดูมีผลต่อความเสี่ยงของผู้แข่งขัน':active==='intermission'?'คนรอด '+currentCount+' คน · เตรียมไปชั้นต่อไป':active==='final'?'มองตัวละครที่ร่วงจากเวที — ตัวเลขเปลี่ยนตามทันที':'เกมจบแล้ว · พร้อมเริ่มรอบใหม่';
+ $('stageChoices').style.display=active==='decision'?'flex':'none';
+ $('stageOptionAText').textContent=ev?.choices[0]||'ทาง 1';$('stageOptionBText').textContent=ev?.choices[1]||'ทาง 2';
+ $('stageVotesA').textContent=state.votes[0]+' เสียง';$('stageVotesB').textContent=state.votes[1]+' เสียง';
+ $('stageOptionA').classList.toggle('chosen',state.choice===0);$('stageOptionB').classList.toggle('chosen',state.choice===1);
+ $('phone').classList.toggle('alarm',['impact','final'].includes(active));$('phone').classList.toggle('critical',active==='final'&&state.timer<=4);
+ $('phone').classList.toggle('shake',!paused&&active==='final'&&state.timer<=4);
+ $('bigTimer').textContent=Math.max(0,Math.ceil(state.timer));$('bigTimer').classList.toggle('show',active==='final');
+ $('stageMessage').innerHTML=active==='impact'&&state.elapsed>2.0&&state.elapsed<5.8?'<span>💥 ระวัง! กำลังมีคนตก!</span>':active==='intermission'?'<span>✅ รอด '+currentCount+' คน</span>':'';
+ $('aliveStage').textContent=currentCount+' / '+state.players.length;
+ $('stageState').textContent=active==='finished'?'แชมป์':active==='final'?'FINAL':active==='impact'?'IMPACT':active==='decision'?'โหวต':'พักรอบ';
+ $('teamStage').innerHTML=TEAM.map((team,i)=>'<div class="team" style="--c:'+team.color+'"><div class="teamlabel">'+team.name+'</div><strong>'+teams[i]+'</strong></div>').join('');
+ $('progressBar').style.width=(active==='lobby'?0:active==='finished'?100:active==='final'?95:((state.step+1)/6*100))+'%';
+ $('ticker').textContent=state.ticker;
+ $('winner').classList.toggle('show',active==='finished');const champion=state.players.find(p=>p.id===state.winnerId);
+ $('winnerName').textContent=champion?.name||'ผู้ชนะ';$('winnerMeta').textContent=champion?'ทีม'+TEAM[champion.team].name+' · HERO '+champion.hero:'';
+ if(isLive)return;
+ $('stepCounter').textContent=(Math.max(0,state.step+1))+' / 5 เหตุการณ์';
+ $('totalStat').textContent=state.audience;$('playersStat').textContent=state.players.length;$('spectatorsStat').textContent=Math.max(0,state.audience-state.players.length);
+ $('roomSizes').querySelectorAll('button').forEach(b=>b.classList.toggle('active',Number(b.dataset.size)===state.audience));
+ $('playBtn').textContent=active==='lobby'?'▶ เริ่มการแข่งขัน':active==='finished'?'↻ เล่นรอบใหม่':paused?'▶ เล่นต่อ':'⏸ หยุดชั่วคราว';
+ $('nextBtn').textContent=active==='decision'?'⚡ สรุปผลโหวตทันที':active==='impact'?'⏭ จบฉากอันตราย':active==='final'?'🏆 ประกาศแชมป์':'⏭ ไปชั้นต่อไป';
+ $('nextBtn').disabled=active==='lobby'||active==='finished';
+ $('statusNote').textContent=paused?'⏸ เกมหยุดชั่วคราว':active==='decision'?'ชั้น '+ev.floor+' · '+Math.ceil(state.timer)+' วินาทีให้คนดูเลือก 1/2':active==='impact'?'กำลังแสดงผลบนตัวละครจริง: '+state.outcome?.casualties+'/'+state.outcome?.victimIds.length+' ตกรอบแล้ว':active==='final'?'🚨 ผู้รอดชีวิต '+currentCount+' คน · เหลือ '+Math.ceil(state.timer)+' วินาที':active==='finished'?'🏆 จบรอบแล้ว · ผู้ชนะ '+champion?.name:active==='intermission'?'จบรอบ · ผ่านไปชั้นต่อไป':'พร้อมเริ่มแข่งขัน';
+ $('choiceA').textContent=ev?.choices[0]||'ทาง 1';$('choiceB').textContent=ev?.choices[1]||'ทาง 2';
+ $('countA').textContent=state.votes[0]+' เสียง';$('countB').textContent=state.votes[1]+' เสียง';
+ $('voteA').disabled=$('voteB').disabled=$('autoVotesBtn').disabled=active!=='decision'||voteUsedStep===state.step;
+ $('autoVotesBtn').disabled=active!=='decision';
+ $('joinButtons').querySelectorAll('button').forEach(b=>b.disabled=active!=='lobby');$('cheerButtons').querySelectorAll('button').forEach(b=>b.disabled=active!=='decision');
+ $('joinStatus').textContent=active==='lobby'?'เข้าร่วมได้ก่อนเริ่ม · เพิ่มผู้เล่นลงในชุดแข่งขันจริง':'ปิดรับผู้เล่นแล้ว · ผู้ตกรอบไม่สามารถคืนชีพ';
+ $('voteResult').textContent=active==='impact'||active==='intermission'?'ผลที่เลือก: '+(state.choice+1)+' · ผู้เสี่ยงตกรอบ '+(state.outcome?.victimIds.length||0)+' คน':active==='decision'?'ให้คนดูช่วยตัดสินใจ · '+(state.votes[0]+state.votes[1])+' คะแนนจำลอง':'ทุกผลการแข่งขันเป็นข้อมูลจำลองจากเบราว์เซอร์';
+ $('teamStats').innerHTML=TEAM.map((team,i)=>'<div class="stat" style="border-top:3px solid '+team.color+'"><b>'+teams[i]+'</b><span>'+team.name+' 🛡'+state.cheers[i]+'</span></div>').join('');
+ $('resultNote').textContent=active==='impact'?'แอนิเมชันกำลังเล่น → ตกรอบแล้ว '+state.outcome.casualties+' จากผู้ที่กำหนดไว้ '+state.outcome.victimIds.length+' คน':active==='finished'?'แชมป์: '+champion?.name:'ไม่มีการลดตัวนับผู้รอดชีวิตก่อนเกิดเหตุการณ์ตกจริง';
+ $('outcomeStatus').textContent=active.toUpperCase();
+ $('camInfo').textContent=camera.toUpperCase();$('camButtons').querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b.dataset.camera===camera));
+ $('pauseBtn').textContent=paused?'▶ เล่นต่อ':'⏸ หยุดชั่วคราว';$('pauseBtn').disabled=['lobby','finished'].includes(active);
+ $('slowBtn').textContent='🐢 ความเร็ว '+speed+'×';
+ $('logs').innerHTML=state.logs.slice(0,15).map(s=>'<div class="feedrow">'+esc(s)+'</div>').join('');
+}
+
+ const canvas=$('world');
+ let gl=null, glProgram=null, meshes={}, uniforms={}, vp=null, drawCalls=0, m4Scratch=null;
+ try {gl=canvas.getContext('webgl',{alpha:false,antialias:true,premultipliedAlpha:false,powerPreference:'high-performance'});}catch(e){}
+ const mI=()=>new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+ function multiply(a,b){let r=new Float32Array(16);for(let c=0;c<4;c++)for(let row=0;row<4;row++)r[c*4+row]=a[row]*b[c*4]+a[row+4]*b[c*4+1]+a[row+8]*b[c*4+2]+a[row+12]*b[c*4+3];return r;}
+ function trs(x,y,z,sx,sy,sz,rx=0,ry=0,rz=0){let cx=Math.cos(rx),sx1=Math.sin(rx),cy=Math.cos(ry),sy1=Math.sin(ry),cz=Math.cos(rz),sz1=Math.sin(rz);let m=mI();
+  // R = Rz * Ry * Rx
+  m[0]=cz*cy*sx;m[1]=sz1*cy*sx;m[2]=-sy1*sx;
+  m[4]=(cz*sy1*sx1-sz1*cx)*sy;m[5]=(sz1*sy1*sx1+cz*cx)*sy;m[6]=cy*sx1*sy;
+  m[8]=(cz*sy1*cx+sz1*sx1)*sz;m[9]=(sz1*sy1*cx-cz*sx1)*sz;m[10]=cy*cx*sz;
+  m[12]=x;m[13]=y;m[14]=z;return m;
+ }
+ function perspective(fovy,aspect,near,far){let f=1/Math.tan(fovy/2),r=new Float32Array(16);r[0]=f/aspect;r[5]=f;r[10]=(far+near)/(near-far);r[11]=-1;r[14]=2*far*near/(near-far);return r;}
+ function lookAt(eye,target,up=[0,1,0]){let z=[eye[0]-target[0],eye[1]-target[1],eye[2]-target[2]],l=Math.hypot(...z);z=z.map(x=>x/l);let x=[up[1]*z[2]-up[2]*z[1],up[2]*z[0]-up[0]*z[2],up[0]*z[1]-up[1]*z[0]];l=Math.hypot(...x);x=x.map(v=>v/l);let y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];let m=mI();m[0]=x[0];m[1]=y[0];m[2]=z[0];m[4]=x[1];m[5]=y[1];m[6]=z[1];m[8]=x[2];m[9]=y[2];m[10]=z[2];m[12]=-x.reduce((s,v,i)=>s+v*eye[i],0);m[13]=-y.reduce((s,v,i)=>s+v*eye[i],0);m[14]=-z.reduce((s,v,i)=>s+v*eye[i],0);return m;}
+ function boxVerts(){let d=[];const faces=[[[1,0,0],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[.5,-.5,.5]],[[-1,0,0],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-.5,-.5,-.5]],[[0,1,0],[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5]],[[0,-1,0],[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5]],[[0,0,1],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]],[[0,0,-1],[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5]]];
+  for(let f of faces){for(let i of [0,1,2,0,2,3])d.push(...f[i+1],...f[0]);}return d;}
+ function sphereVerts(){const d=[],R=10,S=13;for(let r=0;r<R;r++){let theta0=r*Math.PI/R,theta1=(r+1)*Math.PI/R;for(let s=0;s<S;s++){let a0=s*2*Math.PI/S,a1=(s+1)*2*Math.PI/S;function pt(th,a){return [Math.sin(th)*Math.cos(a),Math.cos(th),Math.sin(th)*Math.sin(a)];}const p0=pt(theta0,a0),p1=pt(theta1,a0),p2=pt(theta1,a1),p3=pt(theta0,a1);for(let p of [p0,p1,p2,p0,p2,p3])d.push(...p,...p);}}return d;}
+ function cylinderVerts(){let d=[],N=12;for(let i=0;i<N;i++){let a=i*Math.PI*2/N,b=(i+1)*Math.PI*2/N;let p=[Math.cos(a),-.5,Math.sin(a)],q=[Math.cos(b),-.5,Math.sin(b)],r=[Math.cos(b),.5,Math.sin(b)],s=[Math.cos(a),.5,Math.sin(a)];for(let z of [p,q,r,p,r,s]){const norm=[z[0],0,z[2]];d.push(...z,...norm)}for(let z of [[0,.5,0],s,r])d.push(...z,0,1,0);for(let z of [[0,-.5,0],q,p])d.push(...z,0,-1,0); }return d;}
+ function shader(kind,source){let s=gl.createShader(kind);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;}
+ function initGL(){if(!gl)return false;
+  try{
+   const vert=`attribute vec3 aP;attribute vec3 aN;uniform mat4 uM;uniform mat4 uVP;varying vec3 vN;varying vec3 vP;void main(){vec4 w=uM*vec4(aP,1.);vP=w.xyz;vN=normalize(mat3(uM)*aN);gl_Position=uVP*w;}`;
+   const frag=`precision mediump float;uniform vec3 uC;uniform float uEm;uniform vec3 uLight;uniform float uRed;varying vec3 vN;varying vec3 vP;void main(){vec3 n=normalize(vN);float diff=max(0.,dot(n,normalize(vec3(-0.25,0.9,0.6))));float side=max(0.,dot(n,normalize(vec3(0.9,0.2,0.3))));float back=pow(1.-max(0.,dot(n,normalize(vec3(0.,0.12,1.)))),2.);vec3 tint=uC*(0.27+diff*0.58+side*0.14)+vec3(.06,.15,.22)*back*0.3;vec3 col=tint+uC*uEm+vec3(.55,.05,.09)*uRed*max(0.,diff*.15+back*.3);float fog=clamp((length(vP-vec3(0.,2.,11.))-8.)/18.,0.,.36);col=mix(col,vec3(.045,.067,.11),fog);gl_FragColor=vec4(pow(max(col,vec3(0.)),vec3(.88)),1.);}`;
+   glProgram=gl.createProgram();gl.attachShader(glProgram,shader(gl.VERTEX_SHADER,vert));gl.attachShader(glProgram,shader(gl.FRAGMENT_SHADER,frag));gl.linkProgram(glProgram);if(!gl.getProgramParameter(glProgram,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(glProgram));gl.useProgram(glProgram);
+   uniforms={aP:gl.getAttribLocation(glProgram,'aP'),aN:gl.getAttribLocation(glProgram,'aN'),uM:gl.getUniformLocation(glProgram,'uM'),uVP:gl.getUniformLocation(glProgram,'uVP'),uC:gl.getUniformLocation(glProgram,'uC'),uEm:gl.getUniformLocation(glProgram,'uEm'),uRed:gl.getUniformLocation(glProgram,'uRed')};
+   const toMesh = verts =>{let b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);return{buffer:b,count:verts.length/6}};
+   meshes={box:toMesh(boxVerts()),sphere:toMesh(sphereVerts()),cylinder:toMesh(cylinderVerts())};
+   gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);return true;
+  }catch(err){console.error('WebGL unavailable',err);gl=null;return false;}
+ }
+ const glReady=initGL();
+ function draw(kind,x,y,z,sx,sy,sz,color,em=.0,rx=0,ry=0,rz=0){const mesh=meshes[kind];if(!mesh)return;gl.bindBuffer(gl.ARRAY_BUFFER,mesh.buffer);gl.enableVertexAttribArray(uniforms.aP);gl.enableVertexAttribArray(uniforms.aN);gl.vertexAttribPointer(uniforms.aP,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(uniforms.aN,3,gl.FLOAT,false,24,12);gl.uniformMatrix4fv(uniforms.uM,false,trs(x,y,z,sx,sy,sz,rx,ry,rz));gl.uniform3fv(uniforms.uC,color);gl.uniform1f(uniforms.uEm,em);gl.drawArrays(gl.TRIANGLES,0,mesh.count);drawCalls++;}
+ const hexRGB=h=>{const n=parseInt(h.slice(1),16);return [(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]};
+ const C={wall:[.09,.18,.3], dark:[.055,.094,.145],steel:[.2,.31,.44],floor:[.13,.22,.32],rail:[.37,.53,.65],white:[.86,.9,.97],hair:[.11,.13,.21],skin:[.95,.70,.46],black:[.03,.045,.08],light:[.28,.8,1],yellow:[1,.65,.22],red:[1,.17,.23],green:[.15,.9,.5]};
+
+function clamp01(x){return clamp(x,0,1)}
+function collapseLevel(){
+ if(state.phase==='decision'&&state.eventMode==='collapse')return .12+.17*(1-state.timer/12);
+ if(state.phase==='impact'&&state.eventMode==='collapse')return .18+.82*sm(0,4.6,state.elapsed);
+ if(state.phase==='intermission'&&state.eventMode==='collapse')return .75;
+ if(state.phase==='final')return .38+.55*sm(0,9,state.elapsed);
+ return 0;
+}
+function drawFloor(t){
+ const amount=collapseLevel(),fracturing=amount>.08;
+ draw('box',0,-6.35,0,4.3,.07,3.55,[.007,.014,.031],.08);
+ if(amount>.23){
+   for(let i=0;i<5;i++){
+    const y=-3.0-i*.78;
+    for(const x of [-1.65,1.65])draw('box',x,y,0,.09,.09,3.45,[.2,.26,.36],.04);
+    for(const z of [-1.45,1.45])draw('box',0,y,z,3.6,.055,.08,i%2?C.rail:C.red,.1);
+   }
+ }
+ const cols=6,rows=5,sw=4.1/cols,sd=3.38/rows;
+ for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+  const x=(col-2.5)*sw,z=(row-2)*sd;
+  const proximity=clamp01(1-Math.abs(x-(.15+.35*Math.sin(z*2.1)))/1.60);
+  const weak=proximity>.47&&(col+row)%4!==1;
+  if(amount>.67&&weak&&proximity>.67&&(col+row)%3!==0)continue;
+  const loose=weak?sm(.27,.82,amount):0;
+  const sink=loose*(.1+proximity*2.2);
+  const tilt=loose*Math.sin(col*1.4+row*2.3)*.42;
+  const shade=(col+row)%2?[.13,.22,.31]:[.105,.186,.265];
+  draw('box',x,-1.84-sink,z,sw-.025,.14,sd-.025,shade,.03,tilt,0,tilt*.4);
+  if(fracturing&&proximity>.28)draw('box',x,-1.755-sink,z,sw*.72,.017,.023,amount>.65?C.red:C.yellow,.3+amount*.9);
+ }
+ if(fracturing){
+  let last=[-.21,-1.69,-1.73];
+  for(let i=1;i<=17;i++){
+    const z=-1.73+i*.205,x=.12+Math.sin(z*2.1)*.35+Math.sin(i*1.87)*.07;
+    const dx=x-last[0],dz=z-last[2];
+    draw('box',(x+last[0])/2,-1.687,(z+last[2])/2,Math.hypot(dx,dz),.020,.048,C.red,.9+amount,.0,0,-Math.atan2(dz,dx));
+    if(i%3===0)draw('box',x+.15,-1.685,z+.12,.3,.012,.017,C.yellow,.9);
+    last=[x,-1.68,z];
+  }
+ }
+}
+function drawElevator(t){
+ let danger=['impact','final'].includes(state.phase),intensity=danger?(state.phase==='impact'?state.elapsed/7:state.elapsed/10):0;
+ let flashing=danger?Math.sin(t*(state.phase==='final'&&state.timer<=4?27:10))>.15:false;
+ gl.uniform1f(uniforms.uRed,flashing?1:0);
+ drawFloor(t);
+ for(const s of [-1,1]){
+  draw('box',s*2.13,-1.71,0,.16,.18,3.75,C.steel,.12);
+  draw('box',0,-1.71,s*1.75,4.35,.16,.11,C.steel,.13);
+ }
+ draw('box',0,1.0,-1.9,4.55,5.65,.14,C.wall);
+ for(const x of [-2.27,2.27])draw('box',x,1.0,0,.15,5.6,3.75,C.dark);
+ draw('box',0,3.81,0,4.52,.14,3.7,C.steel);
+ for(const x of [-1.43,-.48,.48,1.43])draw('box',x,1,-1.8,.025,4.9,.08,C.steel,.055);
+ for(const yy of [-.7,1.4,2.54])draw('box',0,yy,-1.78,4.3,.040,.11,C.rail,.08);
+ for(const x of [-2.09,2.09]){
+  draw('box',x,-.50,0,.07,.075,3.1,C.rail,.24);
+  draw('box',x,1.0,1.57,.065,5.1,.075,flashing?C.red:C.light,.6);
+ }
+ for(const x of [-1.12,0,1.12])draw('box',x,3.73,-.12,.30,.042,2.7,flashing?C.red:C.light,.9);
+ for(const x of [-1.72,1.72])draw('box',x,2.62,-1.56,.24,.17,.09,flashing?C.red:C.green,1.1);
+ for(const x of [-2.25,2.25])draw('box',x,1,1.79,.18,5.7,.16,C.steel);
+ draw('box',0,3.83,1.75,4.50,.2,.24,C.rail,.08);
+ if(state.eventMode==='fire'&&danger){for(let i=0;i<12;i++){const x=Math.sin(i*3.1+t*.7)*1.7,y=-.8+((t*.7+i*.2)%2),z=-1.45;draw('sphere',x,y,z,.08,.13,.08,i%2?C.red:C.yellow,1.1)}}
+ if(state.eventMode==='smoke'&&danger){for(let i=0;i<11;i++)draw('sphere',Math.sin(i*4+t*.3)*1.5,-1.2+((i*.27+t*.2)%3),Math.cos(i)*1.2,.21,.18,.21,[.13,.18,.23],.04)}
+ if((state.eventMode==='collapse'&&amountCrack())||state.phase==='final'){
+  const f=state.phase==='final'?sm(1,8,state.elapsed):sm(.2,5.8,state.elapsed);
+  for(let i=0;i<25;i++){
+   const x=Math.sin(i*3.2)*(.25+(i%5)*.27),z=Math.cos(i*1.7)*1.45;
+   draw('box',x,-1.74-f*f*(.4+(i%7)*.25),z,.12,.07,.09,i%2?C.floor:C.steel,.03,f*i*.27,f*.8);
+   if(i%4===0)draw('sphere',x,-1.25+Math.sin(i+t*2)*.22,z,.023,.023,.023,C.yellow,1.5);
+  }
+ }
+ if(danger){for(let i=0;i<12;i++){const x=Math.sin(i*4.3+t*3)*1.9,y=Math.sin(i*2.6+t*5)*1.4+.7,z=Math.cos(i*8.4)*1.1;draw('sphere',x,y,z,.025,.025,.025,i%2?C.red:C.yellow,1.7)}}
+ return intensity;
+}
+function amountCrack(){return collapseLevel()>.35}
+function drawLimb(a,b,r,color,em=0){
+ const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],length=Math.max(.01,Math.hypot(dx,dy,dz));
+ draw('cylinder',(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,r,length,r,color,em,Math.atan2(dz,dy),0,-Math.atan2(dx,Math.hypot(dy,dz)));
+}
+function poseFor(p,i,t){
+ const col=i%4,row=Math.floor(i/4);
+ let x=(col-1.5)*.9,z=-1.12+row*.84,y=-1.75;
+ let pitch=0,roll=0,yaw=0,run=.05,reach=0,fall=0;
+ const phase=state.phase,el=state.elapsed;
+ const dying=state.pending.find(item=>item.id===p.id);
+ if(phase==='decision'){
+  run=state.timer<6?.55:.13;
+  if(state.eventMode==='collapse'){const a=sm(1,12,12-state.timer);x+=(i%2?-1:1)*.17*a;pitch=.14*a;run=.3+.4*a}
+ }
+ if(phase==='impact'){
+  const c=sm(0,4.5,el),side=i%2===0?-1:1;
+  if(dying){
+   const at=dying.at;
+   const pre=sm(Math.max(0,at-2.8),Math.max(.5,at-.5),el);
+   const drop=clamp((el-(at-1.30))/2.4,0,1);
+   x=mix(x,x*.19,pre);z+=.28*pre;
+   pitch=.32*pre+1.42*drop;roll=side*.45*drop;reach=pre;
+   y-=.14*pre+4.35*drop*drop;
+   run=.65*(1-pre);
+   fall=drop;
+  }else{
+   x+=side*.50*c;z-=.06*c;
+   pitch=.22*Math.sin(el*2+i)*c;run=.7*(1-sm(3,6,el));
+   if(i%4===1){reach=sm(0,3,el);x=mix(x,side*1.82,reach);roll=side*.19*reach}
+  }
+ }
+ if(phase==='final'){
+  const at=dying?.at??100;
+  const pre=sm(Math.max(0,at-1.6),at,el);
+  const drop=clamp((el-(at-.8))/1.5,0,1);
+  if(dying){x=mix(x,x*.12,pre);y-=4.1*drop*drop;pitch=1.05*drop;roll=(i%2?-.6:.6)*drop;reach=pre;fall=drop;run=1-drop}
+  else{run=.8;z-=.25*sm(0,10,el);y+=Math.abs(Math.sin(t*7+i))*.08;reach=.6*sm(6,10,el)}
+ }
+ if(phase==='finished'){run=.18;reach=.70;y+=Math.abs(Math.sin(t*2.2))*.07}
+ if(phase==='lobby'||phase==='intermission'){run=.03;y+=Math.sin(t*1.5+i)*.03}
+ return{x,y,z,pitch,roll,yaw,run,reach,fall};
+}
+function drawActor(p,i,t){
+ const po=poseFor(p,i,t),{x,y,z,pitch,roll,yaw,run,reach,fall}=po;
+ if(y < -11)return;
+ function at(lx,ly,lz){
+  const ca=Math.cos(yaw),sa=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),cr=Math.cos(roll),sr=Math.sin(roll);
+  const px=lx*ca+lz*sa,pz=-lx*sa+lz*ca,py=ly*cp-pz*sp,pzz=ly*sp+pz*cp;
+  return[x+px*cr-py*sr,y+.45+px*sr+py*cr,z+pzz];
+ }
+ const tint=TEAM[p.team].rgb,gait=Math.sin(t*13+i*1.2)*run*.6;
+ if(fall<.5)draw('cylinder',x,-1.69,z,.28,.02,.24,C.black,.05);
+ for(const side of [-1,1]){
+  const kick=gait*side+fall*.45*side;
+  const hip=at(side*.13,-.12,0),knee=at(side*.14,-.30,.04+kick*.25),foot=at(side*.15,-.52,.15+kick*.38);
+  drawLimb(hip,knee,.125,[.14,.21,.34]);drawLimb(knee,foot,.105,[.16,.26,.39]);
+  draw('box',...foot,.21,.13,.27,C.white,.06,kick*.2,0,0);
+ }
+ draw('box',...at(0,.20,0),.52,.64,.36,tint,.12,pitch,yaw,roll);
+ draw('box',...at(0,.16,.20),.23,.22,.055,C.white,.33,pitch,yaw,roll);
+ draw('sphere',...at(0,.80,0),.28,.28,.26,C.skin,.02,pitch,yaw,roll);
+ draw('box',...at(0,1.01,-.02),.53,.14,.48,C.hair,.07,pitch,yaw,roll);
+ for(const side of [-1,1])draw('sphere',...at(side*.084,.81,.245),.038,.042,.025,C.black,.06);
+ if(['impact','final'].includes(state.phase))draw('box',...at(0,.68,.245),.095,.10,.026,C.black,.09);
+ for(const side of [-1,1]){
+  const sh=at(side*.33,.43,0);let elbow,hand;
+  if(reach>.1&&side===-1&&i%3===1){const rail=[-2.1,-.55,z+.07];const ideal=at(side*.52,.06,.14);hand=ideal.map((v,k)=>mix(v,rail[k],reach));elbow=[mix(sh[0]-.1,-1.95,reach),mix(sh[1]-.2,-.6,reach),z+.12];}
+  else{elbow=at(side*(.50+.12*reach),.17+side*.06*fall,.10+.19*reach);hand=at(side*(.66+.18*reach),-.04+side*.15*fall,.15+.25*reach)}
+  drawLimb(sh,elbow,.11,tint);draw('sphere',...elbow,.11,.11,.11,tint,.02);
+  drawLimb(elbow,hand,.10,tint);draw('sphere',...hand,.14,.14,.14,C.skin,.05);
+ }
+ draw('sphere',...at(0,1.20,-.07),.067,.067,.067,tint,1.1);
+}
+function cameraFor(t){
+ const mode=camera;
+ if(mode==='wide')return{eye:[0,3.3,9.4],target:[0,-.55,0],fov:45};
+ if(mode==='edge')return{eye:[1.75,1.30,4.6],target:[.20,-2.4,.25],fov:50};
+ const track=state.phase==='impact'||state.phase==='final';const e=state.elapsed;
+ const dip=state.phase==='impact'?sm(2.6,5.5,e)*(1-sm(5.9,7,e)):state.phase==='final'?sm(5.4,8.7,e):0;
+ if(mode==='follow')return{eye:[1.7,2.0-2.0*dip,5.6],target:[.1,-1.2-2.7*dip,.3],fov:49};
+ if(track){const x=state.phase==='final'?-.4:.5;
+  return{eye:[mix(0,x,dip),mix(3.20,1.16,dip),mix(8.75,5.1,dip)],target:[0,mix(-.65,-2.45,dip),.1],fov:mix(43,51,dip)};
+ }
+ return{eye:[Math.sin(t*.3)*.07,3.42,8.85],target:[0,-.54,0],fov:43};
+}
+function renderWebGL(t){
+ const w=canvas.clientWidth||420,h=canvas.clientHeight||746,dpr=Math.min(window.devicePixelRatio||1,1.35),pw=Math.round(w*dpr),ph=Math.round(h*dpr);
+ if(canvas.width!==pw||canvas.height!==ph){canvas.width=pw;canvas.height=ph;gl.viewport(0,0,pw,ph)}
+ const shot=cameraFor(t),shaky=['impact','final'].includes(state.phase)&&!paused?sm(0,2,state.elapsed)*.017:0;
+ const eye=[shot.eye[0]+Math.sin(t*23)*shaky,shot.eye[1]+Math.cos(t*20)*shaky,shot.eye[2]];
+ vp=multiply(perspective(shot.fov*Math.PI/180,w/h,.10,110),lookAt(eye,shot.target));
+ gl.clearColor(.035,.065,.112,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(glProgram);gl.uniformMatrix4fv(uniforms.uVP,false,vp);
+ drawCalls=0;drawElevator(t);
+ const visible=state.stageIds.map(id=>state.players.find(p=>p.id===id)).filter(Boolean);
+ for(let i=0;i<visible.length;i++){
+  const p=visible[i];const pending=state.pending.find(d=>d.id===p.id);
+  if(!p.alive&&!pending)continue;
+  drawActor(p,i,t);
+ }
+ if(state.phase==='finished'&&state.winnerId){const p=state.players.find(p=>p.id===state.winnerId);for(let i=0;i<25;i++){const x=Math.sin(i*2+t*.6)*1.7,y=Math.sin(i*3+t)*1.7+1.1,z=Math.cos(i*2.2)*1.4;draw('sphere',x,y,z,.043,.043,.043,TEAM[p.team].rgb,1.2)}}
+}
+let backupCtx=null;
+function renderFallback(t){
+ if(!backupCtx)return;
+ const w=canvas.clientWidth||400,h=canvas.clientHeight||712,dpr=Math.min(window.devicePixelRatio||1,1.5);
+ if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr)}
+ const c=backupCtx;c.setTransform(dpr,0,0,dpr,0,0);const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#0d192a');g.addColorStop(1,'#050b15');c.fillStyle=g;c.fillRect(0,0,w,h);
+ c.fillStyle='#12263a';c.fillRect(w*.11,h*.22,w*.78,h*.60);c.strokeStyle='#6b8596';c.lineWidth=5;c.strokeRect(w*.11,h*.22,w*.78,h*.60);
+ c.fillStyle='#2c4357';c.fillRect(w*.12,h*.73,w*.76,h*.08);
+ const cast=state.stageIds.map(id=>state.players.find(p=>p.id===id)).filter(Boolean);
+ for(let i=0;i<Math.min(12,cast.length);i++){
+  const p=cast[i],pose=poseFor(p,i,t);if(pose.y< -4)continue;
+  const x=w*(.21+(i%4)*.19),y=h*(.62+Math.floor(i/4)*.048)-Math.max(0,-1.8-pose.y)*h*.08;
+  c.fillStyle=TEAM[p.team].color;c.fillRect(x-12,y-10,24,28);c.fillStyle='#f7c991';c.beginPath();c.arc(x,y-20,12,0,Math.PI*2);c.fill();c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();c.moveTo(x-5,y+15);c.lineTo(x-5,y+24);c.moveTo(x+5,y+15);c.lineTo(x+5,y+24);c.stroke();
+ }
+ c.fillStyle='#c0d2e7';c.textAlign='center';c.font='11px sans-serif';c.fillText('2D fallback • WebGL ไม่พร้อมใช้งาน',w/2,h*.87);
+}
+function beep(f=600,d=.08){if(!sound)return;try{const ctx=window._v13Audio||(window._v13Audio=new (window.AudioContext||window.webkitAudioContext)());if(ctx.state==='suspended')ctx.resume();const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.05,ctx.currentTime+.012);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+d);o.connect(g).connect(ctx.destination);o.start();o.stop(ctx.currentTime+d+.02)}catch(e){sound=false}}
+function sync(force=false){
+ if(isLive||!state)return;
+ const ms=performance.now();if(!force&&ms-lastSync<200)return;lastSync=ms;
+ const data={kind:'state',state,paused,speed,camera,timestamp:Date.now()};
+ try{if(channel)channel.postMessage(data)}catch(e){}
+ try{localStorage.setItem('last-floor-v13-sync',JSON.stringify(data))}catch(e){}
+}
+function receive(data){
+ if(!isLive||!data||data.kind!=='state'||!data.state)return;
+ // This is the *same* competition state as the controller. No independent second game loop.
+ state=data.state;paused=!!data.paused;speed=Number(data.speed)||1;camera=data.camera||'director';lastRemote=performance.now();
+ document.body.classList.add('connected');ui();
+}
+try{channel=new BroadcastChannel('last-floor-v13-sync')}catch(e){}
+if(channel)channel.onmessage=e=>receive(e.data);
+if(isLive){
+ try{const last=JSON.parse(localStorage.getItem('last-floor-v13-sync')||'null');if(last&&Date.now()-last.timestamp<1000*60*10)receive(last)}catch(e){}
+ window.addEventListener('storage',e=>{if(e.key==='last-floor-v13-sync'&&e.newValue)try{receive(JSON.parse(e.newValue))}catch(_){}});
+}else{
+ $('roomSizes').addEventListener('click',e=>{const b=e.target.closest('button[data-size]');if(b)createRoom(Number(b.dataset.size))});
+ $('joinButtons').addEventListener('click',e=>{const b=e.target.closest('button[data-team]');if(b)join(Number(b.dataset.team))});
+ $('cheerButtons').addEventListener('click',e=>{const b=e.target.closest('button[data-team]');if(b)cheer(Number(b.dataset.team))});
+ $('playBtn').addEventListener('click',()=>{if(state.phase==='lobby'||state.phase==='finished')start();else pause()});
+ $('nextBtn').addEventListener('click',next);
+ $('testCollapseBtn').addEventListener('click',testCollapse);
+ $('resetBtn').addEventListener('click',()=>createRoom(state.audience));
+ $('voteA').addEventListener('click',()=>vote(0));$('voteB').addEventListener('click',()=>vote(1));
+ $('autoVotesBtn').addEventListener('click',addSimVotes);
+ $('camButtons').addEventListener('click',e=>{const b=e.target.closest('button[data-camera]');if(!b)return;camera=b.dataset.camera;ui();sync(true)});
+ $('pauseBtn').addEventListener('click',pause);
+ $('slowBtn').addEventListener('click',()=>{speed=speed===1?.5:speed===.5?2:1;ui();sync(true)});
+ $('soundBtn').addEventListener('click',()=>{sound=!sound;$('soundBtn').textContent=sound?'🔊 ปิดเสียงเตือน':'🔇 เปิดเสียงเตือน';if(sound)beep(800,.09)});
+}
+function tick(ms){
+ const dt=lastTick?clamp((ms-lastTick)/1000,0,.10):.016;lastTick=ms;
+ const beforeSec=state.phase==='final'?Math.ceil(state.timer):-1;
+ if(!isLive){advance(dt);
+  const afterSec=state.phase==='final'?Math.ceil(state.timer):-1;
+  if(afterSec>=0&&afterSec!==beforeSec&&afterSec>0)beep(afterSec<=4?1400:800,afterSec<=4?.15:.07);
+ }
+ if(ms-lastUi>95){lastUi=ms;document.body.classList.toggle('paused-game',paused);ui();if(!isLive)sync()}
+ const renderTime=(state.clock||0)+(isLive&&!paused?clamp((performance.now()-lastRemote)/1000,0,.23)*speed:0);
+ if(glReady)renderWebGL(renderTime);else renderFallback(renderTime);
+ requestAnimationFrame(tick);
+}
+createRoom(100);
+if(!glReady){backupCtx=canvas.getContext('2d');if(!isLive)log('⚠️ อุปกรณ์นี้ไม่รองรับ WebGL · แสดง 2D fallback')}
+if(isLive){try{const last=JSON.parse(localStorage.getItem('last-floor-v13-sync')||'null');if(last&&Date.now()-last.timestamp<1000*60*10)receive(last)}catch(e){}}
+ui();requestAnimationFrame(tick);
+window.__lastFloorV13={getState:()=>state,createRoom,start,testCollapse,next,vote,cheer,join,addSimVotes,advance:(seconds)=>{advance(seconds);ui();sync(true)},glReady,renderWebGL,teamCounts};
+})();
+</script></body></html>
