@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080c17">
+<title>LAST FLOOR V12.1 — Animated Fall & Camera</title>
+<style>
+:root { color-scheme:dark; --bg:#070c17; --surface:#111b2e; --border:#2c3a51; --text:#f2f6ff; --muted:#9dabbe; --red:#fc536c; --blue:#4d9fff; --green:#31deb2; --yellow:#ffd06b; }
+* {box-sizing:border-box} body { margin:0; font-family:system-ui,-apple-system,"Noto Sans Thai",Tahoma,sans-serif;background:radial-gradient(ellipse at 85% 15%,#241435,transparent 38%),radial-gradient(ellipse at 8% 45%,#112a42,transparent 50%),var(--bg);color:var(--text); } button,input {font:inherit} button {min-height:43px;border:1px solid #40506d;background:#243249;border-radius:10px;color:var(--text);cursor:pointer;font-weight:700;padding:9px 11px;transition:filter .15s,transform .12s} button:hover:not(:disabled) {filter:brightness(1.18)} button:active:not(:disabled) {transform:scale(.98)} button:disabled {opacity:.48;cursor:not-allowed} button:focus-visible,input:focus-visible,a:focus-visible {outline:2px solid #a2daff;outline-offset:2px} a {color:#8bd9ff} h1,h2,h3,p {margin:0} .app {max-width:1250px;margin:0 auto;padding:16px 16px 60px} .topbar {display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 0 14px} .brand {font-size:clamp(19px,2vw,25px);font-weight:1000;letter-spacing:.12em} .brand span {color:var(--red)} .subtitle {color:var(--muted);font-size:12px;margin-top:2px} .pill {font-size:11px;font-weight:900;letter-spacing:.055em;border-radius:100px;border:1px solid #78465e;padding:8px 12px;background:#3f1b36;color:#ffd0dc} .layout {display:grid;grid-template-columns:minmax(310px,438px) minmax(345px,1fr);gap:20px;align-items:start} .stage-column {position:sticky;top:16px;min-width:0}.phone {width:100%;aspect-ratio:9/16;border-radius:24px;border:2px solid #52627b;position:relative;overflow:hidden;background:#08111c;isolation:isolate;box-shadow:0 0 0 4px #10172a,0 26px 70px #0008}.render {position:absolute;width:100%;height:100%;inset:0;display:block;background:linear-gradient(#121a2d,#09172b 48%,#080a11)} .vignette {position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 54%,transparent 38%,#02030aad 100%),linear-gradient(180deg,#02030aa2,transparent 24%,transparent 70%,#0206139c 92%)} .warningflash{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 50%,transparent 25%,#fa355c8a 100%);mix-blend-mode:screen} .phone.alarm .warningflash {animation:pulse .63s infinite} .phone.critical .warningflash {animation:pulse .2s infinite} .phone.shake {animation:shake .12s infinite} @keyframes pulse {0%,100%{opacity:.05}50%{opacity:.65}} @keyframes shake {0%{transform:translate(1px,-2px) rotate(.13deg)}50%{transform:translate(-2px,1px) rotate(-.13deg)}100%{transform:translate(2px,0) rotate(.1deg)}}
+.stage-top {position:absolute;z-index:3;top:15px;left:16px;right:16px;display:flex;justify-content:space-between;gap:8px;align-items:start} .onair {background:#e44462;border-radius:6px;padding:6px 9px;font-weight:900;font-size:11px;letter-spacing:.13em;box-shadow:0 0 15px #e4446450}.floor-box{text-align:right;text-shadow:0 2px 8px #000}.floor-box small{display:block;color:#dce7ff;letter-spacing:.17em;font-size:10px;font-weight:800}.floor-box strong {font-size:46px;line-height:1;font-weight:1000} .stage-title {position:absolute;z-index:3;top:13%;left:12px;right:12px;text-align:center;text-shadow:0 3px 11px #000;pointer-events:none}.stage-title .over {color:#c7d6e9;letter-spacing:.34em;font-size:10px;font-weight:850}.stage-title h1 {font-size:clamp(22px,3.5vw,37px);font-weight:1000;letter-spacing:.07em;margin-top:5px}.stage-title .role {color:#ffe8b9;letter-spacing:.1em;font-size:12px;font-weight:800}.countdown {position:absolute;z-index:5;top:32%;left:50%;transform:translateX(-50%);font-size:92px;font-weight:1000;line-height:1;color:#fff;text-shadow:0 0 15px #f2374f,0 0 55px #e6234b;opacity:0;pointer-events:none;transition:opacity .12s}.countdown.show {opacity:1} .event {position:absolute;z-index:4;top:62%;left:4%;right:4%;background:linear-gradient(110deg,#0e1c34ed,#131129ee);border:1px solid #63729ca1;border-radius:14px;padding:12px 13px;box-shadow:0 12px 26px #0009;min-height:82px}.event .mini {display:flex;justify-content:space-between;color:#b6cbe1;font-size:10px;letter-spacing:.12em;font-weight:900}.event .event-name {text-align:center;font-weight:1000;font-size:clamp(16px,2.6vw,22px);padding:5px 0 2px}.event .event-description {font-size:11px;text-align:center;color:#c8d5e8;line-height:1.5}.stage-bottom {position:absolute;bottom:0;left:0;right:0;z-index:4;padding:13px 14px 16px;background:linear-gradient(transparent,#050815d9 20%,#050815f7)}.status-line {display:flex;gap:8px;justify-content:space-between;align-items:center;margin:5px 0 10px;font-size:11px;font-weight:900;letter-spacing:.055em}.status-line b{font-size:15px}.teams {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.team {padding:8px 3px;background:#151d30e8;border:1px solid #3b465e;border-top:3px solid var(--c);border-radius:8px;text-align:center}.team .teamlabel {color:#c4cdda;font-size:10px}.team strong {display:block;font-size:19px;margin-top:3px}.team.hot {box-shadow:inset 0 0 16px color-mix(in srgb,var(--c),transparent 80%)}.progress-track {height:4px;background:#3c4658;border-radius:10px;overflow:hidden;margin-top:10px}.progress-track span {display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));width:0;transition:width .4s}.stage-ticker {font-size:10px;color:#c8d3e9;text-align:center;padding:8px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stage-info {display:flex;gap:5px;align-items:center;justify-content:center;font-size:11px;color:#a4b2c8;margin:12px 0} .stage-info .dot {width:6px;height:6px;background:#f58f9d;border-radius:100%} .panel {background:#111a2bf2;border:1px solid #2b3851;border-radius:16px;padding:17px;margin-bottom:14px} .panel-heading {display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:12px}.panel-heading h2 {font-size:16px;font-weight:900}.panel-heading p,.help {font-size:12px;color:var(--muted);line-height:1.65}.panel-heading span {font-size:11px;color:#9caec6}.button-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.button-grid.three {grid-template-columns:repeat(3,minmax(0,1fr))}.button-grid.four {grid-template-columns:repeat(4,minmax(0,1fr))}.button-grid button.active {background:#45617f;border-color:#9bc9f9}.button-grid button.team-btn {border-color:var(--c);background:color-mix(in srgb,var(--c),#152339 87%);font-size:12px}.primary {background:linear-gradient(105deg,#b4234d,#e34b6e);border-color:#fc7291;font-weight:900}.primary:hover{filter:brightness(1.13)} .action {display:grid;grid-template-columns:1fr 1fr;gap:9px}.action button {min-height:66px;text-align:left}.action small {display:block;font-size:11px;color:#b8c7da;font-weight:500;padding-top:2px}.action button.active{border-color:#f3cc7d;background:#39425b}.note {background:#1a2942;border:1px solid #324763;padding:10px 12px;border-radius:9px;font-size:12px;color:#c8d7e6;margin-top:11px;line-height:1.6}.stats {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stat {background:#1a273b;border:1px solid #33435b;padding:11px;border-radius:10px}.stat b {display:block;font-size:23px}.stat span {font-size:11px;color:#b0c1d6}.logs {max-height:225px;overflow-y:auto;overscroll-behavior:contain;font-size:12px;color:#cad7e9}.log {padding:9px 0;border-bottom:1px solid #293750}.log:last-child {border:0}.feature {font-size:11px;color:#abb9cb;line-height:1.7;margin-top:10px}.row {display:flex;align-items:center;gap:8px;flex-wrap:wrap}.row .grow{flex:1}.row button {flex:1}.input {background:#1b2a41;border:1px solid #475b78;border-radius:8px;padding:10px 11px;color:#fff;max-width:100%;min-width:90px;flex:1;min-height:43px}.sound-switch{border:0;background:transparent;color:#becce0;font-size:13px;padding:7px 9px}.health {font-size:12px;color:#a9d1bc}.success {color:#8af8c2}.danger {color:#ff8b9a}.foot {text-align:center;color:#9aaec6;font-size:12px;line-height:1.7;margin-top:14px}.sticker {position:absolute;z-index:7;top:46%;left:10%;right:10%;text-align:center;background:#081428ec;border:1px solid #f8d17d;border-radius:16px;padding:20px 12px;box-shadow:0 0 38px #ffce6260;display:none}.sticker.show {display:block}.sticker .gold {font-size:38px}.sticker h2{font-size:24px;margin:5px 0}.sticker p {font-size:13px;color:#d6e2f0}.links {display:flex;gap:12px;flex-wrap:wrap;font-size:12px}.links a {white-space:nowrap}.spectator-only {display:none}.stage-center-message{position:absolute;top:49%;left:5%;right:5%;z-index:6;transform:translateY(-50%);pointer-events:none;text-align:center;font-size:18px;text-shadow:0 2px 8px #000;font-weight:950;min-height:26px} .stage-center-message span {display:inline-block;padding:8px 13px;border-radius:10px;background:#050918bb}
+body.live {background:#030509;overflow:hidden} body.live .app {padding:0;max-width:none} body.live .topbar,body.live .controls,body.live .stage-info,body.live .foot {display:none} body.live .layout {display:flex;justify-content:center;gap:0} body.live .stage-column {position:static;width:min(100vw,56.25vh);max-width:none} body.live .phone {width:100%;height:100vh;aspect-ratio:9/16;border:0;border-radius:0;box-shadow:none}body.live .spectator-only {display:block;position:absolute;z-index:5;bottom:122px;left:0;right:0;text-align:center;color:#c1dbfa;font-size:13px;font-weight:800;text-shadow:0 2px 8px black;pointer-events:none}body.live .stage-title h1{font-size:clamp(25px,5vh,40px)}body.live .stage-top{top:19px}body.live .event{top:62%}
+@media(max-width:830px){.app{padding:11px 12px 35px}.layout{grid-template-columns:minmax(0,1fr)}.stage-column{position:static}.phone{max-width:480px;margin:0 auto}.controls{max-width:550px;margin:auto;width:100%}.panel{padding:13px}.stage-title h1{font-size:clamp(24px,7vw,33px)}.brand{font-size:20px}} @media(max-width:360px){.button-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.action{grid-template-columns:1fr}.stat b{font-size:19px}} @media(prefers-reduced-motion:reduce){.phone.shake{animation:none}.phone.alarm .warningflash,.phone.critical .warningflash{animation:none;opacity:.23}*{scroll-behavior:auto!important}}
+
+/* V11 cinematic presentation: unobstructed action zone and two legible choices */
+.event{top:27.5%;left:4.5%;right:4.5%;padding:11px 12px;min-height:0;border-color:#788cadb8;background:linear-gradient(115deg,#101b2bef,#152036eb);backdrop-filter:blur(4px)}
+.event .event-name{font-size:clamp(17px,3vw,23px);line-height:1.22;padding:4px 0 1px}
+.event .event-description{font-size:11px;line-height:1.3}
+.stage-title{top:11.5%}
+.stage-title .over{font-size:9px}
+.stage-title h1{margin-top:2px}
+.stage-choices{display:none;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
+.stage-choices.show{display:grid}
+.stage-option{border:1px solid #506883;border-radius:8px;background:#0b1628e6;display:flex;gap:5px;align-items:center;min-width:0;padding:5px 5px;font-size:10px;line-height:1.2;color:#e5eefc}
+.stage-option b{display:flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border-radius:5px;background:#e7eaff;color:#132033;font-size:15px}
+.stage-option span{flex:1;min-width:0}.stage-option small{font-size:10px;color:#ffd899;white-space:nowrap}
+.stage-option.chosen{border-color:#8dffd6;background:#114a3b}
+.stage-option.wrong{border-color:#ff6a7a;background:#4d1b29}
+.event.danger{border-color:#ee657e;box-shadow:0 0 26px #c9234738,0 11px 26px #000a}
+.stage-bottom{padding:12px 13px 14px}
+.stage-center-message{top:53%;font-size:14px}
+.stage-center-message span{background:#0a1726de;padding:7px 10px;border:1px solid #f98678}
+.hazard-banner{display:none;position:absolute;z-index:6;top:48%;left:5%;right:5%;font-size:10px;text-align:center;color:#fff4dd;background:#ae1d33dc;border:1px solid #ff9d92;border-radius:9px;padding:8px 7px;box-shadow:0 0 22px #fa294b7d;letter-spacing:.08em;font-weight:900;pointer-events:none}
+.hazard-banner b{display:block;font-size:17px;letter-spacing:0;margin-top:2px}
+.hazard-banner.show{display:block;animation:hazardBlink .62s ease-in-out infinite alternate}
+@keyframes hazardBlink{0%{opacity:.7}100%{opacity:1}}
+.phone.shake{animation:none}.phone.shake .render{animation:shake .12s linear infinite}
+.scenario{width:100%;background:#36233b;border-color:#b7677a;color:#ffe3d7}
+body.live .event{top:28%}body.live .stage-title{top:12%}
+@media(max-width:430px){.event{top:27%;padding:9px 8px}.stage-title{top:11%}.stage-title h1{font-size:24px}.event .event-name{font-size:17px}.stage-option{font-size:9px;padding:4px}.stage-option small{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.phone.shake .render,.hazard-banner.show{animation:none}}
+
+/* V12 director-cut controls and restrained spectator HUD */
+.cinema-controls{border-color:#725e6d;background:linear-gradient(145deg,#1f2134,#0f1c30)}
+.cinema-controls .panel-heading h2{color:#ffe8ef}
+.cine-button{background:linear-gradient(115deg,#af2e53,#fa5477);border-color:#ff91ae}
+.cine-toolbar{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin:11px 0}
+.cine-toolbar button{font-size:12px;min-width:0}
+.cine-cameras{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0 8px}
+.cine-cameras button{min-height:48px;padding:7px 4px;font-size:11px}
+.cine-cameras button.selected{background:#68475e;border-color:#ffa5b6;color:white}
+.cine-transport{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:11px 0}
+.cine-transport input[type=range]{flex:1;min-width:90px;accent-color:#fa5477;cursor:pointer;touch-action:pan-y}
+.cine-transport output{font-variant-numeric:tabular-nums;color:#ffe5ec;font-size:13px;font-weight:850;min-width:64px;text-align:right}
+.cine-chapters{display:flex;gap:7px;flex-wrap:wrap}
+.cine-chapters button{flex:1;min-width:105px;font-size:12px}
+.cine-status{color:#bdcbe0;font-size:12px;line-height:1.65;margin-top:9px}
+.cine-stage-hud{position:absolute;inset:0;z-index:6;display:none;pointer-events:none}
+body.cinema .cine-stage-hud{display:block}
+body.cinema .stage-title{top:9%;opacity:.95}
+body.cinema .phone.shake .render{animation:none}
+body.cinema .stage-title .over{font-size:9px}
+body.cinema .stage-title h1{font-size:clamp(19px,3.1vw,29px)}
+body.cinema .stage-title .role{font-size:10px;opacity:.72}
+body.cinema .event,body.cinema .countdown,body.cinema .sticker,body.cinema .hazard-banner,body.cinema .stage-center-message{display:none!important}
+body.cinema .stage-bottom{padding:10px 13px 13px;background:linear-gradient(transparent,#040717d7 35%,#040717f8)}
+body.cinema .stage-ticker{display:none}
+body.cinema .status-line{margin:2px 0 7px}
+body.cinema .team{padding:5px 2px}
+body.cinema .team strong{font-size:17px}
+.cine-banner{position:absolute;top:64%;left:5%;right:5%;padding:10px 12px 12px;background:linear-gradient(110deg,#160d1edc,#091a33e6);border:1px solid #ee6178b6;border-radius:13px;box-shadow:0 8px 20px #0007;transition:background .2s}
+.cine-banner .line{display:flex;gap:9px;align-items:center;justify-content:space-between}
+.cine-banner h3{font-size:18px;letter-spacing:.005em;line-height:1.25}
+.cine-banner p{font-size:11px;color:#b8cadb;margin-top:3px}
+.cine-banner strong{font-size:24px;font-variant-numeric:tabular-nums;color:#ffbbc5;white-space:nowrap}
+.cine-choices{display:flex;gap:7px;margin-top:9px}
+.cine-choices span{display:inline-block;flex:1;background:#183252eb;border:1px solid #659cd4;border-radius:8px;font-size:10px;padding:7px 5px;text-align:center;font-weight:900}
+.cine-choices span+span{border-color:#fd8096;background:#452037dc}
+.cine-progress{height:4px;background:#344052;overflow:hidden;border-radius:4px;margin-top:8px}
+.cine-progress > i{display:block;height:100%;background:linear-gradient(90deg,#6aceff,#f8496f);width:0%}
+.cine-shot{position:absolute;top:23%;right:5%;padding:5px 8px;border:1px solid #7c9eba73;border-radius:7px;background:#081523c6;font-size:10px;font-weight:900;color:#d3eafa;letter-spacing:.07em;text-align:right}
+.cine-scene-tag{position:absolute;top:25%;left:5%;padding:7px 9px;border:1px solid #ffac547a;border-radius:9px;background:#301719cb;font-size:11px;font-weight:850;color:#ffe2c8}
+body.live.cinema .stage-title{top:10%}
+body.live.cinema .cine-banner{top:64%}
+body.live.cinema .cine-shot{top:22%}
+@media(max-width:830px){.cine-cameras{grid-template-columns:repeat(2,minmax(0,1fr))}.cine-chapters button{min-width:90px}}
+@media(max-width:430px){.cine-banner{top:65%;padding:8px 9px}.cine-banner h3{font-size:15px}.cine-banner strong{font-size:19px}.cine-choices span{font-size:9px}.cine-shot{top:22%}.cine-toolbar{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.cine-banner,.cine-progress>i{transition:none}}
+
+/* V12.1 precise freeze-frame, staged cast counter and falling-cam controls */
+.cine-cameras{grid-template-columns:repeat(5,minmax(0,1fr))}
+.cine-actor-result{margin-top:10px;padding:9px 11px;background:#15233b;border:1px solid #517b99;border-radius:9px;color:#e8f5ff;font-size:12px;font-weight:750;line-height:1.6}
+.cine-actor-result.is-fall{background:#392336;border-color:#fd7d90;color:#ffe0e6}
+body.cinema .stageState{font-weight:900}
+body.cinema .stage-bottom .status-line {text-shadow:0 2px 4px #050816}
+body.cinema .cine-scene-tag{top:25%}
+body.cinema .stage-title{top:9%}
+body.cinema .vignette{background:radial-gradient(ellipse at 50% 50%,transparent 50%,#02030a95 100%),linear-gradient(180deg,#02030a73,transparent 24%,transparent 73%,#020613a6 94%)}
+@media(max-width:830px){.cine-cameras{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:470px){.cine-cameras{grid-template-columns:repeat(2,minmax(0,1fr))}}
+body.cinema.cine-paused .phone.alarm .warningflash,body.cinema.cine-paused .phone.critical .warningflash{animation:none;opacity:.13}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="topbar"><div><div class="brand">LAST <span>FLOOR</span> V12.1</div><div class="subtitle">THE ELEVATOR EXPERIMENT · STAGED FALL · FOLLOW CAMERA · WebGL 3D</div></div><div class="pill">● V12.1 MOTION STUDY · LOCAL DEMO</div></header>
+ <main class="layout">
+  <section class="stage-column" aria-label="เวทีเกมแนวตั้งสำหรับผู้ชม TikTok">
+   <div class="phone" id="phone">
+    <canvas id="world" class="render" aria-label="ฉากลิฟต์สามมิติและตัวละครเคลื่อนไหว"></canvas>
+    <div class="vignette"></div><div class="warningflash"></div>
+    <div class="stage-top"><span class="onair">● LIVE DEMO</span><div class="floor-box"><small>CURRENT FLOOR</small><strong id="floorNumber">100</strong></div></div>
+    <div class="stage-title"><div class="over">THE ELEVATOR EXPERIMENT</div><h1>ลิฟต์มรณะ</h1><div class="role" id="phaseLabel">ทีมต้องร่วมมือกันเอาชีวิตรอด</div></div>
+    <div class="countdown" id="bigTimer">10</div><div class="stage-center-message" id="stageMessage"></div><div class="hazard-banner" id="hazardBanner">⚠️ CRITICAL STRUCTURE FAILURE <b>พื้นกำลังพัง!</b></div>
+    <div class="event" id="eventBox"><div class="mini"><span id="eventMode">STANDBY</span><span id="eventClock">READY</span></div><div class="event-name" id="eventTitle">เตรียมลงลิฟต์</div><div class="event-description" id="eventDescription">เข้าทีมแล้วช่วยกันเลือกทางรอด ทุกการตัดสินใจมีผล</div><div class="stage-choices" id="stageChoices"><div class="stage-option" id="stageOptionA"><b>1</b><span id="stageOptionAText">ทางเลือกที่ 1</span><small id="stageVotesA">0</small></div><div class="stage-option" id="stageOptionB"><b>2</b><span id="stageOptionBText">ทางเลือกที่ 2</span><small id="stageVotesB">0</small></div></div></div>
+    <div class="stage-bottom"><div class="status-line"><span>👥 <span id="aliveStageLabel">ผู้รอดชีวิต</span> <b id="aliveStage">20 / 20</b></span><span>🏅 <b id="stageState">รอเริ่ม</b></span></div><div class="teams" id="teamStage"></div><div class="progress-track"><span id="progressBar"></span></div><div class="stage-ticker" id="ticker">พิมพ์ A/B/C/D เลือกทีม · โหวต 1/2 เพื่อช่วยชีวิต</div></div>
+    <div class="sticker" id="winner"><div class="gold">🏆</div><h2 id="winnerName">ผู้ชนะ</h2><p id="winnerMeta"></p></div>
+    <div class="cine-stage-hud" aria-label="V12.1 cinematic scene status">
+     <div class="cine-shot" id="cineShot">DIRECTOR CAM · WIDE</div>
+     <div class="cine-scene-tag" id="cineSceneTag">⚡ ลิฟต์สั่น!</div>
+     <div class="cine-banner"><div class="line"><div><h3 id="cineTitle">⚠️ พื้นลิฟต์เริ่มแตก</h3><p id="cineSub">ฉากสาธิตแอนิเมชัน 3D • ไม่ใช่ TikTok LIVE</p></div><strong id="cineTimer">19s</strong></div>
+      <div class="cine-choices"><span>1 · จับราวริมผนัง</span><span>2 · วิ่งไปฝั่งปลอดภัย</span></div>
+      <div class="cine-progress"><i id="cineProgress"></i></div>
+     </div>
+    </div>
+    <div class="spectator-only">พิมพ์ A/B/C/D เลือกทีม • 1/2 โหวต • CHEER ส่งแรงเชียร์</div>
+   </div>
+   <div class="stage-info"><span class="dot"></span> ฉาก V12.1 เป็นการจำลองการตก 6 คน แยกจากเกมหลัก · หน้าจอ 9:16 · เกม V11 ยังอยู่ด้านล่าง</div>
+  </section>
+  <section class="controls">
+   <div class="panel cinema-controls"><div class="panel-heading"><div><h2>🎥 V12.1 · กล้องติดตามการตก + ท่าทาง 3D</h2><p>ฉากสาธิต 6 ตัวละคร / 19 วินาที · หยุดภาพได้จริง และมีตัวละครตกรอบตามลำดับเวลา</p></div><span>CAMERA FIRST</span></div>
+     <button class="cine-button" id="cineStartBtn" style="width:100%">🎬 เปิดฉาก V12.1 / ดูการตกซ้ำ</button>
+     <div class="cine-toolbar"><button id="cinePlayBtn">⏸ หยุดฉาก</button><button id="cineReplayBtn">↻ เล่นตั้งแต่ต้น</button><button id="cineExitBtn">🎮 กลับไปเกมเดิม</button></div>
+     <div class="cine-transport"><button id="cinePrevBtn" aria-label="ถอยหลังหนึ่งวินาที">◀ 1s</button><input id="cineSeek" type="range" min="0" max="19" step="0.1" value="0" aria-label="เลื่อนดูภาพยนตร์แต่ละวินาที"><button id="cineNextBtn" aria-label="เดินหน้าหนึ่งวินาที">1s ▶</button><output id="cineTime">00.0 / 19s</output></div>
+     <div class="cine-cameras" id="cineCameras"><button data-angle="director" class="selected">🎬 ตัดกล้องอัตโนมัติ</button><button data-angle="wide">📷 ภาพกว้าง</button><button data-angle="edge">🕳 ใกล้ขอบเหว</button><button data-angle="hero">🏃 ติดตามตัวละคร</button><button data-angle="fall">⬇ ติดตามคนตก</button></div>
+     <div class="cine-chapters"><button data-jump="3.5">① เริ่มแตกร้าว</button><button data-jump="8.5">② พื้นถล่ม</button><button data-jump="12.2">③ เกือบตก!</button><button data-jump="16.5">④ หลังเหตุการณ์</button></div>
+     <p class="cine-status" id="cineStatus">ฉาก V12.1 กำลังเล่นอัตโนมัติ · กล้องตามตัวละครขณะตก</p><p class="cine-actor-result" id="cineActorResult" role="status">🎬 ฉากสาธิต: 6 คน · ยังไม่มีใครตกรอบ</p>
+     <p class="feature"><strong>ผลในฉากสาธิตไม่เปลี่ยนผู้เล่นของเกมหลัก</strong> (ตัวเลขในแผงควบคุมด้านล่างเป็นการจำลองอีกโหมดหนึ่ง) การตกเป็นแอนิเมชันแบบกำหนดท่า ไม่ใช่ฟิสิกส์แบบ rigid-body และยังไม่เชื่อม TikTok LIVE</p>
+   </div>
+   <div class="panel"><div class="panel-heading"><div><h2>01 · ตั้งค่าห้องจำลอง</h2><p>เปลี่ยนจำนวนผู้ชม กติกาเดียวกันทุกห้อง</p></div><span>ผู้เล่นเริ่มต้น 20%</span></div><div class="button-grid three" id="roomSizes"><button data-size="10">10 คน</button><button data-size="100" class="active">100 คน</button><button data-size="1000">1,000 คน</button></div><div class="stats" style="margin-top:10px"><div class="stat"><b id="totalStat">100</b><span>ผู้ชมทั้งหมด</span></div><div class="stat"><b id="playersStat">20</b><span>ผู้เข้าแข่งขัน</span></div><div class="stat"><b id="spectatorsStat">80</b><span>ผู้ชมช่วยโหวต</span></div></div></div>
+   <div class="panel"><div class="panel-heading"><div><h2>02 · ควบคุมรอบเกม</h2><p>เกมเต็มยังเล่นได้เหมือน V11 และมีโหมดฉากภาพยนตร์แยกต่างหาก</p></div><span id="eventProgress">0 / 5 เหตุการณ์</span></div><div class="row"><button class="primary grow" id="playBtn">▶ เริ่มเกม</button><button id="nextBtn">⏭ เหตุการณ์ถัดไป</button></div><div class="row" style="margin-top:9px"><button id="collapseTestBtn" class="scenario">💥 เล่นเหตุการณ์ชั้น 20 ในเกมปกติ (V11)</button></div><div class="row" style="margin-top:9px"><button id="resetBtn">↻ สร้างห้องใหม่</button><button id="soundBtn" class="sound-switch">🔇 เปิดเสียงเตือน</button></div><div class="note" id="statusNote" role="status">เตรียมพร้อม · กดเริ่มเกมเพื่อเปิดเหตุการณ์ชั้น 80</div><div class="links" style="margin-top:11px"><a id="liveLink" href="?view=live" target="_blank" rel="noopener">📺 เปิดจอถ่ายทอดสด 9:16</a><a href="?view=control" target="_blank" rel="noopener">🛠 เปิดหน้าควบคุมอีกแท็บ</a></div></div>
+   <div class="panel"><div class="panel-heading"><div><h2>03 · เข้าทีมและช่วยชีวิต</h2><p>จำลองคำสั่งผู้ชม เลือกทีมและเพิ่มแรงช่วยเหลือได้</p></div><span>ไม่ใช้ของขวัญ</span></div><div class="row" style="margin-bottom:9px"><input class="input" id="playerName" maxlength="18" placeholder="ชื่อผู้เล่น (ไม่บังคับ)" aria-label="ชื่อผู้เล่น"></div><div class="button-grid four" id="joinButtons"><button class="team-btn" style="--c:var(--red)" data-team="0">🔴 ทีมแดง</button><button class="team-btn" style="--c:var(--blue)" data-team="1">🔵 ทีมน้ำเงิน</button><button class="team-btn" style="--c:var(--green)" data-team="2">🟢 ทีมเขียว</button><button class="team-btn" style="--c:var(--yellow)" data-team="3">🟡 ทีมเหลือง</button></div><p class="feature" id="joinStatus">ผู้ชมสามารถเข้าทีมได้จนกว่าจะเริ่มรอบ 10 วินาทีสุดท้าย</p><div class="button-grid four" style="margin-top:10px" id="cheerButtons"><button data-team="0">💪 แดง</button><button data-team="1">💪 น้ำเงิน</button><button data-team="2">💪 เขียว</button><button data-team="3">💪 เหลือง</button></div><div class="row" style="margin-top:9px"><button id="repairBtn">🔧 ช่วยซ่อมระบบ (+เกราะให้ทีมที่เชียร์ล่าสุด)</button></div></div>
+   <div class="panel"><div class="panel-heading"><div><h2>04 · คนดูตัดสินใจ</h2><p>คนที่ไม่ได้ลงแข่งก็โหวตเปลี่ยนความเสี่ยงได้</p></div><span>โหวตได้ 1 ครั้ง/เหตุการณ์</span></div><div class="action"><button id="voteA">1 · <span id="choiceA">ช่วยกันแก้ปัญหา</span><small id="countA">0 เสียง</small></button><button id="voteB">2 · <span id="choiceB">เลือกทางที่เสี่ยง</span><small id="countB">0 เสียง</small></button></div><div class="note" id="voteResult">หากโหวต A/B ข้างที่ปลอดภัยกว่า ทีมจะมีโอกาสสูญเสียน้อยลง แต่ไม่มีตัวเลือกใดปลอดภัย 100%</div></div>
+   <div class="panel"><div class="panel-heading"><div><h2>05 · ทีมที่ยังรอด</h2><p>นับจำนวนผู้เล่นจริงในระบบจำลอง ไม่ใช่แค่ตัวที่วาด</p></div><span>สูงสุด 12 ตัวบนเวที</span></div><div class="stats" id="teamStats" style="grid-template-columns:repeat(4,minmax(0,1fr))"></div></div>
+   <div class="panel"><div class="panel-heading"><div><h2>06 · บันทึกเหตุการณ์</h2><p>ตรวจว่าการโหวต การเชียร์ และการช่วยกันมีผลจริง</p></div></div><div class="logs" id="logs" aria-live="polite"></div></div>
+   <div class="foot">ต้นแบบ V12.1: WebGL 3D + ขยับจุดหมุนแขนขา + กล้องตามผู้ตก + สถิติฉากสอดคล้องกับเวลา · เก็บ V12 และ V11 ไว้แยกไฟล์<br>ยังไม่มีการเชื่อมต่อ TikTok LIVE / เซิร์ฟเวอร์ / ฐานข้อมูลผู้เล่น</div>
+  </section>
+ </main>
+</div>
+<script>
+'use strict';
+(() => {
+ const $ = id => document.getElementById(id);
+ const isLive = new URLSearchParams(location.search).get('view') === 'live';
+ if (isLive) document.body.classList.add('live');
+ const TEAM = [ {name:'แดง',color:'#fa5572',rgb:[1,.24,.38]}, {name:'น้ำเงิน',color:'#4ca4ff',rgb:[.19,.61,1]}, {name:'เขียว',color:'#35ddb0',rgb:[.14,.86,.65]}, {name:'เหลือง',color:'#f9c861',rgb:[1,.73,.25]} ];
+ const EVENTS = [
+  {floor:80,icon:'⚡',name:'ไฟฟ้าดับทั้งลิฟต์',desc:'เลือกทางแก้ก่อนระบบความปลอดภัยล่ม!',options:['รีเซ็ตแผงไฟ','ต่อสายไฟสำรอง'],safer:0,mode:'blackout'},
+  {floor:60,icon:'⛓',name:'สายเคเบิลขาด!',desc:'ลิฟต์กำลังตก ทีมต้องตัดสินใจทันที',options:['ล็อกเบรกฉุกเฉิน','เร่งเครื่องพุ่งลง'],safer:0,mode:'cable'},
+  {floor:40,icon:'☣️',name:'ควันพิษรั่วเข้าห้อง',desc:'คนดูเลือกแผน แล้วทุกทีมรับผลลัพธ์ร่วมกัน',options:['เปิดช่องระบายอากาศ','ปิดประตูแล้วรอ'],safer:0,mode:'smoke'},
+  {floor:20,icon:'💥',name:'พื้นลิฟต์เริ่มแตก',desc:'พื้นเริ่มร้าวกลางลิฟต์! ตัดสินใจภายในเวลา ก่อนพื้นทรุดตัว',options:['จับราวริมผนัง','วิ่งหนีเข้ากลางห้อง'],safer:0,mode:'collapse'},
+  {floor:10,icon:'🔥',name:'ไฟไหม้ห้องควบคุม',desc:'รอบตัดสินก่อนเข้าสู่ 10 วินาทีสุดท้าย',options:['ใช้ถังดับเพลิง','เปิดประตูฝ่าเปลวไฟ'],safer:0,mode:'fire'}
+ ];
+ const names = ['ดาวเหนือ','นักสู้','พิทักษ์','ผู้กล้า','ฮีโร่','มังกร','หมาป่า','สายฟ้า','นักรบ','พราน','นักเวท','สายลม','ต้นกล้า','แสงดาว','แชมป์','ใบชา','ดวงจันทร์','พายุ','นักบิน','ดอกไม้','นกฮูก','จอมพลัง'];
+ const rand01 = (()=>{let seed=21337;return () => ((seed=(1664525*seed+1013904223)>>>0)/4294967296)})();
+ const randInt = (a,b)=>Math.floor(rand01()*(b-a+1))+a;
+ let state, totalAudience = 100, soundOn = false, lastCheered = -1, userVotedEvent=-1, userHasJoined=false, lastTime=0, lastSecond=-1, tickAccumulator=0, lastBroadcast=0;
+ let remoteSeenAt=0, remoteMode=false, sceneTime=0, receiverIsActive=false;
+ const cine={active:true,playing:true,time:0,duration:19,speed:1,angle:'director'};
+ // Six storyboard actors are an explicit sample, NEVER the actual participants in V11 rounds.
+ const CINE_CAST=[{name:'มังกร',team:0},{name:'นักสู้',team:1},{name:'ฮีโร่',team:2},{name:'สายฟ้า',team:3},{name:'พิทักษ์',team:2},{name:'ผู้กล้า',team:0}];
+ function cineEliminated(i,t){return i===3 && t>=13.8;}
+ function cineCastAlive(t){return CINE_CAST.reduce((count,actor,i)=>count+(cineEliminated(i,t)?0:1),0);}
+ function cineTeamCounts(t){return TEAM.map((_,team)=>CINE_CAST.reduce((count,actor,i)=>count+(actor.team===team&&!cineEliminated(i,t)?1:0),0));}
+ const reducedMotion=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+ let cineUIStamp=0;
+ function smoothstep(a,b,x){const k=clamp01((x-a)/(b-a));return k*k*(3-2*k);}
+ function mix(a,b,k){return a+(b-a)*k;}
+ function updateCineUI(){
+  document.body.classList.toggle('cinema',cine.active);
+  document.body.classList.toggle('cine-paused',cine.active&&!cine.playing);
+  if(!cine.active)return;
+  const t=cine.time;
+  const shots=t<3.4?['ALARM','ไฟฉุกเฉินเริ่มทำงาน','ลิฟต์สั่น — ทุกคนต้องหาที่ยึดเกาะ']:t<7.0?['CRACK','รอยร้าวกำลังขยาย','พื้นเหล็กเริ่มแยก คนในลิฟต์วิ่งหนี']:t<11.5?['COLLAPSE','พื้นลิฟต์กำลังถล่ม!','แผ่นพื้นหลุดออกและเศษเหล็กร่วงลงไป']:t<15.2?['NEAR MISS · SLOW MOTION','เกือบตก! คว้าขอบพื้นไว้!','จังหวะอันตราย — กล้องติดตามผู้เล่น']:['AFTERMATH','รอด 5 จาก 6 คน — สีเหลืองตกรอบ','ดูผลของการเอาตัวรอด ก่อนกดเล่นซ้ำ'];
+  // Keep the spectator stage truthful: six staged actors, not fabricated live participants.
+  $('floorNumber').textContent='20';
+  $('phaseLabel').textContent='DIRECTOR CUT · FLOOR COLLAPSE';
+  $('aliveStageLabel').textContent='ตัวละครในฉาก';
+  const actorAlive=cineCastAlive(t);
+  $('aliveStage').textContent=actorAlive+' / 6';
+  $('stageState').textContent=t<18?'ฉากจำลอง':'จบฉาก';
+  const castCount=cineTeamCounts(t);
+  $('teamStage').innerHTML=TEAM.map((team,i)=>`<div class="team" style="--c:${team.color}"><div class="teamlabel">${team.name}</div><strong>${castCount[i]}</strong></div>`).join('');
+  $('progressBar').style.width=(t/cine.duration*100)+'%';
+  $('phone').classList.toggle('alarm',t>=3.2&&t<15.5);
+  $('phone').classList.toggle('critical',t>=11.2&&t<15.5);
+  $('phone').classList.remove('shake');
+  $('cineTitle').textContent=shots[1];$('cineSub').textContent=shots[2];$('cineSceneTag').textContent='● '+shots[0];
+  $('cineTimer').textContent=Math.max(0,Math.ceil(cine.duration-t))+'s';
+  $('cineProgress').style.width=(t/cine.duration*100)+'%';
+  $('cineSeek').value=t.toFixed(2);$('cineTime').textContent=t.toFixed(1)+' / 19s';
+  $('cinePlayBtn').textContent=cine.playing?'⏸ หยุดฉาก':'▶ เล่นต่อ';
+  $('cineShot').textContent=cine.angle==='director'?'🎬 DIRECTOR CAM':cine.angle==='wide'?'📷 WIDE CAMERA':cine.angle==='edge'?'🕳 EDGE CAMERA':cine.angle==='fall'?'⬇ FALL TRACKING':'🏃 HERO CAMERA';
+  $('cineStatus').textContent=(cine.playing?'▶ เล่น':'⏸ หยุด')+' · '+shots[0]+' · '+(t>=11.5&&t<15.2?'SLOW MOTION 40%':'ความเร็วปกติ')+' · กล้อง '+cine.angle;
+  $('cineActorResult').textContent=t<8?'🎬 ฉากสาธิต 6 คน · พื้นยังไม่ถล่ม':t<13.8?'⚠️ ฉากสาธิต 6/6 · สีเหลืองกำลังเสียหลัก (ยังไม่ตกรอบ)':t<16.5?'⬇ ฉากสาธิต 5/6 · สีเหลืองตกรอบแล้ว 1 คน': '✅ ฉากสาธิตจบ: รอด 5/6 · สีเหลืองตกรอบ 1 คน';
+  $('cineActorResult').classList.toggle('is-fall',t>=10.5&&t<16.5);
+  $('cineCameras').querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b.dataset.angle===cine.angle));
+ }
+ function showCine(time=0){cine.active=true;cine.time=Math.max(0,Math.min(cine.duration,time));cine.playing=true;updateCineUI();broadcast(true)}
+ function exitCine(){cine.active=false;document.body.classList.remove('cinema');updateUI();broadcast(true)}
+
+ let channel = null;
+ try {channel=new BroadcastChannel('last-floor-v121-sync');} catch(e){}
+ const playerId = ()=>'p'+Math.floor(rand01()*1e9).toString(36);
+ function newRoom(n=100){
+  totalAudience=n;userVotedEvent=-1;userHasJoined=false;lastCheered=-1;
+  let players=[], pcount=Math.max(2,Math.round(n*.2));
+  for(let i=0;i<pcount;i++)players.push({id:playerId(),name:names[i%names.length]+(i>=names.length?' '+(1+Math.floor(i/names.length)):'') ,team:i%4,alive:true,hero:0});
+  state={audience:n,players,phase:'lobby',step:-1,timer:0,paused:false,vote:[0,0],cheers:[0,0,0,0],shields:[0,0,0,0],choice:-1,hazard:'none',effectTime:0,fx:'idle',logs:[],winner:null,headline:'เตรียมลงลิฟต์',subtitle:'เข้าทีมแล้วช่วยกันเลือกทางรอด ทุกการตัดสินใจมีผล',recent:'ร่วมทีมพิมพ์ A/B/C/D · โหวต 1/2',joinedTeam:-1,fallen:[]};
+  addLog('🎮 เปิดห้องใหม่ '+n+' คน · ผู้เข้าแข่งขัน '+pcount+' คน · ไม่ใช่ผู้ชม TikTok จริง');
+  $('winner').classList.remove('show');$('phone').className='phone'; updateUI();broadcast(true);
+ }
+ function addLog(message){state.logs.unshift(message);state.logs.length=Math.min(state.logs.length,18);state.recent=message;}
+ const alive=()=>state.players.filter(p=>p.alive);
+ const countTeams=()=>TEAM.map((_,i)=>state.players.filter(p=>p.alive&&p.team===i).length);
+ function start(){
+  exitCine();
+  if(state.phase==='finished')newRoom(totalAudience);
+  if(state.phase==='lobby'){state.step=0;beginStep();}
+  state.paused=false;lastTime=performance.now();updateUI();broadcast(true);
+ }
+ function testCollapse(){
+  exitCine();
+  newRoom(totalAudience);
+  state.step=3;
+  beginStep();
+  state.timer=12;
+  state.headline='💥 พื้นลิฟต์เริ่มร้าว — หนีให้ทัน!';
+  addLog('🧪 โหมดทดสอบฉาก V11: ชั้น 20 (ข้ามเหตุการณ์ก่อนหน้าเพื่อดูแอนิเมชันทันที)');
+  state.paused=false;lastTime=performance.now();updateUI();broadcast(true);
+ }
+ function beginStep(){
+  state.phase='decision';state.timer=12;state.vote=[0,0];state.choice=-1;state.effectTime=0;state.hazard=EVENTS[state.step].mode;state.fx='idle';state.fallen=[];userVotedEvent=-1;
+  const ev=EVENTS[state.step];
+  // ผู้ชมจำลองให้มีฐานเสียงโดยรวม แต่ผู้ใช้ยังโหวตได้จริง
+  const spectatorCount=Math.max(0,state.audience-state.players.length);
+  let votes=Math.max(0,Math.round(spectatorCount*.32));
+  const leftShare=.35+rand01()*.30;
+  state.vote=[Math.round(votes*leftShare),votes-Math.round(votes*leftShare)];
+  state.headline=ev.icon+' '+ev.name;state.subtitle=ev.desc;
+  addLog('🚨 ชั้น '+ev.floor+': '+ev.name+' · เลือก 1/2 ก่อนหมดเวลา');
+  lastSecond=-1;updateUI();
+ }
+ function resolveStep(){
+  if(state.phase!=='decision')return;
+  const ev=EVENTS[state.step];
+  const best = state.vote[0] >= state.vote[1] ? 0 : 1;
+  state.choice=best;state.phase='impact';state.timer=3.6;state.fx=ev.mode;state.effectTime=3.6;
+  let people=alive(), choicesRight=(best===ev.safer);
+  const visibleBefore=new Map(people.slice(0,12).map((p,i)=>[p.id,i]));
+  const lossBase=choicesRight?.12:.32;
+  let removed=0, saved=0, hero=null;
+  for(let t=0;t<4;t++){
+   const teamPlayers=people.filter(p=>p.team===t);
+   const shield=Math.min(3,state.shields[t]);
+   const risk=Math.max(.025,lossBase-shield*.046-Math.min(10,state.cheers[t])*.008);
+   // อนุญาตให้ผู้เล่นเหลือรอดอย่างน้อย 1 คน เพื่อเข้าสู่รอบสุดท้ายได้เสมอ
+   for(const p of teamPlayers){if(alive().length<=2)break;if(rand01()<risk){p.alive=false;removed++}else if(shield>0&&rand01()<.12){saved++;}}
+   state.shields[t]=0;state.cheers[t]=0;
+  }
+  state.fallen=people.filter(p=>!p.alive&&visibleBefore.has(p.id)).slice(0,8).map(p=>({...p,slot:visibleBefore.get(p.id)}));
+  const remaining=alive();
+  if(remaining.length){hero=remaining[randInt(0,remaining.length-1)];hero.hero+=saved>0?2:1;}
+  state.headline=ev.mode==='collapse'?(removed?'💥 พื้นถล่ม! ผู้เล่นร่วงลงไป '+removed+' คน':'🛡 ทุกทีมหนีรอดจากพื้นถล่ม!'):(removed?'💥 ลิฟต์เสียการทรงตัว':'🛡 ทุกคนยืนหยัดได้!');
+  state.subtitle='เสียผู้เล่น '+removed+' คน • เหลือรอด '+alive().length+'/'+state.players.length;
+  addLog((choicesRight?'✅':'⚠️')+' ผู้ชมเลือกทาง '+(best===0?'1':'2')+' ('+state.vote.join(' / ')+') — ตกรอบ '+removed+' คน · เหลือรอด '+alive().length);
+  if(hero)addLog('🦸 HERO MOMENT: '+hero.name+' ยืนหยัดช่วยทีมในชั้น '+ev.floor);
+  $('phone').classList.add('alarm');updateUI();broadcast(true);
+ }
+ function toNext(){
+  if(state.phase==='lobby'){start();return;}
+  if(state.phase==='decision'){resolveStep();return;}
+  if(state.phase==='impact'){
+   if(state.step<EVENTS.length-1){state.step++;beginStep();}else{startFinal();}
+   return;
+  }
+  if(state.phase==='final'){finish();return;}
+  if(state.phase==='finished'){newRoom(totalAudience);start();}
+ }
+ function startFinal(){
+  state.phase='final';state.timer=10;state.fx='final';state.effectTime=10;state.hazard='final';state.headline='🚨 10 วินาทีสุดท้าย';state.subtitle='ลิฟต์กำลังตก! ทุกคนต้องตัดสินใจเอาชีวิตรอด';
+  addLog('🚨 FINAL 10 SECONDS — สัญญาณเตือนถี่ขึ้นทุกวินาที!');lastSecond=-1;updateUI();broadcast(true);
+ }
+ function finish(){
+  if(state.phase==='finished')return;
+  let remain=alive();
+  if(!remain.length){let p=state.players[0];p.alive=true;remain=[p];}
+  let maxScore=-1,win=remain[0];
+  for(const p of remain){const score=p.hero*1.1+rand01()*4;if(score>maxScore){maxScore=score;win=p;}}
+  for(const p of remain){if(p.id!==win.id)p.alive=false;}
+  state.winner={name:win.name,team:win.team,hero:win.hero};state.phase='finished';state.timer=0;state.fx='victory';state.hazard='none';state.headline='🏆 ผู้รอดชีวิตคนสุดท้าย';state.subtitle=win.name+' • ทีม'+TEAM[win.team].name;
+  addLog('🏆 WINNER: '+win.name+' · ทีม'+TEAM[win.team].name+' · HERO '+win.hero);
+  updateUI();broadcast(true);
+ }
+ function vote(n){
+  if(state.phase!=='decision'||userVotedEvent===state.step)return;
+  state.vote[n]++;userVotedEvent=state.step;addLog('🗳 ผู้ชมโหวต '+(n===0?'1':'2')+' เพิ่มจริง 1 เสียง');updateUI();broadcast(true);
+ }
+ function join(t){
+  if(state.phase==='finished'||state.phase==='final')return;
+  const nm=String($('playerName').value||'ผู้ชมคนใหม่').trim().slice(0,18)||'ผู้ชมคนใหม่';
+  if(!userHasJoined){state.players.push({id:'local',name:nm,team:t,alive:true,hero:0});userHasJoined=true;}
+  else{const p=state.players.find(p=>p.id==='local');if(!p||!p.alive)return;p.team=t;p.name=nm;}
+  state.joinedTeam=t;addLog('🎟 '+nm+' เข้าทีม'+TEAM[t].name+' แล้ว');updateUI();broadcast(true);
+ }
+ function cheer(t){
+  if(state.phase==='finished')return;
+  lastCheered=t;state.cheers[t]=Math.min(10,state.cheers[t]+1);state.shields[t]=Math.min(3,state.shields[t]+(state.cheers[t]%3===0?1:0));
+  addLog('📣 ผู้ชมเชียร์ทีม'+TEAM[t].name+' · สร้างแรงต้านความเสียหาย');updateUI();broadcast(true);
+ }
+ function repair(){
+  if(state.phase!=='decision'||lastCheered<0)return;
+  state.shields[lastCheered]=Math.min(3,state.shields[lastCheered]+1);
+  addLog('🔧 ทีม'+TEAM[lastCheered].name+' ได้เกราะป้องกันเพิ่มเติม');updateUI();broadcast(true);
+ }
+ function updateUI(){
+  const ev=EVENTS[state.step]||null, teams=countTeams(), running=state.phase==='decision'||state.phase==='impact'||state.phase==='final';
+  const floor=state.phase==='lobby'?100:state.phase==='final'||state.phase==='finished'?0:ev.floor;
+  $('floorNumber').textContent=String(floor).padStart(floor===0?2:1,'0');
+  $('phaseLabel').textContent=state.phase==='final'?'FINAL SURVIVAL':state.phase==='finished'?'WINNER OF THE ROUND':state.phase==='impact'?'IMPACT · ตัดสินผล':state.phase==='decision'?'SURVIVAL + TEAM · เลือกทางรอด':'SURVIVAL + TEAM · ร่วมมือ';
+  $('eventTitle').textContent=state.headline;$('eventDescription').textContent=state.subtitle;
+  const choicesVisible=!!ev && ['decision','impact'].includes(state.phase);
+  $('stageChoices').classList.toggle('show',choicesVisible);
+  $('stageOptionAText').textContent=ev?ev.options[0]:'ทางเลือกที่ 1';$('stageOptionBText').textContent=ev?ev.options[1]:'ทางเลือกที่ 2';
+  $('stageVotesA').textContent=state.vote[0]+' เสียง';$('stageVotesB').textContent=state.vote[1]+' เสียง';
+  for(let n=0;n<2;n++){$('stageOption'+(n===0?'A':'B')).classList.toggle('chosen',state.phase==='impact'&&state.choice===n);$('stageOption'+(n===0?'A':'B')).classList.toggle('wrong',state.phase==='impact'&&state.choice!==n);}
+  const collapseNow=state.hazard==='collapse'&&['decision','impact'].includes(state.phase);
+  $('hazardBanner').classList.toggle('show',collapseNow && (state.phase==='impact'||state.timer<=4));
+  $('eventBox').classList.toggle('danger',collapseNow);
+  $('stageMessage').innerHTML='';
+  $('eventMode').textContent=state.phase==='final'?'LAST 10 SECONDS':state.phase==='decision'?'พิมพ์ 1 หรือ 2 เพื่อเอาชีวิตรอด':state.phase==='impact'?'IMPACT':state.phase.toUpperCase();
+  $('eventClock').textContent=running?Math.max(0,Math.ceil(state.timer))+'s':'READY';
+  const final=state.phase==='final';$('bigTimer').classList.toggle('show',final);$('bigTimer').textContent=Math.max(0,Math.ceil(state.timer));
+  $('phone').classList.toggle('alarm',state.phase==='impact'||(final&&state.timer>4));
+  $('phone').classList.toggle('critical',final&&state.timer<=4);
+  $('phone').classList.toggle('shake',state.phase==='impact'||final&&state.timer<7);
+  $('aliveStage').textContent=alive().length+' / '+state.players.length;
+  $('stageState').textContent=state.phase==='finished'?'แชมป์':state.phase==='lobby'?'รอเริ่ม':state.phase==='final'?'FINAL':state.phase==='impact'?'IMPACT':'กำลังแข่งขัน';
+  $('ticker').textContent=state.recent;
+  $('teamStage').innerHTML=TEAM.map((t,i)=>`<div class="team ${teams[i]===Math.max(...teams)?'hot':''}" style="--c:${t.color}"><div class="teamlabel">${t.name}</div><strong>${teams[i]}</strong></div>`).join('');
+  $('progressBar').style.width=(state.phase==='lobby'?0:state.phase==='final'||state.phase==='finished'?100:(state.step+1)/6*100)+'%';
+  $('eventProgress').textContent=(Math.max(0,state.step+1))+' / 5 เหตุการณ์';
+  $('totalStat').textContent=state.audience;$('playersStat').textContent=state.players.length;$('spectatorsStat').textContent=Math.max(0,state.audience-state.players.length);
+  $('playBtn').textContent=state.phase==='finished'?'▶ เล่นรอบใหม่':state.phase==='lobby'?'▶ เริ่มเกม':state.paused?'▶ เล่นต่อ':'⏸ หยุดชั่วคราว';
+  $('nextBtn').disabled=state.phase==='finished';
+  $('nextBtn').textContent=state.phase==='decision'?'⚡ ตัดสินผลทันที':state.phase==='impact'?'⏭ ไปชั้นถัดไป':state.phase==='final'?'🏆 ประกาศแชมป์':'⏭ เหตุการณ์ถัดไป';
+  $('statusNote').textContent=(state.paused?'⏸ หยุดชั่วคราว · ':'')+(state.phase==='lobby'?'รอเริ่มเกม • เลือกทีมแล้วกด ▶':state.phase==='decision'?'ชั้น '+ev.floor+' · โหวต 1/2 ภายใน '+Math.ceil(state.timer)+' วินาที':state.phase==='impact'?'💥 ผลโหวตส่งผลต่อจำนวนผู้รอดชีวิตแล้ว':state.phase==='final'?'🚨 เหลือ '+Math.ceil(state.timer)+' วินาทีสุดท้าย':state.phase==='finished'?'🏆 '+state.winner.name+' เป็นผู้ชนะ!':'กำลังเล่น');
+  $('choiceA').textContent=ev?ev.options[0]:'ทางเลือก 1';$('choiceB').textContent=ev?ev.options[1]:'ทางเลือก 2';
+  $('countA').textContent=state.vote[0]+' เสียง';$('countB').textContent=state.vote[1]+' เสียง';
+  $('voteA').disabled=$('voteB').disabled=state.phase!=='decision'||userVotedEvent===state.step;
+  $('voteA').classList.toggle('active',state.phase==='impact'&&state.choice===0);$('voteB').classList.toggle('active',state.phase==='impact'&&state.choice===1);
+  $('voteResult').textContent=state.phase==='impact'?'ผลที่คนดูเลือก: '+(state.choice===0?'ทางเลือก 1':'ทางเลือก 2')+' • การโหวตส่งผลต่อความเสี่ยงของทีม':state.phase==='decision'?'จำนวนเสียงจำลอง + 1 เสียงของคุณ • เลือกได้ครั้งเดียวต่อชั้น':'คะแนนจากการโหวตไม่ใช้ของขวัญซื้อความได้เปรียบ';
+  $('teamStats').innerHTML=TEAM.map((t,i)=>`<div class="stat" style="border-top:3px solid ${t.color}"><b>${teams[i]}</b><span>${t.name} · 🛡${state.shields[i]}</span></div>`).join('');
+  $('logs').innerHTML=state.logs.map(s=>'<div class="log">'+escapeHTML(s)+'</div>').join('');
+  $('joinStatus').textContent=userHasJoined?'เข้าร่วมแล้ว: ทีม'+TEAM[state.joinedTeam].name+' · สามารถเปลี่ยนทีมก่อนรอบสุดท้าย':'เข้าร่วมได้ก่อนรอบ 10 วินาทีสุดท้าย';
+  $('joinButtons').querySelectorAll('button').forEach(b=>{b.disabled=state.phase==='finished'||state.phase==='final';b.classList.toggle('active',userHasJoined&&Number(b.dataset.team)===state.joinedTeam)});
+  $('repairBtn').disabled=state.phase!=='decision'||lastCheered<0;
+  $('roomSizes').querySelectorAll('button').forEach(b=>b.classList.toggle('active',Number(b.dataset.size)===state.audience));
+  $('winner').classList.toggle('show',state.phase==='finished');
+  if(state.winner){$('winnerName').textContent=state.winner.name;$('winnerMeta').textContent='ทีม'+TEAM[state.winner.team].name+' · HERO '+state.winner.hero;}
+ }
+ function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function beep(freq=620,d=.09){if(!soundOn)return;try{const a=window.__soundCtx||(window.__soundCtx=new (window.AudioContext||window.webkitAudioContext)());if(a.state==='suspended')a.resume();const o=a.createOscillator(),g=a.createGain();o.type='sawtooth';o.frequency.value=freq;g.gain.setValueAtTime(.001,a.currentTime);g.gain.exponentialRampToValueAtTime(.07,a.currentTime+.01);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+d+.01)}catch(e){soundOn=false;}}
+ function broadcast(force=false){if(isLive)return;if(!state)return;const now=performance.now();if(!force&&now-lastBroadcast<350)return;lastBroadcast=now;const msg={kind:'state',source:'controller',state:{...state,logs:state.logs.slice(0,5)},cinema:{...cine}};try{if(channel)channel.postMessage(msg);localStorage.setItem('last_floor_v121_state',JSON.stringify({...msg,timestamp:Date.now()}));}catch(e){}}
+ function receive(msg){if(!isLive||!msg||msg.kind!=='state'||!msg.state)return;state=msg.state;remoteMode=true;remoteSeenAt=performance.now();if(msg.cinema){cine.active=!!msg.cinema.active;cine.playing=!!msg.cinema.playing;cine.time=Math.max(0,Math.min(19,+msg.cinema.time||0));cine.angle=msg.cinema.angle||'director';}updateUI();if(cine.active)updateCineUI();}
+ if(channel)channel.onmessage=e=>receive(e.data);
+ if(isLive){try{const saved=JSON.parse(localStorage.getItem('last_floor_v121_state')||'null');if(saved&&Date.now()-saved.timestamp<60000)receive(saved)}catch(e){}window.addEventListener('storage',e=>{if(e.key==='last_floor_v121_state')try{receive(JSON.parse(e.newValue))}catch(_){}});}
+ if(!isLive){
+  $('cineStartBtn').addEventListener('click',()=>showCine(0));
+  $('cinePlayBtn').addEventListener('click',()=>{if(!cine.active)showCine();else{if(cine.time>=cine.duration)cine.time=0;cine.playing=!cine.playing;updateCineUI();broadcast(true)}});
+  $('cineReplayBtn').addEventListener('click',()=>showCine(0));
+  $('cineExitBtn').addEventListener('click',()=>{exitCine();updateUI()});
+  $('cinePrevBtn').addEventListener('click',()=>{showCine(cine.time-1);cine.playing=false;updateCineUI()});
+  $('cineNextBtn').addEventListener('click',()=>{showCine(cine.time+1);cine.playing=false;updateCineUI()});
+  $('cineSeek').addEventListener('input',e=>{showCine(+e.target.value);cine.playing=false;updateCineUI()});
+  $('cineCameras').addEventListener('click',e=>{const b=e.target.closest('[data-angle]');if(b){const wasPlaying=cine.playing;cine.angle=b.dataset.angle;showCine(cine.time);cine.playing=wasPlaying;updateCineUI()}});
+  document.querySelector('.cine-chapters').addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(b){showCine(+b.dataset.jump);cine.playing=false;updateCineUI()}});
+  $('roomSizes').addEventListener('click',e=>{let b=e.target.closest('[data-size]');if(b)newRoom(Number(b.dataset.size))});
+  $('playBtn').addEventListener('click',()=>{if(state.phase==='lobby'||state.phase==='finished'){start()}else{state.paused=!state.paused;lastTime=performance.now();updateUI();broadcast(true)}});
+  $('nextBtn').addEventListener('click',()=>toNext());$('collapseTestBtn').addEventListener('click',testCollapse);$('resetBtn').addEventListener('click',()=>newRoom(totalAudience));
+  $('voteA').addEventListener('click',()=>vote(0));$('voteB').addEventListener('click',()=>vote(1));
+  $('joinButtons').addEventListener('click',e=>{let b=e.target.closest('button[data-team]');if(b)join(+b.dataset.team)});
+  $('cheerButtons').addEventListener('click',e=>{let b=e.target.closest('button[data-team]');if(b)cheer(+b.dataset.team)});
+  $('repairBtn').addEventListener('click',repair);
+  $('soundBtn').addEventListener('click',()=>{soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 ปิดเสียงเตือน':'🔇 เปิดเสียงเตือน';if(soundOn)beep(780,.08)});
+ }
+ // -------- WebGL: true perspective 3D rendering; no libraries or CDN required --------
+ const canvas=$('world');
+ let gl=null, glProgram=null, meshes={}, uniforms={}, vp=null, drawCalls=0, m4Scratch=null;
+ try {gl=canvas.getContext('webgl',{alpha:false,antialias:true,premultipliedAlpha:false,powerPreference:'high-performance'});}catch(e){}
+ const mI=()=>new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+ function multiply(a,b){let r=new Float32Array(16);for(let c=0;c<4;c++)for(let row=0;row<4;row++)r[c*4+row]=a[row]*b[c*4]+a[row+4]*b[c*4+1]+a[row+8]*b[c*4+2]+a[row+12]*b[c*4+3];return r;}
+ function trs(x,y,z,sx,sy,sz,rx=0,ry=0,rz=0){let cx=Math.cos(rx),sx1=Math.sin(rx),cy=Math.cos(ry),sy1=Math.sin(ry),cz=Math.cos(rz),sz1=Math.sin(rz);let m=mI();
+  // R = Rz * Ry * Rx
+  m[0]=cz*cy*sx;m[1]=sz1*cy*sx;m[2]=-sy1*sx;
+  m[4]=(cz*sy1*sx1-sz1*cx)*sy;m[5]=(sz1*sy1*sx1+cz*cx)*sy;m[6]=cy*sx1*sy;
+  m[8]=(cz*sy1*cx+sz1*sx1)*sz;m[9]=(sz1*sy1*cx-cz*sx1)*sz;m[10]=cy*cx*sz;
+  m[12]=x;m[13]=y;m[14]=z;return m;
+ }
+ function perspective(fovy,aspect,near,far){let f=1/Math.tan(fovy/2),r=new Float32Array(16);r[0]=f/aspect;r[5]=f;r[10]=(far+near)/(near-far);r[11]=-1;r[14]=2*far*near/(near-far);return r;}
+ function lookAt(eye,target,up=[0,1,0]){let z=[eye[0]-target[0],eye[1]-target[1],eye[2]-target[2]],l=Math.hypot(...z);z=z.map(x=>x/l);let x=[up[1]*z[2]-up[2]*z[1],up[2]*z[0]-up[0]*z[2],up[0]*z[1]-up[1]*z[0]];l=Math.hypot(...x);x=x.map(v=>v/l);let y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];let m=mI();m[0]=x[0];m[1]=y[0];m[2]=z[0];m[4]=x[1];m[5]=y[1];m[6]=z[1];m[8]=x[2];m[9]=y[2];m[10]=z[2];m[12]=-x.reduce((s,v,i)=>s+v*eye[i],0);m[13]=-y.reduce((s,v,i)=>s+v*eye[i],0);m[14]=-z.reduce((s,v,i)=>s+v*eye[i],0);return m;}
+ function boxVerts(){let d=[];const faces=[[[1,0,0],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[.5,-.5,.5]],[[-1,0,0],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-.5,-.5,-.5]],[[0,1,0],[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5]],[[0,-1,0],[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5]],[[0,0,1],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]],[[0,0,-1],[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5]]];
+  for(let f of faces){for(let i of [0,1,2,0,2,3])d.push(...f[i+1],...f[0]);}return d;}
+ function sphereVerts(){const d=[],R=10,S=13;for(let r=0;r<R;r++){let theta0=r*Math.PI/R,theta1=(r+1)*Math.PI/R;for(let s=0;s<S;s++){let a0=s*2*Math.PI/S,a1=(s+1)*2*Math.PI/S;function pt(th,a){return [Math.sin(th)*Math.cos(a),Math.cos(th),Math.sin(th)*Math.sin(a)];}const p0=pt(theta0,a0),p1=pt(theta1,a0),p2=pt(theta1,a1),p3=pt(theta0,a1);for(let p of [p0,p1,p2,p0,p2,p3])d.push(...p,...p);}}return d;}
+ function cylinderVerts(){let d=[],N=12;for(let i=0;i<N;i++){let a=i*Math.PI*2/N,b=(i+1)*Math.PI*2/N;let p=[Math.cos(a),-.5,Math.sin(a)],q=[Math.cos(b),-.5,Math.sin(b)],r=[Math.cos(b),.5,Math.sin(b)],s=[Math.cos(a),.5,Math.sin(a)];for(let z of [p,q,r,p,r,s]){const norm=[z[0],0,z[2]];d.push(...z,...norm)}for(let z of [[0,.5,0],s,r])d.push(...z,0,1,0);for(let z of [[0,-.5,0],q,p])d.push(...z,0,-1,0); }return d;}
+ function shader(kind,source){let s=gl.createShader(kind);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;}
+ function initGL(){if(!gl)return false;
+  try{
+   const vert=`attribute vec3 aP;attribute vec3 aN;uniform mat4 uM;uniform mat4 uVP;varying vec3 vN;varying vec3 vP;void main(){vec4 w=uM*vec4(aP,1.);vP=w.xyz;vN=normalize(mat3(uM)*aN);gl_Position=uVP*w;}`;
+   const frag=`precision mediump float;uniform vec3 uC;uniform float uEm;uniform vec3 uLight;uniform float uRed;varying vec3 vN;varying vec3 vP;void main(){vec3 n=normalize(vN);float diff=max(0.,dot(n,normalize(vec3(-0.25,0.9,0.6))));float side=max(0.,dot(n,normalize(vec3(0.9,0.2,0.3))));float back=pow(1.-max(0.,dot(n,normalize(vec3(0.,0.12,1.)))),2.);vec3 tint=uC*(0.27+diff*0.58+side*0.14)+vec3(.06,.15,.22)*back*0.3;vec3 col=tint+uC*uEm+vec3(.55,.05,.09)*uRed*max(0.,diff*.15+back*.3);float fog=clamp((length(vP-vec3(0.,2.,11.))-8.)/18.,0.,.36);col=mix(col,vec3(.045,.067,.11),fog);gl_FragColor=vec4(pow(max(col,vec3(0.)),vec3(.88)),1.);}`;
+   glProgram=gl.createProgram();gl.attachShader(glProgram,shader(gl.VERTEX_SHADER,vert));gl.attachShader(glProgram,shader(gl.FRAGMENT_SHADER,frag));gl.linkProgram(glProgram);if(!gl.getProgramParameter(glProgram,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(glProgram));gl.useProgram(glProgram);
+   uniforms={aP:gl.getAttribLocation(glProgram,'aP'),aN:gl.getAttribLocation(glProgram,'aN'),uM:gl.getUniformLocation(glProgram,'uM'),uVP:gl.getUniformLocation(glProgram,'uVP'),uC:gl.getUniformLocation(glProgram,'uC'),uEm:gl.getUniformLocation(glProgram,'uEm'),uRed:gl.getUniformLocation(glProgram,'uRed')};
+   const toMesh = verts =>{let b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);return{buffer:b,count:verts.length/6}};
+   meshes={box:toMesh(boxVerts()),sphere:toMesh(sphereVerts()),cylinder:toMesh(cylinderVerts())};
+   gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);return true;
+  }catch(err){console.error('WebGL unavailable',err);gl=null;return false;}
+ }
+ const glReady=initGL();
+ function draw(kind,x,y,z,sx,sy,sz,color,em=.0,rx=0,ry=0,rz=0){const mesh=meshes[kind];if(!mesh)return;gl.bindBuffer(gl.ARRAY_BUFFER,mesh.buffer);gl.enableVertexAttribArray(uniforms.aP);gl.enableVertexAttribArray(uniforms.aN);gl.vertexAttribPointer(uniforms.aP,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(uniforms.aN,3,gl.FLOAT,false,24,12);gl.uniformMatrix4fv(uniforms.uM,false,trs(x,y,z,sx,sy,sz,rx,ry,rz));gl.uniform3fv(uniforms.uC,color);gl.uniform1f(uniforms.uEm,em);gl.drawArrays(gl.TRIANGLES,0,mesh.count);drawCalls++;}
+ const hexRGB=h=>{const n=parseInt(h.slice(1),16);return [(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]};
+ const C={wall:[.09,.18,.3], dark:[.055,.094,.145],steel:[.2,.31,.44],floor:[.13,.22,.32],rail:[.37,.53,.65],white:[.86,.9,.97],hair:[.11,.13,.21],skin:[.95,.70,.46],black:[.03,.045,.08],light:[.28,.8,1],yellow:[1,.65,.22],red:[1,.17,.23],green:[.15,.9,.5]};
+
+ function clamp01(n){return Math.max(0,Math.min(1,n));}
+ function collapseStrength(){
+  if(cine.active){const t=cine.time;return t<3.5?(.07+.11*t/3.5):t<7?mix(.18,.55,smoothstep(3.5,7,t)):t<11.5?mix(.55,1,smoothstep(7,11.5,t)):.99;}
+  if(state.hazard==='collapse'&&state.phase==='decision')return .07 + .48*clamp01((12-state.timer)/12);
+  if(state.hazard==='collapse'&&state.phase==='impact')return .55+.45*clamp01((3.6-state.timer)/2.5);
+  if(state.phase==='final')return .35 + .6*clamp01((10-state.timer)/10);
+  return 0;
+ }
+ // Fractures are real 3D geometry, not CSS damage painted over the game.
+ function drawShatteringFloor(t){
+  const strength=collapseStrength(),danger=strength>0;const isBreaking=(cine.active&&cine.time>5.7)||(state.phase==='impact'&&state.hazard==='collapse')||state.phase==='final';
+  draw('box',0,-3.1,-.05,4.3,.08,3.6,[.006,.01,.022]); // deep abyss
+  if(cine.active&&cine.time>5){
+   for(let i=0;i<6;i++){
+    let y=-3.6-i*1.35;
+    for(let side of [-1,1])draw('box',side*1.55,y,0,.10,.12,3.5,C.steel,.03);
+    for(let z of [-1.15,1.15])draw('box',0,y,z,3.2,.07,.10,i%2===0?C.red:C.rail,i%2===0?.5:.1);
+   }
+  }
+  const cols=6,rows=5,sw=4.16/cols,sd=3.42/rows;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+   const xx=(c-(cols-1)/2)*sw, zz=(r-(rows-1)/2)*sd;
+   const faultX=.16+Math.sin(zz*2.3)*.40;
+   const proximity=clamp01(1-Math.abs(xx-faultX)/1.5);
+   const fault=proximity>.46 && (c+r)%4!==0;
+   const sink=isBreaking&&fault?Math.pow(clamp01((strength-.39)/.61),1.3)*(.38+proximity*(cine.active?2.9:1.9)):0;
+   // Visible physical hole: central metal slabs have fallen entirely out of the floor.
+   if(cine.active&&cine.time>8.0&&fault&&proximity>.62&&((r+c)%5!==0))continue;
+   const ragged= Math.sin((c+5)*3.78+(r+2)*1.52)*.06;
+   const tilt=isBreaking?clamp01((strength-.48)/.52)*(fault?(.19+proximity*(cine.active?.82:.35)):.055)*Math.sin(c*3+r*1.8):0;
+   const shade=(c+r)%2===0?[.105,.205,.285]:[.15,.24,.325];
+   // Smaller gap between slabs makes growing fractures visible as the floor drops
+   draw('box',xx,-1.83-sink+ragged*strength,zz,sw-.023,.12,sd-.023,shade,0,tilt*.4,tilt,-tilt*.38);
+   if(danger&&proximity>.16){
+    const redGlow=[.92,.14,.11];
+    const cy=-1.748-sink+ragged*strength;
+    if(proximity>.48&&strength>.15)draw('box',xx,cy+.006,zz,sw*.66,.012,.018,redGlow,.2+strength*.95,0,-Math.sin(r*.97+c)*.75);
+   }
+  }
+  if(danger){
+   // Main branching crack and glowing spurs along the center seam
+   let last=[-.13,-1.66,-1.7];
+   for(let i=1;i<=18;i++){
+    const z=-1.7+i*3.4/18;
+    const x=.16+Math.sin(z*2.3)*.40+Math.sin(i*2.4)*.06;
+    const dx=x-last[0],dz=z-last[2],len=Math.hypot(dx,dz);
+    const yy=-1.70-(isBreaking?clamp01((strength-.55)*3)*.13:0);
+    const color=strength>.7?C.red:[1,.51,.13];
+    draw('box',(x+last[0])/2,yy,(z+last[2])/2,len,.016,.045,color,.95+strength*.9,0,-Math.atan2(dz,dx));
+    if(i%3===1){const len2=.3+.38*strength;let dir=i%2?-1:1;
+     draw('box',x+dir*len2/2,yy,z+.15,len2,.01,.024,C.yellow,.9,0,dir*.26);}
+    last=[x,yy,z];
+   }
+   // warning-lit rail at the safe edges
+   for(const s of [-1,1])draw('box',s*1.92,-1.65,.0,.045,.025,3.2,C.green,.32);
+  }
+ }
+ function drawDebris(t){
+  const frac=cine.active?smoothstep(6.2,14,cine.time):clamp01((3.6-state.timer)/3.6);
+  for(let k=0;k<23;k++){
+   const seed=k*2.399963;
+   const xx=Math.sin(seed)*(.16+(k%5)*.26);
+   const zz=Math.cos(k*1.33)*1.5;
+   const fall=frac*frac*(.5+(k%7)*.21);
+   const twist=frac*(1+k%4)*.88;
+   draw('box',xx+Math.sin(t*5+k)*frac*.12,-1.69-fall,zz,.13+(k%3)*.10,.05,.12+(k%4)*.06,k%4?C.floor:C.steel,.03,twist*.9,twist,-twist);
+   if(k%4===0)draw('sphere',xx,-1.30+Math.sin(t*13+k)*frac*.50,zz,.03,.03,.03,C.yellow,1.7);
+  }
+ }
+ function drawElevator(t){
+  const jolt=cine.active?Math.sin(t*36)*.035*smoothstep(4,11,cine.time):state.phase==='impact'?Math.sin(t*65)*.095:state.phase==='final'?Math.sin(t*(18+(10-state.timer)*4))*.12:0;
+  const alarm=cine.active||state.phase==='impact'||state.phase==='final';let flash=alarm?(Math.sin(t*(state.phase==='final'&&state.timer<4?26:10))>.15?1:0):0;
+  gl.uniform1f(uniforms.uRed,flash);
+  // Floor, ceiling, back wall, perspective side panels and door frame
+  drawShatteringFloor(t);
+  // Thick perimeter frame around the destructible floor
+  for(const side of [-1,1]){
+   draw('box',side*2.13,-1.72,-.06,.16,.18,3.75,C.steel,.13);
+   draw('box',0,-1.72,side*1.78,4.4,.17,.12,C.steel,.1);
+  }
+  draw('box',0,1.03,-1.87,4.5,5.55,.15,C.wall);
+  draw('box',-2.26,1.03,-.1,.15,5.55,3.65,C.dark);
+  draw('box',2.26,1.03,-.1,.15,5.55,3.65,C.dark);
+  draw('box',0,3.84,-.1,4.45,.20,3.65,C.steel);
+  // Brushed back panels with metal highlights
+  for(let x of [-1.42,-.47,.47,1.42])draw('box',x,1.1,-1.76,.013,4.9,.05,C.steel,.06);
+  draw('box',0,.50,-1.75,4.4,.036,.10,C.rail,.04);
+  draw('box',0,2.40,-1.75,4.3,.045,.10,C.rail,.04);
+  for(let x of [-1.8,1.8])draw('box',x,.13,-1.65,.16,2.15,.14,C.steel,.07);
+  // Ceiling luminous strips, side rails, emergency alarm lamps
+  for(let x of [-1.15,0,1.15])draw('box',x,3.7,-.15,.30,.04,2.8,alarm&&flash?C.red:C.light,.8);
+  for(let x of [-2.1,2.1])draw('box',x,-.55,.10,.07,.07,3.15,C.rail,.15);
+  draw('box',-1.65,2.62,-1.57,.28,.17,.12,flash?C.red:C.green,flash?1.3:.5);
+  draw('box',1.65,2.62,-1.57,.28,.17,.12,flash?C.red:C.green,flash?1.3:.5);
+  // Door track; sliding doors close at random hazards (not always covering stage)
+  for(let x of [-2.28,2.28])draw('box',x,.99,1.78,.18,5.8,.21,C.steel);
+  draw('box',0,3.85,1.72,4.45,.22,.27,C.rail,.1);
+  draw('box',0,-1.65,1.76,4.45,.12,.23,C.steel);
+  let door=state.phase==='impact'&&['blackout','fire'].includes(state.hazard)?Math.min(.9,(3.6-state.timer)/2.0):state.phase==='final'?.1:0;
+  if(door>.02){draw('box',-2.15+door*.78,1.0,1.75,door*1.6,5.5,.07,C.steel,.03);draw('box',2.15-door*.78,1.0,1.75,door*1.6,5.5,.07,C.steel,.03);}
+  // Damage sparks, smoke and red danger strobes
+  if(alarm){for(let k=0;k<15;k++){let xx=Math.sin(k*11.3+t*3.7)*1.85, yy=Math.sin(k*2.5+t*4)*1.5+.8,zz=Math.cos(k*13.1)*1.1;draw('sphere',xx,yy,zz,.018,.018,.018,k%2?C.yellow:C.red,2);}}
+  if(state.hazard==='smoke'&&state.phase==='impact'){for(let k=0;k<9;k++){let xx=Math.sin(k*3.2+t*.4)*1.6, yy=-1.6+((t*.22+k*.13)%2.7),zz=Math.sin(k*2.4)*1.5;draw('sphere',xx,yy,zz,.15,.09,.16,[.15,.19,.24],.03);}}
+  if((cine.active&&cine.time>6.2)||(state.hazard==='collapse'&&state.phase==='impact'))drawDebris(t);
+  // dynamic spotlight-like strips at front
+  for(let x of [-2.04,2.04])draw('box',x,1.0,1.57,.06,5.0,.07,alarm&&flash?C.red:C.light,.5);
+  return jolt;
+ }
+ function drawCharacter(p,index,total,t,jolt,falling=false){
+  const cols=4, col=index%cols,row=Math.floor(index/cols), maxRows=4;
+  let x=(col-1.5)*.88+Math.sin(index*2.8)*.08;
+  let z=-1.05+row*.73;
+  const fracture=state.hazard==='collapse', collapsing=fracture&&state.phase==='impact';
+  if(fracture&&state.phase==='decision'){
+   let anticipation=clamp01((12-state.timer)/12);
+   x+=(index%2?1:-1)*anticipation*.14;
+   z+=Math.sin(t*4+index)*anticipation*.06;
+  }
+  if(collapsing){
+   const frac=clamp01((3.6-state.timer)/3.1);
+   const ease=frac*frac*(3-2*frac);
+   const side=(index%2===0?-1:1);
+   // Survivors leap toward safe rails, eliminated players fall inward through broken floor.
+   x += falling? -x*.65*ease : side*.49*ease;
+   z += Math.sin(index*1.8)*.21*ease;
+  }
+  let running=state.phase==='decision'&&(state.timer<7||fracture),impact=state.phase==='impact',final=state.phase==='final';
+  let step=(running||final)?Math.sin(t*(running?11:18)+index*2):Math.sin(t*2.2+index*2)*.12;
+  let bob=Math.abs(step)*(.025+(final?.09:running?.05:0));
+  let jump=impact?Math.abs(Math.sin((3.6-state.timer)*8+index*.81))*.33:0;
+  let fallTilt=falling?Math.min(1.65,(3.6-state.timer)*.65):impact&&index%4===0?Math.min(.65,(3.6-state.timer))*.46:0;
+  let rescue=impact&&index%5===1?Math.sin(t*13):0;
+  let y=-1.78+jolt+bob+jump-(falling?Math.max(0,Math.pow((3.6-state.timer)/2.2,1.7)*2.5):0);
+  const tint=TEAM[p.team].rgb;
+  const ry=Math.sin(index*.6+t*(running?2:.4))*.22;
+  const lean=(final?Math.sin(t*17+index)*.22:running?.18:0)+fallTilt;
+  // contact shadow and light-colored platform
+  draw('cylinder',x,-1.69,z,.31,.025,.23,C.black,.02);
+  draw('cylinder',x,-1.67,z,.23,.02,.23,tint,.12);
+  // leg + footwear
+  for(let s of [-1,1]){
+   let swing=step*s*(final?.55:running?.47:.06);
+   draw('cylinder',x+s*.115,y+.24,z,.108,.44,.105,[.14,.23,.35],.02,swing,0,s*.1);
+   draw('box',x+s*.11,y+.035,z+.075+swing*.07,.16,.13,.27,C.white,.02);
+  }
+  // body armor, chest panel, belt
+  draw('box',x,y+.64,z,.43,.56,.29,tint,.04,0,ry,lean);
+  draw('box',x,y+.66,z+.168,.21,.17,.04,C.white,.10,0,0,lean);
+  draw('box',x,y+.41,z+.01,.46,.08,.32,C.steel,.01);
+  // sleeves + gloves
+  for(let s of [-1,1]){
+   let arm=impact?(rescue*.65+s*.4):running?step*s*.7:(Math.sin(t*1.8+index)*.15);
+   draw('cylinder',x+s*.31,y+.61,z+.01,.12,.43,.12,tint,.03,arm,0,-s*(.20+rescue*.25));
+   draw('sphere',x+s*.36,y+.36+(impact?Math.sin(t*9+index)*.1:0),z+.05,.105,.11,.105,C.skin);
+  }
+  // neck and 3D head + hair, eyes face forward
+  draw('cylinder',x,y+.99,z,.11,.12,.11,C.skin);
+  draw('sphere',x,y+1.22,z,.24,.25,.22,C.skin,.02,0,ry,lean*.35);
+  draw('sphere',x,y+1.375,z-.025,.24,.12,.19,C.hair,.03,0,ry);
+  draw('sphere',x-.075,y+1.24,z+.203,.025,.028,.026,C.black);
+  draw('sphere',x+.075,y+1.24,z+.203,.025,.028,.026,C.black);
+  // Team marker lights behind each character
+  draw('sphere',x,y+1.59,z-.16,.067,.067,.067,tint,.9);
+ }
+
+ // Camera beats are authored for clarity: one spatial focus per shot, not random shaking.
+ const CINE_SHOTS=[
+  [0,[0,3.2,9.4],[0,-.45,-.2],44],
+  [3.6,[1.4,3.6,8.2],[0,-1.14,-.15],45],
+  [6.0,[-2.4,2.5,6.4],[-.7,-1.4,.0],49],
+  [8.5,[2.8,4.1,6.4],[0,-1.65,.1],53],
+  [11.0,[1.1,2.0,4.7],[.45,-1.55,.6],51],
+  [13.2,[2.5,1.2,4.8],[.6,-2.1,.7],53],
+  [15.5,[0,4.9,7.7],[0,-2.1,.2],47],
+  [19,[0,3.3,9.1],[0,-1.15,.0],44]
+ ];
+ function getCineCamera(t,angle){
+  const falling=smoothstep(11.0,15.7,t),drop=falling*4.0;
+  const fallCam={eye:[1.32,1.12-5.20*falling,5.60],target:[.30,-1.0-4.10*falling,.78],fov:50};
+  const fixed={wide:{eye:[0,3.6,9.3],target:[0,-1.2,0],fov:44},edge:{eye:[1.8,1.25,4.35],target:[.35,-2.15,.6],fov:51},hero:{eye:[-1.65,2.45,5.5],target:[-.9,-1.0,.6],fov:48},fall:fallCam};
+  if(angle!=='director'&&fixed[angle])return fixed[angle];
+  for(let i=0;i<CINE_SHOTS.length-1;i++){
+   const a=CINE_SHOTS[i],b=CINE_SHOTS[i+1];
+   if(t<=b[0]){
+    const k=smoothstep(a[0],b[0],t);
+    const base={eye:a[1].map((v,j)=>mix(v,b[1][j],k)),target:a[2].map((v,j)=>mix(v,b[2][j],k)),fov:mix(a[3],b[3],k)};
+    // During the crucial fall, the automatic director dips with the falling body.
+    const take=smoothstep(12.0,13.4,t)*(1-smoothstep(15.1,16.55,t))*.90;
+    return {eye:base.eye.map((v,j)=>mix(v,fallCam.eye[j],take)),target:base.target.map((v,j)=>mix(v,fallCam.target[j],take)),fov:mix(base.fov,fallCam.fov,take)};
+   }
+  }
+  return{eye:[0,3.3,9.1],target:[0,-1.15,0],fov:44};
+ }
+ // Six individually choreographed rigged blocky characters.
+ // Visual risk is scripted; the underlying competition remains the original V11 model.
+ // The whole rig is positioned by storyboard time, not wall-clock time. Pausing freezes every joint.
+ function cinePose(i,t,jolt=0){
+  const hazard=smoothstep(2.6,6.8,t),escape=smoothstep(6.3,10.4,t),near=smoothstep(10.0,14.5,t),settle=smoothstep(15.0,18.0,t);
+  const start=[[-1.28,.98],[-1.54,-.60],[-.44,-.55],[1.22,.72],[.65,-1.28],[1.58,-.53]][i];
+  let x=start[0],z=start[1],y=-1.8+jolt,rx=0,rz=0,yaw=0,run=hazard,reach=0,up=0,fall=0;
+  if(i===0){ // Red: stumbles at the lip and reaches for the floor before recovering.
+   x+=.63*escape;z+=.25*escape;rx=.26*hazard+.93*near-.56*settle;rz=-.24*near; y-=.26*near; y+=.16*settle;reach=near;run=hazard*(1-near);
+  } else if(i===1){ // Blue: crouches and grabs a handrail (located at x=-2.1, y=-.55).
+   x=mix(x,-1.94,hazard);z+=.15*hazard;rz=-.32*near;rx=-.15*near;reach=escape;run=hazard*(1-escape);
+  } else if(i===2){ // Green: leap across the gap, body pitches on landing.
+   x+=1.16*escape;z+=.52*escape;up=.94*Math.sin(Math.PI*escape);rx=.54*escape-.60*settle;y+=up;reach=escape;run=hazard;
+  } else if(i===3){ // Yellow: visibly loses support; falls into the shaft in 3D space.
+   const slip=smoothstep(8.1,11.4,t);fall=smoothstep(11.6,15.7,t);
+   x-=.30*hazard+.64*slip;z+=.24*slip;rx=.12*hazard+1.13*slip+.7*fall;rz=.25*slip+.6*fall;
+   y-=.18*slip+4.5*fall*fall;reach=slip;run=hazard*(1-slip);
+  } else if(i===4){x-=.78*hazard;z+=.48*hazard;rx=.35*near-.2*settle;reach=.6*near;run=hazard*(1-near);}
+  else {x-=.42*hazard;z-=.40*hazard;yaw=2.4*hazard;rx=.17*hazard;run=hazard;}
+  return {x,y,z,rx,rz,yaw,run,reach,up,fall};
+ }
+ function drawLimb(a,b,r,color,em=0){
+  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],length=Math.max(.01,Math.hypot(dx,dy,dz));
+  const rz=-Math.atan2(dx,Math.hypot(dy,dz));
+  const rx=Math.atan2(dz,dy);
+  draw('cylinder',(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,r,length,r,color,em,rx,0,rz);
+ }
+ function drawCineCharacter(p,i,now,jolt){
+  const t=cine.time,pose=cinePose(i,t,jolt),{x,y,z,rx,rz,yaw,run,reach,fall}=pose;
+  // Articulated local-to-world pose about the hip; torso and head actually rotate together.
+  function at(lx,ly,lz){
+   const cy=Math.cos(yaw),sy=Math.sin(yaw),cx=Math.cos(rx),sx=Math.sin(rx),cz=Math.cos(rz),sz=Math.sin(rz);
+   const px=lx*cy+lz*sy,pz=-lx*sy+lz*cy;
+   const py=ly*cx-pz*sx,pzz=ly*sx+pz*cx;
+   return [x+px*cz-py*sz,y+.46+px*sz+py*cz,z+pzz];
+  }
+  const tint=TEAM[p.team].rgb,skin=C.skin;
+  const gait=Math.sin(t*(8+8*run)+i*1.2)*run*.54;
+  if(i!==3||t<11.5)draw('cylinder',x,-1.70,z,.29,.024,.23,C.black,.02);
+  // Hip position and feet are independent, enabling bracing, tripping and midair kicking.
+  for(const side of [-1,1]){
+   const hip=[x+side*.12,y+.38,z];
+   const kick=gait*side+(i===3?fall*.65*side:0);
+   const knee=[x+side*.13,y+.18-(i===3?.12*fall:0),z+.10+kick*.30];
+   const foot=[x+side*.14,y+.02+(i===3?fall*.15:0),z+.17+kick*.43];
+   drawLimb(hip,knee,.12,[.13,.21,.34]);drawLimb(knee,foot,.105,[.16,.26,.4]);
+   draw('box',...foot,.22,.13,.31,C.white,.05,kick*.25,0,side*.15);
+  }
+  const torso=at(0,.18,0),chest=at(0,.17,.19),neck=at(0,.52,0),head=at(0,.79,0),hair=at(0,.99,-.01);
+  draw('box',...torso,.50,.60,.34,tint,.12,rx,yaw,rz);
+  draw('box',...chest,.22,.22,.052,C.white,.32,rx,yaw,rz);
+  drawLimb(at(0,.43,0),neck,.11,skin);
+  draw('sphere',...head,.29,.27,.26,skin,.02,rx,yaw,rz);
+  draw('box',...hair,.53,.15,.48,C.hair,.05,rx,yaw,rz);
+  // Panic face follows the head orientation, not a detached front-facing sticker.
+  for(const side of [-1,1])draw('sphere',...at(side*.084,.81,.235),.038,.045,.025,C.black,.07);
+  if(t>6.8)draw('box',...at(0,.66,.246),.11,.10,.025,C.black,.06,rx,yaw,rz);
+  // Arms have shoulders, elbows and hands. Key action poses are grounded to visible surfaces.
+  for(const side of [-1,1]){
+   const shoulder=at(side*.32,.41,0);let elbow,hand;
+   if(i===1&&side===-1){ // Blue: hand reaches the actual side rail.
+    const grip=reach; const rest=at(side*.47,.05,.08);const rail=[-2.1,-.55,z+.05];
+    hand=rest.map((v,k)=>mix(v,rail[k],grip));elbow=[mix(shoulder[0]-.14,-1.99,grip),mix(shoulder[1]-.22,-.62,grip),z+.16];
+   }else if(i===0&&side===1){ // Red: fingertips stretch down to a lip of a surviving slab.
+    const to=at(.54,-.35,.45);const target=[x+.33,-1.74,z+.32];
+    hand=to.map((v,k)=>mix(v,target[k],reach));elbow=[(shoulder[0]+hand[0])/2,shoulder[1]-.17,z+.24];
+   }else if(i===3){ // Yellow: involuntary arm flail during the fall.
+    const flail=fall*Math.sin(t*8+side);
+    elbow=at(side*(.56+.12*fall),.12+side*.15*fall,.12+flail*.12);
+    hand=at(side*(.78+.25*fall),-.02+side*.28*fall,.32+flail*.25);
+   }else{
+    const swing=gait*side*.42,spread=(i===2?.36:reach*.24);
+    elbow=at(side*(.48+spread),.16+swing*.16,.05+.20*reach);
+    hand=at(side*(.60+spread),-.08+swing*.30,.12+.23*reach);
+   }
+   drawLimb(shoulder,elbow,.115,tint);draw('sphere',...elbow,.12,.12,.12,tint,.04);
+   drawLimb(elbow,hand,.10,tint);draw('sphere',...hand,.14,.14,.14,skin,.06);
+  }
+  draw('sphere',...at(0,1.18,-.08),.075,.075,.075,tint,1.2);
+ }
+ function renderWebGL(dt,now){
+  let w=canvas.clientWidth||400,h=canvas.clientHeight||711,dpr=Math.min(window.devicePixelRatio||1,1.5),pw=Math.max(1,Math.round(w*dpr)),ph=Math.max(1,Math.round(h*dpr));
+  if(canvas.width!==pw||canvas.height!==ph){canvas.width=pw;canvas.height=ph;gl.viewport(0,0,pw,ph);}
+  const final=state.phase==='final',impact=state.phase==='impact';
+  const motion=final?Math.max(0,10-state.timer)/10:impact?(3.6-state.timer)/3.6:0;
+  let eye,target,fov;
+  if(cine.active){
+   const shot=getCineCamera(cine.time,cine.angle);
+   const pulse=reducedMotion?0:smoothstep(5.0,10,cine.time)*(1-smoothstep(15,18,cine.time));
+   eye=[shot.eye[0]+Math.sin(cine.time*29)*.020*pulse,shot.eye[1]+Math.cos(cine.time*23)*.015*pulse,shot.eye[2]];
+   target=shot.target;fov=shot.fov;
+  }else{
+   const camX=(final||impact)?Math.sin(now*22)*.028*motion:Math.sin(now*.45)*.045;
+   const camY=(final||impact)?Math.cos(now*17)*.040*motion:0;
+   eye=[camX,3.6+camY,9.2+(final?motion*.45:0)];target=[0,-.22,-.2];fov=41;
+  }
+  const v=lookAt(eye,target);
+  vp=multiply(perspective(fov*Math.PI/180,w/h,.1,100),v);
+  gl.viewport(0,0,pw,ph);gl.clearColor(.035,.065,.115,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.useProgram(glProgram);gl.uniformMatrix4fv(uniforms.uVP,false,vp);gl.uniform1f(uniforms.uRed,0);
+  drawCalls=0;const poseClock=cine.active?cine.time:now;let jolt=drawElevator(poseClock);
+  let visible=alive().slice(0,12);
+  if(cine.active){for(let i=0;i<CINE_CAST.length;i++)drawCineCharacter(CINE_CAST[i],i,poseClock,jolt);}
+  else for(let i=0;i<visible.length;i++)drawCharacter(visible[i],i,visible.length,now,jolt);
+  if(!cine.active&&state.phase==='impact')for(const p of (state.fallen||[]))drawCharacter(p,p.slot,12,now,jolt,true);
+  // celebratory lights when finished
+  if(state.phase==='finished'){let c=TEAM[state.winner.team].rgb;for(let i=0;i<18;i++){let x=Math.sin(i*7.9+now*.8)*1.7,y=Math.sin(i*3.2+now*.7)*1.9+1,z=Math.cos(i*9.4)*1.2;draw('sphere',x,y,z,.055,.055,.055,c,.9);}}
+ }
+ // Canvas 2D graceful fallback for devices with disabled WebGL; no external dependency
+ const context2D=!glReady?canvas.getContext('2d'):null;
+ function renderFallback(now){
+  if(!context2D)return;
+  const w=canvas.clientWidth||400,h=canvas.clientHeight||711,dpr=Math.min(window.devicePixelRatio||1,2);
+  if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+  const ctx=context2D;ctx.setTransform(dpr,0,0,dpr,0,0);
+  const bg=ctx.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#071120');bg.addColorStop(.55,'#172d45');bg.addColorStop(1,'#050914');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  const x0=w*.10,x1=w*.9,ceil=h*.24,base=h*.80;
+  ctx.fillStyle='#15283d';ctx.fillRect(x0,ceil,x1-x0,base-ceil);
+  ctx.fillStyle='#273e5c';ctx.fillRect(x0-5,ceil,7,base-ceil);ctx.fillRect(x1-2,ceil,7,base-ceil);
+  for(let i=1;i<5;i++){
+   const x=x0+(x1-x0)*i/5;
+   ctx.strokeStyle='#42617d60';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,ceil);ctx.lineTo(x,base);ctx.stroke();
+  }
+  for(let j=0;j<4;j++){
+   const y=ceil+(base-ceil)*(j+.7)/4;
+   ctx.strokeStyle='#45627a50';ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();
+  }
+  const sh=collapseStrength(),breaking=(cine.active&&cine.time>6.0)||(state.phase==='impact'&&state.hazard==='collapse');
+  const floorTop=h*.64;
+  ctx.fillStyle='#18344b';ctx.fillRect(x0,floorTop,x1-x0,base-floorTop);
+  // Each floor slab is a distinct drawn piece with animated displacement.
+  for(let c=0;c<8;c++)for(let r=0;r<3;r++){
+   let xx=x0+(x1-x0)*c/8, yy=floorTop+(base-floorTop)*r/3;
+   let isBad=Math.abs(c-3.5-Math.sin(r*2)*.8)<1.7;
+   let fall=breaking&&isBad?Math.max(0,sh-.55)*h*.17:0;
+   ctx.fillStyle=(c+r)%2?'#1c384d':'#254257';
+   ctx.fillRect(xx+1,yy+fall+1,(x1-x0)/8-3,(base-floorTop)/3-3);
+  }
+  if(sh>0){
+   // Cracks spread toward the camera: visible even without 3D hardware support.
+   ctx.save();ctx.beginPath();ctx.rect(x0,floorTop,x1-x0,base-floorTop);ctx.clip();
+   const main=(offset,bright)=>{
+    ctx.beginPath();
+    for(let i=0;i<=13;i++){
+     let y=floorTop+(base-floorTop)*i/13;
+     let x=w*.52+Math.sin(i*2.4+offset)*w*.035+i*.9;
+     if(!i)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=bright;ctx.lineWidth=Math.max(2,w*.008*sh);ctx.shadowColor='#ff623b';ctx.shadowBlur=18*sh;ctx.stroke();
+   };
+   main(0,'#ff774b');
+   for(let j=0;j<4;j++){
+    let y=floorTop+(base-floorTop)*(j+.7)/4,x=w*.52+Math.sin(j*3)*w*.04;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+(j%2?-1:1)*w*.18*sh,y+(j%2?10:-8)*sh);ctx.strokeStyle='#ffbd61';ctx.lineWidth=1.8;ctx.stroke();
+   }
+   if(breaking&&sh>.65){
+    const hole=Math.min(.45,(sh-.65)*1.3)*w;
+    ctx.fillStyle='#020712';ctx.beginPath();ctx.ellipse(w*.52,h*.735,hole,hole*.3,0,0,Math.PI*2);ctx.fill();
+    for(let k=0;k<13;k++){
+     ctx.save();ctx.translate(w*.52+Math.sin(k*2.4)*w*.25,h*.69+((k*39+(cine.active?cine.time:now)*55)%(h*.3)));
+     ctx.rotate((cine.active?cine.time:now)*2+k);ctx.fillStyle=k%2?'#405a6b':'#f4a354';ctx.fillRect(0,0,7+k%3*3,5+k%4*2);ctx.restore();
+    }
+   }
+   ctx.restore();
+  }
+  // Cast animation characters with team colors. A safe side step vs a fall is visible.
+  let players=cine.active?CINE_CAST:alive().slice(0,12);
+  const people=players.map((p,i)=>({p,i,falling:false}));
+  if(breaking)(state.fallen||[]).forEach(f=>people.push({p:f,i:f.slot,falling:true}));
+  people.forEach(({p,i,falling})=>{
+   if(cine.active&&i===3&&cine.time>16.6)return;
+   const col=i%4,row=Math.floor(i/4),fear=state.hazard==='collapse'&&state.phase==='decision';
+   let x=w*(.235+col*.178),y=h*(.665+row*.054);
+   const k=breaking?(cine.active?smoothstep(6,15,cine.time):clamp01((3.6-state.timer)/3.4)):0;
+   const run=cine.active?smoothstep(2.5,8,cine.time):fear?clamp01((12-state.timer)/12):k;
+   x+=(falling?-1:(col<2?-1:1))*run*w*.045;
+   if(falling){x+=(w*.51-x)*k*.8;y+=k*k*h*.18;}else if(cine.active&&i===3){const f=smoothstep(11.6,15.7,cine.time);x+=(w*.52-x)*k*.42;y+=f*f*h*.34;}else if(cine.active&&i===2){y-=Math.sin(k*Math.PI)*h*.065;}else if(breaking){y-=Math.sin(k*Math.PI)*h*.016;}
+   const bob=Math.sin((cine.active?cine.time:now)*11+i)*h*(fear?.005:.002);y+=bob;
+   let color=TEAM[p.team].color;
+   ctx.shadowColor=color;ctx.shadowBlur=11;
+   ctx.fillStyle='#ffcda4';ctx.beginPath();ctx.arc(x,y-12,7,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle=color;ctx.fillRect(x-9,y-5,18,18);
+   ctx.fillStyle='#d0e9ef';ctx.fillRect(x-7,y+11,5,8);ctx.fillRect(x+2,y+11,5,8);
+   ctx.shadowBlur=0;
+  });
+  if(state.phase==='impact'||state.phase==='final'){
+   const pulse=(Math.sin(now*13)>0)?'rgba(255,35,68,.16)':'rgba(255,36,68,.025)';
+   ctx.fillStyle=pulse;ctx.fillRect(x0,ceil,x1-x0,base-ceil);
+  }
+ }
+ function advance(dt){
+  if(remoteMode && isLive && performance.now()-remoteSeenAt<5000)return;
+  if(!state||state.paused||cine.active)return;
+  if(state.phase==='lobby'||state.phase==='finished')return;
+  let remaining=Math.min(120,Math.max(0,dt)),guard=0;
+  while(remaining>0&&guard++<24&&state.phase!=='finished'&&state.phase!=='lobby'){
+   if(state.timer>remaining){state.timer-=remaining;remaining=0;}
+   else{remaining-=Math.max(0,state.timer);state.timer=0;toNext();}
+  }
+  let second=Math.ceil(state.timer);
+  if(second!==lastSecond){lastSecond=second;
+   if(state.phase==='final'&&second>0)beep(second<=4?1250:second<=7?900:680,second<=4?.10:.06);
+   else if(state.phase==='decision'&&second<=3&&second>0)beep(680,.07);
+   updateUI();broadcast(true);
+  }
+ }
+ function animate(ms){
+  const now=ms/1000;const dt=lastTime?Math.max(0,(ms-lastTime)/1000):.016;lastTime=ms;
+  // For a standalone broadcast view, demo its own sample round; following controller state takes priority
+  if(isLive&&!remoteMode&&!cine.active&&state.phase==='lobby'&&ms>2500)start();
+  if(isLive&&remoteMode&&ms-remoteSeenAt>5000){remoteMode=false;lastTime=ms;}
+  if(cine.active&&cine.playing&&!(isLive&&remoteMode)){
+   const prevCineTime=cine.time;
+   const slow=(cine.time>=11.5&&cine.time<15.2)?.4:1;
+   cine.time=Math.min(cine.duration,cine.time+Math.min(.08,dt)*slow*cine.speed);
+   if(soundOn){
+    for(const [moment,pitch] of [[3.5,520],[7.0,670],[11.5,940],[15.3,580]])
+     if(prevCineTime<moment && cine.time>=moment)beep(pitch,moment===11.5?.21:.12);
+   }
+   if(cine.time>=cine.duration)cine.playing=false;
+  }
+  advance(dt);sceneTime+=Math.min(.08,dt);
+  if(cine.active&&ms-cineUIStamp>110){cineUIStamp=ms;updateCineUI();}
+  if(glReady)renderWebGL(dt,now);else renderFallback(now);
+  if(!isLive)broadcast();
+  requestAnimationFrame(animate);
+ }
+ newRoom(totalAudience);
+ if(isLive){ // retrieve freshest controller state after local bootstrap without overwriting viewer display
+  try{const msg=JSON.parse(localStorage.getItem('last_floor_v121_state')||'null');if(msg&&Date.now()-msg.timestamp<60000)receive(msg)}catch(e){}
+ }
+ updateCineUI();
+ requestAnimationFrame(animate);
+ window.__lastFloorV12={getState:()=>state,play:start,next:toNext,reset:newRoom,vote,join,cheer,testCollapse,glReady,cine,showCine,exitCine,getCineCamera};
+})();
+</script>
+</body>
+</html>
