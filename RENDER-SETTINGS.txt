@@ -1,0 +1,23 @@
+LAST FLOOR V16.4 — Render Web Service (test setup)
+
+Source: GitHub > rongrianthai/last-10-seconds
+Branch: main
+Language: Node
+Root Directory: (leave empty)
+Build Command: npm install
+Start Command: npm start
+Plan: Free (for testing only)
+
+Environment variables:
+  LIVE_ROOM_TOKEN = (create your own private random secret, at least 24 characters; DO NOT put it in GitHub)
+  ENABLE_TEST_ENDPOINT = 1
+  ALLOWED_ORIGINS = https://rongrianthai.github.io
+  TIKTOK_USERNAME = (omit until you are ready to test a real public TikTok LIVE)
+
+Once deployed:
+  1) Open LAST FLOOR V16.4 controller page.
+  2) In TikTok LIVE box, set URL = https://your-name.onrender.com
+  3) Enter the SAME secret as LIVE_ROOM_TOKEN.
+  4) Press Connect LIVE.
+  5) Expand Test via Server and send Thai 'เล่น'; then test 1 or 2 in the voting phase.
+  6) When done, set ENABLE_TEST_ENDPOINT=0 and deploy again.
