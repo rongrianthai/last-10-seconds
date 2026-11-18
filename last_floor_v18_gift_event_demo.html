@@ -502,38 +502,23 @@ body .hero-hud {display:none!important}
 .phone.stage-extreme .event{border-color:#fb5875!important;box-shadow:0 0 24px #fb58754b}
 .phone.stage-hard .event-name{color:#ffe2a3}.phone.stage-extreme .event-name{color:#ffd0da}
  
-/* V18 PHASE 1 - simulation only; effects are visual/audio ornaments, never modify game state. */
-.gift-stage-layer{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .18s;isolation:isolate}
-.gift-stage-layer.active{opacity:1}
-.gift-ambient{position:absolute;inset:0;opacity:0;transition:opacity .3s}
-.gift-stage-layer[data-kind="rose"] .gift-ambient{opacity:1;background:repeating-linear-gradient(0deg,#fa203b20 0px,#fa203b05 35px,#b900220c 72px);animation:gift-redflash .75s ease-in-out infinite alternate}
-.gift-stage-layer[data-kind="finger_heart"] .gift-ambient{opacity:1;background:radial-gradient(ellipse at 54% 12%,#fcae4044,transparent 43%)}
-.gift-stage-layer[data-kind="doughnut"] .gift-ambient{opacity:1;background:radial-gradient(ellipse at 50% 28%,#52e5ff34,transparent 55%)}
-.gift-stage-layer[data-kind="hand_hearts"] .gift-ambient{opacity:1;background:radial-gradient(ellipse at 50% 45%,#4ddcfa30,transparent 70%)}
-.gift-stage-layer[data-kind="money_gun"] .gift-ambient{opacity:1;background:linear-gradient(160deg,#ff425020,#20224000 50%,#eb42542b)}
-.gift-stage-layer[data-kind="galaxy"] .gift-ambient{opacity:1;background:radial-gradient(ellipse at 50% 27%,#ffeaa957,transparent 68%)}
-.gift-stage-particles{position:absolute;inset:0;overflow:hidden}
-.gift-stage-particles i{position:absolute;left:var(--gx);top:var(--gy);width:var(--gs);height:var(--gs);background:var(--gc);border-radius:50%;box-shadow:0 0 9px var(--gc),0 0 18px var(--gc);animation:gift-particle var(--gt) ease-in-out infinite alternate;animation-delay:var(--gd)}
-.gift-stage-layer[data-kind="finger_heart"] .gift-stage-particles i{border-radius:2px;transform:rotate(20deg)}
-.gift-stage-layer[data-kind="money_gun"] .gift-stage-particles i{height:90px;width:2px;border-radius:1px;opacity:.7;animation-name:gift-streak}
-.gift-spotlight{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) scale(.5);opacity:0;font-size:54px;filter:drop-shadow(0 0 24px #65d7ff);animation:gift-float 2s ease-in-out infinite alternate}
-.gift-stage-layer[data-kind="doughnut"] .gift-spotlight{opacity:1}
-.gift-stage-layer[data-kind="doughnut"] .gift-spotlight::before{content:'🛸'}
-.gift-stage-layer[data-kind="galaxy"] .gift-spotlight{opacity:1;font-size:72px;filter:drop-shadow(0 0 35px #ffd683)}
-.gift-stage-layer[data-kind="galaxy"] .gift-spotlight::before{content:'✨'}
-.gift-shield{position:absolute;top:30%;bottom:27%;left:12%;right:12%;border:4px solid #67dfff99;background:linear-gradient(100deg,#3ec8fd13,#c0f8ff08);border-radius:50%;box-shadow:inset 0 0 34px #52dfff4d,0 0 32px #42e5ff77;opacity:0;transform:scale(.7);animation:gift-shield 1.4s ease-in-out infinite alternate}
-.gift-stage-layer[data-kind="hand_hearts"] .gift-shield{opacity:1}
-.gift-savior{position:absolute;top:37%;left:50%;font-size:64px;transform:translate(-50%,-50%);opacity:0;filter:drop-shadow(0 0 18px #ffdf88);animation:gift-savior 1.4s ease-in-out infinite alternate}
-.gift-stage-layer[data-kind="galaxy"] .gift-savior{opacity:1}
-.gift-savior::before{content:'🦾'}
-.gift-golden-rays{position:absolute;inset:-30%;background:repeating-conic-gradient(from 0deg at 50% 48%,#fff1a820 0deg 11deg,transparent 11deg 27deg);opacity:0;animation:gift-gold-spin 13s linear infinite}
-.gift-stage-layer[data-kind="galaxy"] .gift-golden-rays{opacity:.75}
-.gift-banner{position:absolute;z-index:12;top:21%;left:8%;right:8%;display:none;pointer-events:none;text-align:center;border:1px solid #f1d795e6;border-radius:12px;background:linear-gradient(120deg,#0c142bf5,#182242f5);box-shadow:0 8px 25px #0008,0 0 20px #fcce7850;padding:7px 10px;color:#fff;max-height:15%;overflow:hidden}
-.gift-banner.show{display:block;animation:gift-banner-in .3s ease-out}
-.gift-banner .gift-tag{font-size:9px;letter-spacing:.13em;color:#ffcf79;font-weight:900}
-.gift-banner .gift-label{display:block;font-size:clamp(12px,2.4vw,18px);font-weight:950;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gift-banner .gift-sender{display:block;font-size:10px;color:#d8e8fa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gift-stage-layer[data-kind="money_gun"]{animation:gift-drop .55s linear infinite alternate}
+/* Gift badges follow the rendered sender's head. */
+#avatarGifts{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.avatar-gift{position:absolute;width:2.4em;height:3em;transform:translate(-50%,-50%);overflow:hidden;pointer-events:none;color:var(--ink)}
+.avatar-gift i{position:absolute;left:var(--x);top:var(--y);width:.33em;height:.48em;background:currentColor;animation:var(--motion) 1s ease-in-out var(--delay) infinite}
+.avatar-gift[data-kind="rose"] i{border-radius:80% 10% 70% 20%;--motion:petal}
+.avatar-gift[data-kind="finger_heart"] i{clip-path:polygon(55% 0,90% 0,62% 45%,95% 45%,15% 100%,38% 56%,8% 56%);--motion:spark}
+.avatar-gift[data-kind="doughnut"] i{width:.65em;height:.25em;border-radius:40%;box-shadow:0 .16em .08em -.05em white;--motion:drone}
+.avatar-gift[data-kind="hand_hearts"] i{clip-path:polygon(0 10%,50% 0,100% 10%,85% 73%,50% 100%,15% 73%);--motion:guard}
+.avatar-gift[data-kind="money_gun"] i{width:.52em;height:.28em;border-left:.1em solid #e6ffbf;--motion:bill}
+.avatar-gift[data-kind="galaxy"] i{clip-path:polygon(50% 0,62% 36%,100% 50%,63% 62%,50% 100%,38% 64%,0 50%,37% 38%);--motion:star}
+@keyframes petal{from{transform:translateY(-.6em) rotate(-30deg);opacity:.35}to{transform:translate(.15em,.6em) rotate(70deg);opacity:.95}}
+@keyframes spark{50%{transform:scale(1.4);opacity:.25}}
+@keyframes drone{50%{transform:translate(.3em,-.4em)}}
+@keyframes guard{50%{transform:translateY(-.22em);opacity:.45}}
+@keyframes bill{from{transform:translateY(-.5em) rotate(-25deg)}to{transform:translate(.2em,.6em) rotate(35deg);opacity:.35}}
+@keyframes star{50%{transform:translate(.24em,-.35em) rotate(90deg) scale(.65);opacity:.45}}
+@media(prefers-reduced-motion:reduce){.avatar-gift i{animation:none}}
 .gift-test-panel{border-color:#ffd38a;background:linear-gradient(145deg,#2e2340,#14233b)}
 .gift-test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
 .gift-test-grid button{min-width:0;padding:10px 6px;font-size:12px;min-height:42px;border:1px solid #6b7198;border-radius:9px;background:#283956;color:#fff;font-weight:750}
@@ -541,30 +526,12 @@ body .hero-hud {display:none!important}
 .gift-status{font-size:11px;color:#c9def8;margin-top:8px;line-height:1.5}
 .gift-test-panel[hidden],.gift-tools-section[hidden]{display:none!important}
 .gift-tools-section{border-top:1px solid #566585;margin-top:12px;padding-top:7px}
-@keyframes gift-redflash{0%{opacity:.15}100%{opacity:.9}}
-@keyframes gift-particle{0%{opacity:.15;transform:translate(0,0) scale(.6)}100%{opacity:1;transform:translate(24px,-36px) scale(1.35)}}
-@keyframes gift-streak{0%{transform:translateY(-90px);opacity:0}100%{transform:translateY(260px);opacity:.9}}
-@keyframes gift-float{0%{transform:translate(-50%,-50%) scale(.85) rotate(-12deg)}100%{transform:translate(-50%,-67%) scale(1.12) rotate(12deg)}}
-@keyframes gift-shield{0%{transform:scale(.90);opacity:.35}100%{transform:scale(1.03);opacity:.93}}
-@keyframes gift-savior{0%{transform:translate(-50%,-50%) scale(.7)}100%{transform:translate(-50%,-65%) scale(1.15)}}
-@keyframes gift-banner-in{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes gift-drop{from{transform:translateY(-2px)}to{transform:translateY(4px)}}
-@keyframes gift-gold-spin{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.gift-stage-layer,.gift-stage-layer *,.gift-banner{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="app"><header class="topbar"><div><div class="brand">LAST <span>FLOOR</span> V18</div><div class="subtitle">SOLO SURVIVAL · 10 FLOORS · 2 HEARTS · 3D LIVE</div></div><span class="pill">● V18 · GIFT DEMO / LIVE WAITING ROOM</span></header>
 <div class="live-orientation-hint" aria-hidden="true">📱 จอ LIVE เป็น 9:16<br>หมุน iPad แนวตั้งเพื่อลดพื้นที่ด้านข้าง ภาพไม่ถูกยืดหรือตัด</div><main class="layout">
 <section class="stage-column" aria-label="จอไลฟ์แนวตั้ง">
 <div class="phone mini-mode" id="phone"><canvas id="world" class="render" aria-label="ฉากลิฟต์ 3D แสดงเฉพาะผู้ชมที่พิมพ์ เล่น ผ่าน LIVE ที่เชื่อมแล้ว"></canvas>
-<div class="gift-stage-layer" id="giftStageLayer" aria-hidden="true" data-kind="">
- <div class="gift-golden-rays"></div><div class="gift-ambient"></div>
- <div class="gift-stage-particles" id="giftStageParticles"></div>
- <div class="gift-spotlight"></div><div class="gift-shield"></div><div class="gift-savior"></div>
-</div>
-<div class="gift-banner" id="giftBanner" role="status" aria-live="polite">
- <div class="gift-tag">🧪 ของขวัญจำลอง · ไม่ใช่ TikTok จริง</div>
- <strong class="gift-label" id="giftLabel"></strong><small class="gift-sender" id="giftSender"></small>
-</div><div class="champion-beams" aria-hidden="true"></div><div class="ceremony-vignette" aria-hidden="true"></div><div class="ceremony-particles" id="ceremonyParticles" aria-hidden="true"></div><div class="ceremony-eyebrow" aria-hidden="true">✦ GRAND CHAMPION ✦</div><div class="festival-glow" aria-hidden="true"></div><div class="vignette"></div><div id="showcaseTitle" class="showcase-title" hidden>CHARACTER STUDIO · V16<br><small>🔴 นักเวท · 🔵 มังกร · 🟢 พิทักษ์ · 🟡 ดาวรุ่ง</small></div><div id="miniLabels" class="mini-labels" aria-hidden="true"></div><div class="warningflash"></div>
+<div id="avatarGifts" aria-hidden="true"></div><div class="champion-beams" aria-hidden="true"></div><div class="ceremony-vignette" aria-hidden="true"></div><div class="ceremony-particles" id="ceremonyParticles" aria-hidden="true"></div><div class="ceremony-eyebrow" aria-hidden="true">✦ GRAND CHAMPION ✦</div><div class="festival-glow" aria-hidden="true"></div><div class="vignette"></div><div id="showcaseTitle" class="showcase-title" hidden>CHARACTER STUDIO · V16<br><small>🔴 นักเวท · 🔵 มังกร · 🟢 พิทักษ์ · 🟡 ดาวรุ่ง</small></div><div id="miniLabels" class="mini-labels" aria-hidden="true"></div><div class="warningflash"></div>
 <div class="social-notice" id="socialNotice" role="status" aria-live="polite" hidden></div><div class="lobby-ribbon" id="lobbyRibbon">🎮 พิมพ์ <b>เล่น</b> เพื่อเข้าลิฟต์ฟรี!</div>
 <button class="stage-audio-control" id="stageAudioBtn" type="button" aria-label="เปิดหรือปิดเสียงเกม">🔇 เปิดเสียง</button>
 <div class="stage-top"><span class="onair" id="liveIndicator">● WAITING FOR LIVE</span><div class="floor-box"><small>FLOOR</small><strong id="floorNumber">100</strong></div></div>
@@ -1673,6 +1640,16 @@ function drawActor(p,i,t){
   const px=lx*ca+lz*sa,pz=-lx*sa+lz*ca,py=ly*cp-pz*sp,pzz=ly*sp+pz*cp;
   return[x+px*cr-py*sr,y+.45+px*sr+py*cr,z+pzz];
  }
+ if(activeGifts.has(p)&&!showcaseMode){
+  const head=at(0,.42,0),scale=actorTransform?.s||1;
+  const anchor=[x+(head[0]-x)*scale,-1.76+(head[1]+1.76)*scale,z+(head[2]-z)*scale];
+  const pos=projectMini(anchor);
+  const lower=projectMini([anchor[0],anchor[1]-.42*scale,anchor[2]]);
+  if(pos&&lower&&pos.every(n=>Math.abs(n)<=1)){
+   const size=Math.abs(pos[1]-lower[1])*canvas.clientHeight/2;
+   placeGift(p,(pos[0]+1)*canvas.clientWidth/2,(1-pos[1])*canvas.clientHeight/2,size);
+  }
+ }
  const team=p.team,tint=TEAM[team].rgb;
  const variation=(Number(String(p.id||'').replace(/\D/g,''))||0)%5;
  const skin=[[.95,.72,.54],[.80,.55,.38],[.98,.77,.61],[.68,.43,.31],[.89,.63,.46]][variation];
@@ -2006,6 +1983,7 @@ function renderFallback(t){
    glow.addColorStop(0,'#ffe3987f');glow.addColorStop(1,'#ffd35b00');
    c.fillStyle=glow;c.fillRect(0,h*.40,w,h*.46);
    c.fillStyle='#7a4d22';c.beginPath();c.ellipse(x,y+5,w*.27,14,0,0,Math.PI*2);c.fill();
+   if(activeGifts.has(champ))placeGift(champ,x,y-52*Math.min(2.18,w/190),20*Math.min(2.18,w/190));
    drawFallbackMini(c,x,y,Math.min(2.18,w/190),champ.team,0,true);
    
    for(let i=0;i<27;i++){const q=(i*.6180339+t*.11)%1,xx=w*(.12+q*.76),yy=h*(.43+((i*.137+t*.15)%1)*.33);c.fillStyle=i%3?'#ffd06b':'#55d9ff';c.fillRect(xx,yy,3.5,6)}
@@ -2015,6 +1993,7 @@ function renderFallback(t){
   for(let i=0;i<Math.min(miniMode?20:12,cast.length);i++){
    const p=cast[i],pose=poseFor(p,i,t);if(pose.y< -4)continue;
    const x=w*(miniMode?[.16,.29,.42,.58,.71,.84][i%6]:.21+(i%4)*.19),y=h*(miniMode?.48+Math.floor(i/6)*.075:.65+Math.floor(i/4)*.050)-Math.max(0,-1.8-pose.y)*h*.08;
+   if(activeGifts.has(p))placeGift(p,x,y-52*(miniMode?.40:.76),20*(miniMode?.40:.76));
    drawFallbackMini(c,x,y,miniMode?.40:.76,p.team,i,false,p.emote&&(state.clock||0)<p.emote.until?p.emote.kind:'',t);
    if(miniMode&&showMiniNames&&(p.manual||i%3===0)){
     c.font='9px sans-serif';c.textAlign='center';c.fillStyle='#eefaff';c.fillText(p.name,x,y-40,72);
@@ -2356,6 +2335,7 @@ function updateCeremony(){
 
  if(ms-lastUi>95){lastUi=ms;document.body.classList.toggle('paused-game',paused);ui();updateSoloControls();if(!isFollower)sync()}
  const renderTime=(['lobby','intermission','finished'].includes(state.phase)?ms/1000:(state.clock||0))+(isFollower&&!paused?clamp((performance.now()-lastRemote)/1000,0,.23)*speed:0);
+ for(const effect of activeGifts.values())effect.node.hidden=true;
  if(glReady)renderWebGL(renderTime);else renderFallback(renderTime);
  showNameplates(renderTime);
  requestAnimationFrame(tick);
@@ -2381,86 +2361,92 @@ if(!isFollower){
 
 // ---- LAST FLOOR V18 Phase 1: SIMULATED gifts only. No real LIVE gift subscriptions. ----
 const GIFT_DEFS=Object.freeze([
- {key:'rose',gift:'Rose',title:'🚨 ไฟแดงฉุกเฉิน',category:'CHAOS',duration:2300,cooldown:650},
- {key:'finger_heart',gift:'Finger Heart',title:'⚡ ประกายไฟระเบิด',category:'CHAOS',duration:2500,cooldown:650},
- {key:'doughnut',gift:'Doughnut',title:'🛸 โดรนช่างซ่อม',category:'RESCUE',duration:3500,cooldown:850},
- {key:'hand_hearts',gift:'Hand Hearts',title:'🛡️ เกราะพลังงาน',category:'RESCUE',duration:4200,cooldown:1000},
- {key:'money_gun',gift:'Money Gun',title:'⬇️ ลิฟต์ตกอิสระ',category:'LEGENDARY',duration:5200,cooldown:1300},
- {key:'galaxy',gift:'Galaxy',title:'✨ ปาฏิหาริย์วินาทีสุดท้าย',category:'LEGENDARY',duration:6500,cooldown:1500}
+ {key:'rose',gift:'Rose',icon:'🌹',color:'#ff5472',title:'กุหลาบไฟแดง',category:'CHAOS',duration:2300,cooldown:650},
+ {key:'finger_heart',gift:'Finger Heart',icon:'⚡',color:'#ffc255',title:'ประกายไฟ',category:'CHAOS',duration:2500,cooldown:650},
+ {key:'doughnut',gift:'Doughnut',icon:'🛸',color:'#76ecff',title:'โดรนช่างซ่อม',category:'RESCUE',duration:3500,cooldown:850},
+ {key:'hand_hearts',gift:'Hand Hearts',icon:'🛡️',color:'#7dbaff',title:'เกราะพลังงาน',category:'RESCUE',duration:4200,cooldown:1000},
+ {key:'money_gun',gift:'Money Gun',icon:'💸',color:'#82e69a',title:'ธนบัตรโปรย',category:'LEGENDARY',duration:5200,cooldown:1300},
+ {key:'galaxy',gift:'Galaxy',icon:'🌌',color:'#c4a0ff',title:'แสงกาแล็กซี',category:'LEGENDARY',duration:6500,cooldown:1500}
 ]);
 const giftQueue=[],giftSeen=new Set();
-let giftActive=null,giftNextAt=0,giftSerial=0,giftAccepted=0,giftCompleted=0,giftRejected=0;
-function giftStatus(){return {enabled:GIFT_TEST_MODE,active:giftActive?giftActive.key:null,queued:giftQueue.length,accepted:giftAccepted,completed:giftCompleted,rejected:giftRejected,kind:$('giftStageLayer').dataset.kind};}
+const activeGifts=new Map();
+let giftSerial=0,giftAccepted=0,giftCompleted=0,giftRejected=0;
+function giftStatus(){
+ const items=Array.from(activeGifts.values()),first=items[0];
+ return {enabled:GIFT_TEST_MODE,active:first?.key||null,queued:giftQueue.length,accepted:giftAccepted,completed:giftCompleted,rejected:giftRejected,kind:first?.key||'',senderId:first?.player.viewerId||null,senders:items.map(item=>item.player.viewerId)};
+}
 function giftSetStatus(){
  const s=giftStatus();for(const id of ['giftControlStatus','giftSoloStatus']){const node=$(id);if(node)node.textContent=`จำลองเท่านั้น · คิว ${s.queued} · เล่นแล้ว ${s.completed} · ปฏิเสธ ${s.rejected}`;}
 }
-function giftEnqueue(kind,sender='ผู้ชมจำลอง',eventId=''){
+function giftEnqueue(kind,sender,eventId=''){
  if(!GIFT_TEST_MODE)return {ok:false,reason:'disabled'};
  const def=GIFT_DEFS.find(d=>d.key===kind);if(!def)return {ok:false,reason:'unknown gift'};
+ const token=String(sender??'').trim();
+ const exact=state.players.filter(p=>token&&String(p.viewerId)===token);
+ const matches=exact.length?exact:state.players.filter(p=>token&&p.name===token);
+ const player=matches.length===1?matches[0]:null;
+ if(!player||!player.alive||!state.stageIds.includes(player.id)){
+  giftRejected++;giftSetStatus();return {ok:false,reason:'กรุณาใช้ชื่อผู้เล่นที่เข้าลิฟต์และมีตัวละครอยู่บนจอ'};
+ }
  const safeId=String(eventId||'test-'+(++giftSerial));
  if(giftSeen.has(safeId)){giftRejected++;giftSetStatus();return {ok:false,reason:'duplicate'};}
  if(giftQueue.length>=18){giftRejected++;giftSetStatus();return {ok:false,reason:'queue full'};}
  giftSeen.add(safeId);if(giftSeen.size>400){const old=giftSeen.values().next().value;giftSeen.delete(old);}
- giftQueue.push({...def,sender:String(sender).slice(0,32).replace(/[\r\n\t]/g,' '),eventId:safeId});giftAccepted++;giftSetStatus();
+ giftQueue.push({...def,player,eventId:safeId});giftAccepted++;giftSetStatus();
  return {ok:true,queued:giftQueue.length};
 }
-function giftParticles(kind){
- const layer=$('giftStageParticles');layer.replaceChildren();
- const colors=kind==='galaxy'?['#fff2b1','#ffc55f','#f8f3d1']:kind==='hand_hearts'||kind==='doughnut'?['#83e8ff','#c6faff','#53aaff']:kind==='money_gun'?['#ffe8de','#ff6c75']:['#ffc459','#ff6c4f','#fff5af'];
- const count=kind==='rose'?7:kind==='finger_heart'?27:kind==='money_gun'?22:25;
- const frag=document.createDocumentFragment();
- for(let i=0;i<count;i++){
-  const p=document.createElement('i');p.style.setProperty('--gx',((i*37+11)%95)+'%');p.style.setProperty('--gy',((i*53+7)%82+10)+'%');
-  p.style.setProperty('--gs',(2+(i*7)%6)+'px');p.style.setProperty('--gc',colors[i%colors.length]);
-  p.style.setProperty('--gt',(0.4+((i*11)%16)/10).toFixed(2)+'s');p.style.setProperty('--gd',(-((i*7)%20)/10).toFixed(2)+'s');frag.appendChild(p);
- }
- layer.appendChild(frag);
-}
-function giftSound(def){
- // Reuse the existing original WebAudio engine, and remain silent until user enabled sound.
- const ctx=GAME_SOUND&&GAME_SOUND.ctx;if(!GAME_SOUND?.enabled||!ctx||ctx.state!=='running'||state.phase==='decision')return;
- try{const now=ctx.currentTime;const osc=ctx.createOscillator(),gain=ctx.createGain();
- osc.type=def.category==='LEGENDARY'?'sawtooth':'sine';osc.frequency.setValueAtTime(def.category==='CHAOS'?540:def.category==='RESCUE'?710:280,now);
- osc.frequency.exponentialRampToValueAtTime(def.category==='LEGENDARY'?90:920,now+.16);
- gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.023,now+.015);gain.gain.exponentialRampToValueAtTime(.0001,now+.22);
- osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.24);
- }catch(_e){}
+function placeGift(player,x,y,size){
+ const node=activeGifts.get(player).node;
+ node.style.fontSize=clamp(size,4,12)+'px';
+ node.style.left=x+'px';node.style.top=y+'px';node.hidden=false;
 }
 function giftBegin(item,now){
- giftActive={...item,endsAt:now+item.duration};
- const stage=$('giftStageLayer');stage.dataset.kind=item.key;stage.classList.add('active');
- giftParticles(item.key);$('giftLabel').textContent=item.title;
- $('giftSender').textContent=`${item.sender} · ${item.gift} · ${item.category}`;
- $('giftBanner').classList.add('show');giftSound(item);giftSetStatus();
-}
-function giftClear(now){
- if(!giftActive)return;
- giftNextAt=now+giftActive.cooldown;giftCompleted++;giftActive=null;
- $('giftStageLayer').classList.remove('active');$('giftStageLayer').dataset.kind='';
- $('giftBanner').classList.remove('show');$('giftStageParticles').replaceChildren();giftSetStatus();
+ const node=document.createElement('div');node.className='avatar-gift';node.hidden=true;
+ node.dataset.kind=item.key;node.dataset.sender=item.player.id;node.style.setProperty('--ink',item.color);
+ const count=item.key==='doughnut'?1:4;
+ for(let i=0;i<count;i++){
+  const part=document.createElement('i');
+  part.style.setProperty('--x',i%2?'76%':'6%');
+  part.style.setProperty('--y',i<2?'30%':'65%');
+  part.style.setProperty('--delay',(-.23*i)+'s');
+  node.appendChild(part);
+ }
+ $('avatarGifts').appendChild(node);
+ activeGifts.set(item.player,{...item,node,endsAt:now+item.duration});
 }
 function giftTick(now){
  if(!GIFT_TEST_MODE)return;
- if(giftActive && now>=giftActive.endsAt)giftClear(now);
- if(!giftActive && giftQueue.length && now>=giftNextAt){
-  // Do not play large scene changes during a timed 1/2 decision; defer until a break.
-  if(state.phase==='decision'&&giftQueue[0].category==='LEGENDARY')return;
-  giftBegin(giftQueue.shift(),now);
+ let changed=false;
+ for(const [player,item] of activeGifts){
+  if(now<item.endsAt&&player.alive&&state.players.includes(player)&&state.stageIds.includes(player.id))continue;
+  item.node.remove();activeGifts.delete(player);giftCompleted++;changed=true;
  }
+ for(let i=0;i<giftQueue.length;){
+  const item=giftQueue[i];
+  if(activeGifts.has(item.player)){i++;continue;}
+  giftQueue.splice(i,1);changed=true;
+  if(item.player.alive&&state.players.includes(item.player)&&state.stageIds.includes(item.player.id))giftBegin(item,now);
+  else giftRejected++;
+ }
+ if(changed)giftSetStatus();
 }
 function buildGiftTestUI(){
  if(!GIFT_TEST_MODE)return;
  const buildButtons=(parent)=>{
   const grid=document.createElement('div');grid.className='gift-test-grid';
-  for(const def of GIFT_DEFS){const b=document.createElement('button');b.type='button';b.dataset.gift=def.key;b.textContent=def.title;grid.appendChild(b);}
-  grid.addEventListener('click',e=>{const b=e.target.closest('button[data-gift]');if(b)giftEnqueue(b.dataset.gift,'ผู้ชมทดลอง');});
+  for(const def of GIFT_DEFS){const b=document.createElement('button');b.type='button';b.dataset.gift=def.key;b.textContent=def.icon+' '+def.gift;grid.appendChild(b);}
+  grid.addEventListener('click',e=>{const b=e.target.closest('button[data-gift]');if(!b)return;
+   const sender=$(isSolo?'soloChatUser':'chatUser').value;
+   const result=giftEnqueue(b.dataset.gift,sender);
+   if(!result.ok)row.textContent='⚠️ '+result.reason;
+   else if(isSolo)$('soloToolsMenu').hidden=true;});
   parent.appendChild(grid);
   const row=document.createElement('div');row.className='gift-status';row.textContent='จำลองเท่านั้น · ไม่ใช่ของขวัญจาก TikTok';row.id=parent.classList.contains('panel')?'giftControlStatus':'giftSoloStatus';parent.appendChild(row);
  };
  if(!isLive){
   const panel=document.createElement('section');panel.className='panel gift-test-panel';
   const h=document.createElement('h2');h.textContent='🎁 V18 · GIFT EVENT TEST';panel.appendChild(h);
-  const p=document.createElement('p');p.className='feature';p.textContent='ทดลอง 6 เอฟเฟกต์ · ไม่เปลี่ยนคะแนน/หัวใจ · ไม่ส่งข้อมูลไป Render';panel.appendChild(p);
+  const p=document.createElement('p');p.className='feature';p.textContent='ใช้ชื่อในช่องคอมเมนต์จำลอง กด เล่น เพื่อเข้าลิฟต์ แล้วเลือกของขวัญ';panel.appendChild(p);
   buildButtons(panel);document.querySelector('.controls')?.prepend(panel);
  }
  if(isSolo){
