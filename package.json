@@ -1,15 +1,10 @@
 {
   "name": "last-floor-tiktok-relay",
-  "version": "0.1.0",
+  "version": "0.4.4",
   "private": true,
   "type": "module",
-  "description": "TikTok LIVE relay backend for LAST FLOOR V16.4",
+  "description": "LAST FLOOR V17.4.4 TikTok LIVE waiting-room relay and Postgres solo leaderboard",
   "engines": {"node": ">=20"},
-  "scripts": {
-    "start": "node server.mjs",
-    "test": "node --test test/*.test.mjs"
-  },
-  "dependencies": {
-    "tiktok-live-connector": "^2.5.0"
-  }
+  "scripts": {"start": "node server.mjs", "test": "node --test test/*.test.mjs"},
+  "dependencies": {"tiktok-live-connector": "^2.5.0", "pg": "^8.13.1"}
 }

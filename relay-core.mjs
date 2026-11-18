@@ -12,12 +12,15 @@ export function allowedGameCommand(text) {
 export function parseLiveComment(raw, source = 'live') {
   if (!raw || typeof raw !== 'object') return null;
   const user = raw.user ?? {};
-  const userId = String(user.uniqueId || user.userId || raw.userId || '')
+  // TikTok's numeric account ID is the durable identity. uniqueId (@handle) may change.
+  const platformUserId = String(raw.userId || user.userId || '').trim();
+  const durableId = /^\d{5,30}$/.test(platformUserId) ? platformUserId : null;
+  const userId = String(durableId || user.uniqueId || raw.uniqueId || '')
     .trim().replace(/^@/, '').slice(0, 60);
-  const name = String(user.nickname || raw.name || userId).trim().slice(0, 50);
+  const name = String(user.nickname || raw.nickname || raw.name || user.uniqueId || raw.uniqueId || userId).trim().slice(0, 50);
   const text = String(raw.comment ?? raw.text ?? '').trim().replace(/\s+/g, ' ').slice(0, 44);
   if (!userId || !name || !allowedGameCommand(text)) return null;
-  return { userId, name, text, source: source === 'test' ? 'test' : 'live', ts: Date.now() };
+  return { userId, platformUserId: durableId, name, text, source: source === 'test' ? 'test' : 'live', ts: Date.now() };
 }
 export function validToken(given, expected, timingSafeEqual) {
   if (typeof given !== 'string' || typeof expected !== 'string') return false;
